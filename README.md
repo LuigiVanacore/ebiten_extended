@@ -2,7 +2,7 @@
 
 This is a project to create a gameplay framework capable of extending functionalities of the ebitenengine.
 
-For now this is the funcionalities implemented:
+For now this are the funcionalities implemented:
 
 - Sprite
 - Animation
