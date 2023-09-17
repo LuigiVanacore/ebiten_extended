@@ -5,6 +5,9 @@ This is a project to create a gameplay framework capable of extending functional
 For now this is the funcionalities implemented:
 
 - Sprite
+- Animation
+- Scene graph
 - Collisions
+- Time managment
 - Resource Management
 - Audio Management
