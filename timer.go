@@ -5,18 +5,29 @@ import "time"
 type Timer struct {
 	startTime time.Time
 	duration time.Duration
+	looped bool
 }
 
-func NewTimer(duration time.Duration) *Timer {
-	return &Timer{duration: duration}
+func NewTimer(duration time.Duration, isLooping bool) *Timer {
+	return &Timer{duration: duration, looped: isLooping}
 }
 
-func (t *Timer) SetDuration(duration time.Duration) {
+func (t *Timer) SetDuration(duration time.Duration) *Timer {
 	t.duration = duration
+	return t
 }
 
 func (t *Timer) GetDuration() time.Duration {
 	return t.duration
+}
+
+func (t *Timer) IsLooped() bool {
+	return t.looped
+}
+
+func (t *Timer) SetLooping(isLooping bool) *Timer {
+	t.looped = isLooping
+	return t
 }
 
 func (t *Timer) Start() *Timer {
