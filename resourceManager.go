@@ -47,7 +47,7 @@ func (r *resourceManager) GetFont(fontId uint) *font.Face {
 	return r.fonts[fontId]
 }
 
-func (r * resourceManager) LoadImage(texture []byte) {
+func (r * resourceManager) LoadImage(texture []byte){
 	image, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {
 		log.Fatal(err)
