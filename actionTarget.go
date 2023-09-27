@@ -1,13 +1,13 @@
 package ebiten_extended
 
 type ActionTarget struct {
-	eventRealTimeMap map[int]func()
-	eventPoolMap     map[int]func()
+	eventRealTimeMap map[int]func(args ...any)
+	eventPoolMap     map[int]func(args ...any)
 	actionMap        *ActionMap
 }
 
 func NewActionTarget(actionMap *ActionMap) *ActionTarget {
-	return &ActionTarget{eventRealTimeMap: make(map[int]func()), eventPoolMap: make(map[int]func()), actionMap: actionMap}
+	return &ActionTarget{eventRealTimeMap: make(map[int]func(args ...any)), eventPoolMap: make(map[int]func(args ...any)), actionMap: actionMap}
 }
 
 func (a *ActionTarget) ProcessEvent(actionId int) bool {
@@ -19,16 +19,16 @@ func (a *ActionTarget) ProcessEvent(actionId int) bool {
 	return false
 }
 
-func (a *ActionTarget) ProcessEvents() {
+func (a *ActionTarget) ProcessEvents(args ...any) {
 	for actionId, fun := range a.eventRealTimeMap {
 		action := a.actionMap.Get(actionId)
 		if action.Test() {
-			fun()
+			fun(args...)
 		}
 	}
 }
 
-func (a *ActionTarget) Bind(actionId int, callback func()) {
+func (a *ActionTarget) Bind(actionId int, callback func(args ...any)) {
 	action := a.actionMap.Get(actionId)
 	if action.inputType == PRESSED {
 		a.eventRealTimeMap[actionId] = callback
