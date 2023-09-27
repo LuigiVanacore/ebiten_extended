@@ -3,18 +3,19 @@ package ebiten_extended
 import (
 	"math"
 
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Sprite struct {
 	transform Transform
-	textureRect Rect
+	textureRect *math2D.Rectangle
 	texture     *ebiten.Image
 }
 
 func NewSprite(texture *ebiten.Image, isPivotToCenter bool) *Sprite {
 
-	textureRect := NewRect(float64(texture.Bounds().Min.X),
+	textureRect := math2D.Rectangle(float64(texture.Bounds().Min.X),
 		float64(texture.Bounds().Min.Y),
 		float64(texture.Bounds().Max.X),
 		float64(texture.Bounds().Max.Y))
@@ -28,12 +29,12 @@ func NewSprite(texture *ebiten.Image, isPivotToCenter bool) *Sprite {
 	return sprite
 }
 
-func (s *Sprite) GetTextureRect() Rect {
+func (s *Sprite) GetTextureRect() *math2D.Rectangle {
 	return s.textureRect
 }
 
 func (s *Sprite) SetTextureRect(width, height float64) {
-	s.textureRect = Rect{Width: width, Height: height}
+	s.textureRect = math2D.NewRectangle(0, 0, width, height)
 }
 
 func (s *Sprite) GetTexture() *ebiten.Image {
@@ -61,7 +62,7 @@ func (s *Sprite) SetPosition(x, y float64) {
 	s.transform.SetPosition(x, y)
 }
 
-func (s *Sprite) GetPosition() Vector2D {
+func (s *Sprite) GetPosition() math2D.Vector2D {
 	return s.transform.GetPosition()
 }
 

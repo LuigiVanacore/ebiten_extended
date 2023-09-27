@@ -23,6 +23,9 @@ type AnimationSet struct {
 
 func NewAnimationSet(spriteSheet *ebiten.Image, frameCount uint, duration float64, isLooping bool) *AnimationSet {
 	timePerFrame :=  1 / duration
+	if ( duration == 0) {
+		timePerFrame = 0
+	}
 	frameSize := Vector2D{ X: float64(spriteSheet.Bounds().Dx()) / float64(frameCount), Y: float64(spriteSheet.Bounds().Dy())}
 	animationSet:=  &AnimationSet{ spriteSheet:  spriteSheet, frameSize: frameSize, frameCount: frameCount, timePerFrame: timePerFrame, isLooping: isLooping}
 	animationSet.updateFrameImage()

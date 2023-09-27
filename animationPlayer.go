@@ -60,7 +60,5 @@ func (a *AnimationPlayer) Update(dt float64) {
 }
 
 func (a *AnimationPlayer) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	if a.isPlaying {
 		a.animationMap[a.currentAnimationId].Draw(target, op)
-	}
 }
