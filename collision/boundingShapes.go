@@ -7,12 +7,12 @@ import (
  
 
 func EnlargeRectanglePoint( r math2D.Rectangle, p math2D.Vector2D) math2D.Rectangle {
-	enlarged := math2D.NewRectangle( math2D.Min(r.GetPosition().X(),p.X()),
-									 math2D.Min(r.GetPosition().Y(), p.Y()),
-									 math2D.Max(r.GetPosition().X() + r.GetSize().X(), p.X()),
-									 math2D.Max(r.GetPosition().Y() + r.GetSize().Y(), p.Y()))
+	enlarged := math2D.NewRectangle( math2D.NewVector2D(math2D.Min(r.GetPosition().X(),p.X()),
+									 					math2D.Min(r.GetPosition().Y(), p.Y())),
+									 math2D.NewVector2D(math2D.Max(r.GetPosition().X() + r.GetSize().X(), p.X()),
+														math2D.Max(r.GetPosition().Y() + r.GetSize().Y(), p.Y())))
 	size := math2D.SubtractVectors(enlarged.GetSize(), enlarged.GetPosition())
-	enlarged.SetSize(size.X(), size.Y())
+	enlarged.SetSize(size)
 	return enlarged
 }
 
@@ -27,7 +27,7 @@ func EnlargeRectangleRectangle(r, extender math2D.Rectangle) math2D.Rectangle {
 
 
 func OrientedRectangleRectangleHull(r math2D.OrientedRectangle) math2D.Rectangle {
-	h := math2D.NewRectangle(r.GetCenter().X(), r.GetCenter().Y(), 0, 0)
+	h := math2D.NewRectangle(r.GetCenter(), math2D.ZeroVector2D())
 
 	for nr := 1; nr < 4; nr++ {
 		corner := OrientedRectangleCorner(r, nr)
@@ -38,7 +38,7 @@ func OrientedRectangleRectangleHull(r math2D.OrientedRectangle) math2D.Rectangle
 
 
 func RectanglesRectangleHull(rectangles []math2D.Rectangle, count int ) math2D.Rectangle {
-	h := math2D.NewRectangle(0, 0, 0, 0)
+	h := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.ZeroVector2D())
 	if ( 0 == count || len(rectangles) == 0 ) {
 		return h
 	}
@@ -56,12 +56,12 @@ func OrientedRectangleCircleHull(r math2D.OrientedRectangle) math2D.Circle {
 }
  
 func CirlcesRectangleHull(circles []math2D.Circle, count int) math2D.Rectangle {
-	h := math2D.NewRectangle(0, 0, 0, 0)
+	h := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.ZeroVector2D())
 	if (0 == count || len(circles) == 0 ) {
 		return h
 	}
 
-	h.SetPosition(circles[0].GetCenterPosition().X(), circles[0].GetCenterPosition().Y())
+	h.SetPosition(circles[0].GetCenterPosition())
 	for i:=1; i < count; i++ {
 		halfExtend := math2D.NewVector2D(circles[i].GetRadius(), circles[i].GetRadius())
 		minP := math2D.SubtractVectors(circles[i].GetCenterPosition(), halfExtend)

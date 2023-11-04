@@ -3,15 +3,6 @@ package collision
 import "github.com/LuigiVanacore/ebiten_extended/math2D"
  
 
-
-
-
-
-
-
-
-
-
 func CirclesCollide(a, b math2D.Circle) bool {
 	radiusSum := a.GetRadius() + b.GetRadius()
 	distance := math2D.SubtractVectors(a.GetCenterPosition(), b.GetCenterPosition())
@@ -54,7 +45,7 @@ func CircleSegmentCollide(c math2D.Circle, s math2D.Segment) bool {
 
 
 func CircleOrientedRectangleCollide(c math2D.Circle, r math2D.OrientedRectangle) bool {
-	lr := math2D.NewRectangle(0, 0, r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2)
+	lr := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2))
 	lc := math2D.NewCircle(math2D.NewVector2D(0,0), c.GetRadius() )
 
 	lc.SetCenter(math2D.SubtractVectors(c.GetCenterPosition(), r.GetCenter()))
@@ -163,7 +154,7 @@ func LineRectangleCollide(l math2D.Line, r math2D.Rectangle) bool {
  
 
 func LineOrientedRectangleCollide( l math2D.Line, r math2D.OrientedRectangle) bool {
-	lr := math2D.NewRectangle(0, 0, r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2)
+	lr := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2))
 
 	base := math2D.SubtractVectors(l.GetBase(), r.GetCenter())
 	base = base.RotateVector(-r.GetRotation())
@@ -205,7 +196,7 @@ func PointRectangleCollide(p math2D.Vector2D, r math2D.Rectangle) bool {
 
 
 func OrientedRectanglePointCollide( r math2D.OrientedRectangle, p math2D.Vector2D) bool {
-	lr := math2D.NewRectangle(0, 0, r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2)
+	lr := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D( r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2))
 	lp := math2D.SubtractVectors(p, r.GetCenter())
 	lp = lp.RotateVector(-r.GetRotation())
 	lp = math2D.AddVectors(lp, r.GetHalfExtended())
@@ -252,7 +243,7 @@ func RectangleSegmentCollide(r math2D.Rectangle, s math2D.Segment) bool {
 }
 
 func OrientedRectangleSegmentCollide(r math2D.OrientedRectangle, s math2D.Segment) bool{
-	lr := math2D.NewRectangle(0, 0, r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2)
+	lr := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(r.GetHalfExtended().X() * 2, r.GetHalfExtended().Y() * 2))
 
 	ls := math2D.Segment{}
 	ls.SetStartPoint( math2D.SubtractVectors(s.GetStartPoint(), r.GetCenter()))

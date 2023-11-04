@@ -7,11 +7,14 @@ import (
 )
 
 type Node struct {
+	id uint64
+	name string
 	entity any
 }
 
-func NewNode(entity any) *Node {
-	return &Node{entity: entity}
+func NewNode(entity any, name string) *Node {
+	id := NodeManager().GetNextIdVal()
+	return &Node{entity: entity, id: id, name: name}
 }
 
 func (n *Node) Update(dt float64) {

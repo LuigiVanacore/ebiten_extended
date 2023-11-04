@@ -39,7 +39,7 @@ func ZeroVector2D() Vector2D {
 func (v Vector2D) UnitVector2D() Vector2D {
 	length := v.Length()
 	if length != 0 {
-		return DivideScalar(v, length)
+		return v.DivideScalar( length)
 	}
 	return v
 }
@@ -87,23 +87,23 @@ func (v Vector2D) Negate() Vector2D {
 	return Vector2D{-v.x, -v.y}
 }
 
-func MultiplyVectors(v1, v2 Vector2D) Vector2D {
-	return Vector2D{v1.x * v2.x, v1.y * v2.y}
+func (v *Vector2D) MultiplayVector(v1 Vector2D) Vector2D {
+	return Vector2D{v1.x * v.x, v1.y * v.y}
 }
 
-func DivideVectors(v1, v2 Vector2D) Vector2D {
-	return Vector2D{v1.x / v2.x, v1.y / v2.y}
+func (v *Vector2D) DivideVectors(v1 Vector2D) Vector2D {
+	return Vector2D{v1.x / v.x, v1.y / v.y}
 }
 
 func DotProduct(v1,v2 Vector2D) float64 {
 	return v1.x*v2.x + v1.y*v2.y
 }
 
-func MultiplyScalar(v Vector2D, s  float64) Vector2D {
+func (v *Vector2D) MultiplyScalar( s  float64) Vector2D {
 	return Vector2D{v.x * s, v.y * s}
 }
 
-func DivideScalar(v Vector2D, s float64) Vector2D {
+func(v *Vector2D)   DivideScalar( s float64) Vector2D {
 	return Vector2D{v.x / s, v.y / s}
 }
 
@@ -137,7 +137,7 @@ func (v Vector2D) EncloseAngle(v2 Vector2D) float64 {
 func (v Vector2D) ProjectVector(v2 Vector2D) Vector2D {
 	var d = DotProduct(v2, v2)
 	if d != 0 {
-		return MultiplyScalar(v2, DotProduct(v, v2) / d)
+		return v2.MultiplyScalar( DotProduct(v, v2) / d)
 	}
 	return v2
 }

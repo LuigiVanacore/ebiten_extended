@@ -1,4 +1,4 @@
-package ebiten_extended
+package collision
 
 var collisionMaskSize = 10
 

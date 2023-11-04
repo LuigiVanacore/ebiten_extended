@@ -3,6 +3,8 @@ package ebiten_extended
 import (
 	"image"
 
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -10,10 +12,10 @@ import (
 
 
 type AnimationSet struct {
-	transform Transform
+	transform transform.Transform
 	spriteSheet *ebiten.Image
 	frameImage  *ebiten.Image
-	frameSize Vector2D
+	frameSize math2D.Vector2D
 	currentFrame uint
 	frameCount uint
 	timePerFrame float64
@@ -26,7 +28,7 @@ func NewAnimationSet(spriteSheet *ebiten.Image, frameCount uint, duration float6
 	if ( duration == 0) {
 		timePerFrame = 0
 	}
-	frameSize := Vector2D{ X: float64(spriteSheet.Bounds().Dx()) / float64(frameCount), Y: float64(spriteSheet.Bounds().Dy())}
+	frameSize := math2D.NewVector2D( float64(spriteSheet.Bounds().Dx()) / float64(frameCount), float64(spriteSheet.Bounds().Dy()))
 	animationSet:=  &AnimationSet{ spriteSheet:  spriteSheet, frameSize: frameSize, frameCount: frameCount, timePerFrame: timePerFrame, isLooping: isLooping}
 	animationSet.updateFrameImage()
 	animationSet.SetPivotToCenter()
@@ -34,22 +36,22 @@ func NewAnimationSet(spriteSheet *ebiten.Image, frameCount uint, duration float6
 	return animationSet
 }
 
-func (a *AnimationSet) GetTransform() *Transform {
+func (a *AnimationSet) GetTransform() *transform.Transform {
 	return &a.transform
 }
 
-func (a *AnimationSet) SetTransform(transform Transform) {
+func (a *AnimationSet) SetTransform(transform transform.Transform) {
 	a.transform = transform
 }
 
 func (a *AnimationSet)  SetPivotToCenter() {
-	x, y := a.frameSize.X / 2, a.frameSize.Y / 2
+	x, y := a.frameSize.X() / 2, a.frameSize.Y() / 2
 	a.transform.SetPivot(x, y)
 }
 
 func (a *AnimationSet) updateFrameImage() {
-	sx := int(a.currentFrame)*int(a.frameSize.X)
-	a.frameImage =  a.spriteSheet.SubImage(image.Rect(sx,0,sx + int(a.frameSize.X), int(a.frameSize.Y))).(*ebiten.Image)
+	sx := int(a.currentFrame)*int(a.frameSize.X())
+	a.frameImage =  a.spriteSheet.SubImage(image.Rect(sx,0,sx + int(a.frameSize.X()), int(a.frameSize.Y()))).(*ebiten.Image)
 }
 
 func (a *AnimationSet) Update(dt float64) {

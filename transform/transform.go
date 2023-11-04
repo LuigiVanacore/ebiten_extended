@@ -1,9 +1,9 @@
-package ebiten_extended
+package transform
 
 import (
 	"math"
 
-	math2D "github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 

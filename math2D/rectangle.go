@@ -7,10 +7,10 @@ type Rectangle struct {
 	size     Vector2D
 }
 
-func NewRectangle(x float64, y float64, width float64, height float64) Rectangle {
+func NewRectangle(position Vector2D, size Vector2D) Rectangle {
 	return Rectangle{
-		position: Vector2D{x: x, y: y},
-		size:     Vector2D{x: x, y: y},
+		position: position,
+		size:     size,
 	}
 }
 
@@ -18,9 +18,8 @@ func (r *Rectangle) GetPosition() Vector2D {
 	return r.position
 }
 
-func (r *Rectangle) SetPosition(x, y float64) {
-	r.position.x = x
-	r.position.y = y
+func (r *Rectangle) SetPosition(position Vector2D) {
+	r.position = position
 }
 
 func (r *Rectangle) Translate(x float64, y float64) {
@@ -32,9 +31,8 @@ func (r *Rectangle) GetSize() Vector2D {
 	return r.size
 }
 
-func (r *Rectangle) SetSize(x, y float64) {
-	r.size.x = x
-	r.size.y = y
+func (r *Rectangle) SetSize(size Vector2D) {
+	r.size = size
 }
 
 func (r Rectangle) GetCenter()  Vector2D {

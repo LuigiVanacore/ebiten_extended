@@ -1,8 +1,11 @@
 package ebiten_extended
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Drawable interface {
-	Transformable
+	transform.Transformable
 	Draw(target *ebiten.Image, op *ebiten.DrawImageOptions)
 }

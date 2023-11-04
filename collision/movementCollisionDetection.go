@@ -8,60 +8,42 @@ func MovingCircleCircleCollide( a, b math2D.Circle, moveA math2D.Vector2D) bool 
 	travelA := math2D.NewSegment(a.GetCenterPosition(), math2D.AddVectors(a.GetCenterPosition(), moveA))
 	return CircleSegmentCollide(bAbsorbedA, travelA)
 } 
-// Bool moving_rectangle_rectangle_collide(const Rectangle* a, const Vector2D* moveA, const Rectangle* b)
-// {
-// 	Rectangle envelope = *a;
-// 	envelope.origin = add_vector(&envelope.origin, moveA);
-// 	envelope = enlarge_rectangle_rectangle(&envelope, a);
 
-// 	if(rectangles_collide(&envelope, b))
-// 	{
-// 		const float epsilon = 1.0f / 32.0f;/* improves case a->size is (close to) zero */
-// 		const float minimumMoveDistance = maximum(minimum(a->size.x, a->size.y) / 4, epsilon);
-// 		const Vector2D halfMoveA = divide_vector(moveA, 2);
-// 		if(vector_length(moveA) < minimumMoveDistance)
-// 			return yes;
 
-// 		envelope.origin = add_vector(&a->origin, &halfMoveA);
-// 		envelope.size = a->size;
-// 		return
-// 			moving_rectangle_rectangle_collide(a, &halfMoveA, b) ||
-// 			moving_rectangle_rectangle_collide(&envelope, &halfMoveA, b);
-// 	}
-// 	else
-// 		return no;
-// }
 func MovingRectangleRectangleCollide( a math2D.Rectangle, moveA math2D.Vector2D, b math2D.Rectangle) bool {
-	
+	envelope := a
+	envelope.SetPosition(math2D.AddVectors(envelope.GetPosition(), moveA))
+	envelope = EnlargeRectangleRectangle(envelope, a)
+
+	if RectanglesCollide(envelope, b) {
+		halfMoveA := moveA.DivideScalar(2)
+
+		envelope.SetPosition(math2D.AddVectors(a.GetPosition(), halfMoveA))
+		envelope.SetSize(a.GetSize())
+		return MovingRectangleRectangleCollide(a, halfMoveA, b) || MovingRectangleRectangleCollide(envelope, halfMoveA, b)
+	}
+
+	return false
 }
-// Bool moving_circle_rectangle_collide(const Circle* a, const Vector2D* moveA, const Rectangle* b)
-// {
-// 	Circle envelope = *a;
-// 	const Vector2D halfMoveA = divide_vector(moveA, 2);
-// 	const float moveDistance = vector_length(moveA);
-// 	envelope.center = add_vector(&a->center, &halfMoveA);
-// 	envelope.radius = a->radius + moveDistance / 2;
 
-// 	if(circle_rectangle_collide(&envelope, b))
-// 	{
-// 		const float epsilon = 1.0f / 32.0f;/* improves case a->radius is (close to) zero */
-// 		const float minimumMoveDistance = maximum(a->radius / 4, epsilon);
-// 		if(moveDistance < minimumMoveDistance)
-// 			return yes;
 
-// 		envelope.radius = a->radius;
-// 		return
-// 			moving_circle_rectangle_collide(a, &halfMoveA, b) ||
-// 			moving_circle_rectangle_collide(&envelope, &halfMoveA, b);
-// 	}
-// 	else
-// 		return no;
-// }
+func MovingCircleRectangleCollide( a math2D.Circle, moveA math2D.Vector2D, b math2D.Rectangle) bool {
+	envelope := a
+	halfMoveA := moveA.DivideScalar(2)
+	moveDistance := moveA.Length()
+	envelope.SetCenter(math2D.AddVectors(a.GetCenterPosition(), halfMoveA))
+	envelope.SetRadius(a.GetRadius() + moveDistance / 2)
 
-// Bool moving_rectangle_circle_collide(const Rectangle* a, const Vector2D* moveA, const Circle* b)
-// {
-// 	const Vector2D moveB = negate_vector(moveA);
-// 	return moving_circle_rectangle_collide(b, &moveB, a);
-// }
+	if CircleRectangleCollide(envelope, b) {
+		envelope.SetRadius(a.GetRadius())
+		return MovingCircleRectangleCollide(a, halfMoveA, b) || MovingCircleRectangleCollide(envelope, halfMoveA, b)	
+	}
 
+	return false
+}
+
+func MovingRectangleCircleCollide( a math2D.Rectangle, moveA math2D.Vector2D, b math2D.Circle) bool {
+	moveB := moveA.Negate()
+	return MovingCircleRectangleCollide(b, moveB, a)
+}
 

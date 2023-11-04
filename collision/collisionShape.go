@@ -1,21 +1,22 @@
-package ebiten_extended
+package collision
 
 import (
+
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
-	"image/color"
 )
 
 type CollisionShape struct {
-	transform     *Transform
-	shape         Shape
+	transform     *transform.Transform
+	shape         math2D.Shape
 	collisionMask CollisionMask
 	debug         bool
 }
 
-func NewCollisionShape(transform *Transform, shape Shape, mask CollisionMask) *CollisionShape {
+func NewCollisionShape(transform *transform.Transform, shape math2D.Shape, mask CollisionMask) *CollisionShape {
 	collisionShape := &CollisionShape{transform: transform, collisionMask: *NewCollisionMask()}
-	shape.SetTransform(transform)
+	//shape.SetTransform(transform)
 	collisionShape.shape = shape
 	collisionShape.collisionMask = mask
 	return collisionShape
@@ -32,7 +33,7 @@ func (c *CollisionShape) IsColliding(collider Collidable) bool {
 	return false
 }
 
-func (c *CollisionShape) GetShape() Shape {
+func (c *CollisionShape) GetShape() math2D.Shape {
 	return c.shape
 }
 
@@ -40,9 +41,9 @@ func (c *CollisionShape) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOpt
 	if c.debug {
 		//vector.DrawFilledCircle(target, float32(c.Transform.position.X), float32(c.Transform.position.Y), 15, color.White, false)
 		//m := c.transform.GetGeoM()
-		if shape, ok := c.shape.(*Circle); ok {
-			vector.StrokeCircle(target, float32(c.transform.position.X), float32(c.transform.position.Y), float32(shape.radius), 2, color.White, false)
-		}
+		/* if shape, ok := c.shape.(*math2D.Circle); ok {
+			vector.StrokeCircle(target, float32(c.transform.GetPosition().X()), float32(c.transform.GetPosition().Y()), float32(shape.GetRadius()), 2, color.White, false)
+		} */
 	}
 }
 

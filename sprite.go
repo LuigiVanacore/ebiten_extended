@@ -4,23 +4,22 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Sprite struct {
-	transform Transform
+	transform transform.Transform
 	textureRect *math2D.Rectangle
 	texture     *ebiten.Image
 }
 
 func NewSprite(texture *ebiten.Image, isPivotToCenter bool) *Sprite {
+	
+	textureRect := math2D.NewRectangle(math2D.NewVector2D(float64(texture.Bounds().Min.X),float64(texture.Bounds().Min.Y)),
+	math2D.NewVector2D(float64(texture.Bounds().Max.X),float64(texture.Bounds().Max.Y)))
 
-	textureRect := math2D.Rectangle(float64(texture.Bounds().Min.X),
-		float64(texture.Bounds().Min.Y),
-		float64(texture.Bounds().Max.X),
-		float64(texture.Bounds().Max.Y))
-
-	sprite := &Sprite{textureRect: *textureRect, texture: texture}
+	sprite := &Sprite{textureRect: &textureRect, texture: texture}
 
 	if isPivotToCenter {
 		sprite.SetPivotToCenter()
@@ -34,7 +33,8 @@ func (s *Sprite) GetTextureRect() *math2D.Rectangle {
 }
 
 func (s *Sprite) SetTextureRect(width, height float64) {
-	s.textureRect = math2D.NewRectangle(0, 0, width, height)
+	textureRect := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(width, height))
+	s.textureRect = &textureRect
 }
 
 func (s *Sprite) GetTexture() *ebiten.Image {
@@ -45,16 +45,14 @@ func (s *Sprite) SetTexture(texture *ebiten.Image) {
 }
 
 func (s *Sprite) SetPivotToCenter() {
-	rect := s.GetTextureRect()
-	x, y := rect.GetCenter()
-	s.transform.SetPivot(x, y)
+	s.transform.SetPivot(s.GetTextureRect().GetCenter().X(), s.GetTextureRect().GetCenter().Y())
 }
 
-func (s *Sprite) GetTransform() *Transform {
+func (s *Sprite) GetTransform() *transform.Transform {
 	return &s.transform
 }
 
-func (s *Sprite) SetTransform(transform Transform) {
+func (s *Sprite) SetTransform(transform transform.Transform) {
 	s.transform = transform
 }
 
@@ -67,9 +65,9 @@ func (s *Sprite) GetPosition() math2D.Vector2D {
 }
 
 func (s *Sprite) updateGeoM(geom ebiten.GeoM) ebiten.GeoM {
-	geom.Translate(-s.transform.pivot.X, -s.transform.pivot.Y)
-	geom.Rotate(float64(s.transform.rotation%360) * 2 * math.Pi / 360)
-	geom.Translate(s.transform.position.X, s.transform.position.Y)
+	geom.Translate(-s.transform.GetPivot().X(), -s.transform.GetPivot().Y())
+	geom.Rotate(float64(s.transform.GetRotation()%360) * 2 * math.Pi / 360)
+	geom.Translate(s.transform.GetPivot().X(), s.transform.GetPivot().Y())
 	return geom
 }
 

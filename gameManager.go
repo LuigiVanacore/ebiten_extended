@@ -30,6 +30,10 @@ func newGameManager() *gameManager {
 	return &gameManager{isRunning: true}
 }
 
+func Init() {
+	//InitTextManager()
+}
+
 func (g *gameManager) AddNode(node *Node) {
 	g.scenes = append(g.scenes, node)
 }

@@ -1,4 +1,4 @@
-package ebiten_extended
+package transform
 
 
 type Transformable interface {

@@ -3,11 +3,12 @@ package ebiten_extended
 import (
  
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 )
 
 
 type AnimationPlayer struct {
-	transform Transform
+	transform transform.Transform
 	animationMap map[uint]*AnimationSet
 	currentAnimationId uint
 	isPlaying bool
@@ -17,11 +18,11 @@ func NewAnimationPlayer() *AnimationPlayer {
 	return &AnimationPlayer{ animationMap: make(map[uint]*AnimationSet)}
 }
 
-func (a *AnimationPlayer) GetTransform() *Transform {
+func (a *AnimationPlayer) GetTransform() *transform.Transform {
 	return &a.transform
 }
 
-func (a *AnimationPlayer) SetTransform(transform Transform) {
+func (a *AnimationPlayer) SetTransform(transform transform.Transform) {
 	a.transform = transform
 }
 
