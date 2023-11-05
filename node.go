@@ -1,8 +1,6 @@
 package ebiten_extended
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -20,9 +18,7 @@ func NewNode(entity any, name string) *Node {
 func (n *Node) Update(dt float64) {
 	if entity, ok := n.entity.(Updatable); ok {
 		entity.Update(dt)
-	} else {
-		fmt.Println("entity is not updatable")
-	}
+	} 
 }
 
 func (n *Node) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {

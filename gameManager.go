@@ -27,11 +27,11 @@ type gameManager struct {
 }
 
 func newGameManager() *gameManager {
-	return &gameManager{isRunning: true}
+	return &gameManager{scenes: make([]*Node, 0), isRunning:  true}
 }
 
-func Init() {
-	//InitTextManager()
+func init() {
+	InitTextManager()
 }
 
 func (g *gameManager) AddNode(node *Node) {

@@ -15,9 +15,9 @@ type EnterMinerAndDigForNuggetState struct {
 func (e *EnterMinerAndDigForNuggetState) Enter(owner any) {
 	miner := transformEntityToMiner(owner)
 	//if the miner is not already located at the goldmine, he must
-   //change location to the gold mine
+    //change location to the gold mine
 	if miner.GetLocation() != GOLDMINE {
-
+		
 		miner.ChangeLocation(GOLDMINE)
 	}
 }

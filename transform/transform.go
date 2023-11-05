@@ -14,6 +14,10 @@ type Transform struct {
 	geoM     ebiten.GeoM
 }
 
+func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation int) Transform{
+	return Transform{ position: position, pivot: pivot, rotation: rotation}
+}
+
 func (t *Transform) GetPosition() math2D.Vector2D {
 	return t.position
 }

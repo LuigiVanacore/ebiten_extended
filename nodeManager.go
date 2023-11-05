@@ -35,5 +35,5 @@ func (nodemanager *nodeManager) setNextIdVal(nextIdVal uint64) *nodeManager {
 }
 
 func (nodeManager *nodeManager) incrementNextIdVal() {
-	nodeManager.setNextIdVal(nodeManager.GetNextIdVal()+1)
+	nodeManager.setNextIdVal(nodeManager.nextIdVal+1)
 }

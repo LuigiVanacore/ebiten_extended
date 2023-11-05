@@ -1,6 +1,7 @@
 package example_statemachine
 
 import (
+	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/stateMachine"
 )
 
@@ -30,8 +31,8 @@ type Miner struct {
 	moneyInTheBank uint
 	thirst uint
 	fatigue uint
-	stateMachine statemachine.StateMachine
 }
+
 
 func NewMiner() *Miner {
 	miner := &Miner{ goldCarried: 0, moneyInTheBank: 0, thirst: 0, location: HOUSE}
