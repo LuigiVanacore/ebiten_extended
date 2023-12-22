@@ -38,6 +38,10 @@ func (t *Transform) SetPivot(x, y float64) {
 	t.pivot.SetPosition(x , y)
 }
 
+func (t *Transform) Scale(x, y float64) {
+	t.geoM.Scale(x, y)
+}
+
 func (t *Transform) GetPivot() math2D.Vector2D {
 	return t.pivot
 }
