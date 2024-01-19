@@ -1,9 +1,6 @@
 package example_statemachine
 
-import (
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/stateMachine"
-)
+
 
 type locationType uint
 
@@ -105,6 +102,4 @@ func (miner *Miner) BuyAndDrinkAWhiskey() {
 
 func (miner *Miner) Update() {
 	miner.thirst += 1
-
-	miner.stateMachine.Update()
 }

@@ -1,6 +1,7 @@
 package ebiten_extended
 
 import (
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -22,38 +23,50 @@ func GameManager() *gameManager {
 }
 
 type gameManager struct {
-	scenes []*Node
+	scenes []*SceneNode
 	isRunning bool
+	isDebug bool 
 }
 
 func newGameManager() *gameManager {
-	return &gameManager{scenes: make([]*Node, 0), isRunning:  true}
+	return &gameManager{scenes: make([]*SceneNode, 0), isRunning:  true}
 }
 
 func init() {
 	InitTextManager()
 }
 
-func (g *gameManager) AddNode(node *Node) {
+func (g *gameManager) Pause() {
+	g.isRunning = false
+}
+
+func (g *gameManager) Start() {
+	g.isRunning = true
+}
+
+func (g *gameManager) IsDebug() bool {
+	return g.isDebug
+}
+
+func (g *gameManager) SetIsDebug(debugFlag bool ){
+	g.isDebug = debugFlag
+	fmt.Printf("The debug flag is setted as %t", g.isDebug)
+}
+
+func (g *gameManager) AddNode(node *SceneNode) {
 	g.scenes = append(g.scenes, node)
 }
 
 func (g *gameManager) Update() {
 	
 	if g.isRunning {
-		g.updateScene(fixedDelta)
+		SceneManager().Update()
 	}
 
 }
 
-func (g *gameManager) updateScene(dt float64) {
-	for i := range g.scenes {
-		g.scenes[i].Update(dt)
-	}
-}
+
 
 func (g *gameManager) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	for i := range g.scenes {
-		g.scenes[i].Draw(target, op)
-	}
+	SceneManager().Draw(target, op)
 }
