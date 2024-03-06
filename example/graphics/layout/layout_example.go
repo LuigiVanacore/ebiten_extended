@@ -11,6 +11,9 @@ const (
 	screenWidth  = 320
 	screenHeight = 240
 	AircraftID = 0
+	DesertID = 1
+	BackgroundLayer = 2
+	AircraftLayer = 3
 )
 
 type Game struct {
@@ -20,6 +23,7 @@ type Game struct {
 
 func NewGame() *Game {
 	ebiten_extended.ResourceManager().LoadImage(resources.Aircraft)
+	ebiten_extended.ResourceManager().LoadImage(resources.Desert)
 
 	sprite := ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite.SetPosition(screenWidth/2, screenHeight/2)
@@ -27,13 +31,26 @@ func NewGame() *Game {
 	sprite2:= ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite2.SetPosition(100,100)
 
+	desertSprite := ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(DesertID),false)
+	
+
 	node1 := ebiten_extended.NewSceneNode(sprite, "sprite1")
-	node2 := ebiten_extended.NewSceneNode(sprite2, "sprite2") 
+	node2 := ebiten_extended.NewSceneNode(sprite2, "sprite2")
+	node3 := ebiten_extended.NewSceneNode(desertSprite, "desert") 
 	
 	node1.AddChildren(node2)
 
+
+	backgroundLayer := ebiten_extended.NewLayer(BackgroundLayer, 0)
+	aircraftLayer := ebiten_extended.NewLayer(AircraftLayer, 0)
+
+	backgroundLayer.AddNode(node3)
+
+	aircraftLayer.AddNode(node1)
+
 	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
-	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(node1)
+	ebiten_extended.SceneManager().AddLayer(backgroundLayer)
+	ebiten_extended.SceneManager().AddLayer(aircraftLayer)
 	ebiten_extended.GameManager().SetIsDebug(true)
 	return &Game{ sprite: sprite}
 }

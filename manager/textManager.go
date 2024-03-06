@@ -1,4 +1,4 @@
-package ebiten_extended
+package manager
 
 import (
 	"image/color"

@@ -1,8 +1,9 @@
-package ebiten_extended
+package manager
 
 import (
 	"fmt"
 
+	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -23,13 +24,13 @@ func GameManager() *gameManager {
 }
 
 type gameManager struct {
-	scenes []*SceneNode
+	scenes []*ebiten_extended.SceneNode
 	isRunning bool
 	isDebug bool 
 }
 
 func newGameManager() *gameManager {
-	return &gameManager{scenes: make([]*SceneNode, 0), isRunning:  true}
+	return &gameManager{scenes: make([]*ebiten_extended.SceneNode, 0), isRunning:  true}
 }
 
 func init() {
@@ -53,7 +54,7 @@ func (g *gameManager) SetIsDebug(debugFlag bool ){
 	fmt.Printf("The debug flag is setted as %t", g.isDebug)
 }
 
-func (g *gameManager) AddNode(node *SceneNode) {
+func (g *gameManager) AddNode(node *ebiten_extended.SceneNode) {
 	g.scenes = append(g.scenes, node)
 }
 
@@ -61,6 +62,7 @@ func (g *gameManager) Update() {
 	
 	if g.isRunning {
 		SceneManager().Update()
+		
 	}
 
 }

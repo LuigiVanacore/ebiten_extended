@@ -1,4 +1,4 @@
-package ebiten_extended
+package manager
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 
+	_ "image/gif"
+	_ "image/jpeg"
 	_ "image/png"
 )
 

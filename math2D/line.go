@@ -7,7 +7,7 @@ type Line struct {
 }
 
 func NewLine(base, direction Vector2D) Line {
-	return Line { base: base, direction:  direction}
+	return Line{base: base, direction: direction}
 }
 
 func (line *Line) GetBase() Vector2D {

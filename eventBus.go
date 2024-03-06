@@ -213,3 +213,4 @@ func (bus *EventBus) setUpPublish(callback *eventHandler, args ...interface{}) [
 func (bus *EventBus) WaitAsync() {
 	bus.wg.Wait()
 }
+

@@ -27,10 +27,10 @@ func NewRootSceneNode() *SceneNode {
 
 
 func (s *SceneNode) Update() {
-	s.UpdateChildren()
 	if entity, ok := s.entity.(Updatable); ok {
 		entity.Update()
 	}
+	s.UpdateChildren()
 }
 
 func (s *SceneNode) UpdateChildren() {
@@ -75,7 +75,7 @@ func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) eb
 //	}
 //}
 
-func (s *SceneNode) Addhildren(child *SceneNode) {
+func (s *SceneNode) AddChildren(child *SceneNode) {
 	child.AttachParent(s)
 
 	s.children = append(s.children, child)
@@ -84,7 +84,7 @@ func (s *SceneNode) Addhildren(child *SceneNode) {
 func (s *SceneNode) AddChildrenEntity(entity any, name string) {
 	sceneNode := NewSceneNode(entity, name)
 
-	s.Addhildren(sceneNode)
+	s.AddChildren(sceneNode)
 }
 
 func (s *SceneNode) DetachChild(node *SceneNode) bool {

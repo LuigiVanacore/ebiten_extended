@@ -30,7 +30,7 @@ func (l *Layer) GetPriority() int {
 }
 
 func (l *Layer) AddNode( node *SceneNode) {
-	l.rootScene.Addhildren(node)
+	l.rootScene.AddChildren(node)
 }
 
 func (l *Layer) GetRootScene() *SceneNode {

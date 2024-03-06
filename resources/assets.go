@@ -12,4 +12,10 @@ var (
 
 	//go:embed Aircraft.png
 	Aircraft []byte
+
+	//go:embed Desert.png
+	Desert []byte
+
+	//go:embed download.png
+	Player []byte
 )

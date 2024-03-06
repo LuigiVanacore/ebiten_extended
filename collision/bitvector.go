@@ -27,3 +27,4 @@ func Bitunset(bitvector []byte, n int) error {
 
 	return nil
 }
+
