@@ -1,9 +1,12 @@
 package input
 
+//import "github.com/hajimehoshi/ebiten/v2"
 
 type InputContext struct {
-	
+	//actionMap map[RawInputButton]Action
+	//stateMap map[RawInputButton]State
 }
+
 // namespace InputMapping
 // {
 
@@ -21,7 +24,7 @@ type InputContext struct {
 // 		bool MapAxisToRange(RawInputAxis axis, Range& out) const;
 
 // 		double GetSensitivity(Range range) const;
-		
+
 // 		const RangeConverter& GetConversions() const
 // 		{ return *Conversions; }
 
