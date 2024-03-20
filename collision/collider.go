@@ -8,12 +8,13 @@ import (
 type Collider struct {
 	transform     transform.Transform
 	collisionShape  CollisionShape
-	layer CollisionMask
-	target CollisionMask
+	mask CollisionMask
 }
 
-func NewCollider(transform transform.Transform, shape CollisionShape, layer uint64, target uint64) *Collider {
-	c := Collider{transform: transform,  layer: CollisionMask(layer), target: CollisionMask(target) }
+
+
+func NewCollider(transform transform.Transform, shape CollisionShape, mask CollisionMask) *Collider {
+	c := Collider{transform: transform,  mask: mask }
 	shape.SetTransform(&c.transform)
 	return &c
 }
@@ -23,18 +24,18 @@ func (c *Collider) Update() {
 }
 
 func (c *Collider) IsColliding(collider Collider) bool {
-	if c.IsCollidible(collider.GetLayer()) {
+	if c.IsCollidible(collider.GetCollisionMask()) {
 		return c.collisionShape.IsColliding(collider.GetShape())
 	}
 	return false
 }
 
-func (c *Collider) GetLayer() CollisionMask {
-	return c.layer
+func (c *Collider) GetCollisionMask() CollisionMask {
+	return c.mask
 }
 
-func (c *Collider) GetTarget() CollisionMask {
-	return c.target
+func (c *Collider) SetCollisionMask(mask CollisionMask) {
+	c.mask = mask
 }
 
 func (c *Collider) GetShape() CollisionShape {
@@ -51,10 +52,8 @@ func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) 
 	//}
 }
 
-func (c *Collider) SetDebug(isDebug bool) {
-	//c.debug = isDebug
-}
 
-func (c *Collider) IsCollidible(tag CollisionMask) bool {
-	return c.target.IsCollidible(tag)
+
+func (c *Collider) IsCollidible(mask CollisionMask) bool {
+	return c.mask.IsCollidible(mask)
 }

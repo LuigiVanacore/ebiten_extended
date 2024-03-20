@@ -14,6 +14,9 @@ func NewCollisionCircle(circle math2D.Circle, transform *transform.Transform) *C
 	return &CollisionCircle{ circle: circle, transform: transform}
 }
 
+func (c *CollisionCircle) GetTransform() *transform.Transform {
+	return c.transform
+}
 
 func (c *CollisionCircle) SetTransform(transform *transform.Transform) {
 	c.transform = transform

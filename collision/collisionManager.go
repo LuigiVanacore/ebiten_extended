@@ -1,4 +1,4 @@
-package manager
+package collision
 
 import "github.com/LuigiVanacore/ebiten_extended/collision"
 
