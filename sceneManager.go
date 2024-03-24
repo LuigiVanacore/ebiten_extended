@@ -2,9 +2,9 @@ package ebiten_extended
 
 import (
 	"fmt"
-
-	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
+	"math"
 )
 
 const (
@@ -25,19 +25,19 @@ func SceneManager() *sceneManager {
 
 type sceneManager struct {
 	nextIdVal uint64
-	rootScene ebiten_extended.SceneNode
-	layers    []*ebiten_extended.Layer
+	rootScene SceneNode
+	layers    []*Layer
 }
 
 func newSceneManager() *sceneManager {
-	sceneManager := &sceneManager{layers: make([]*ebiten_extended.Layer, 0)}
+	sceneManager := &sceneManager{layers: make([]*Layer, 0), rootScene: &BaseNode{id: 0, name: "root", parent: nil }}
 	sceneManager.incrementNextIdVal()
 	return sceneManager
 }
 
 func (sceneManager *sceneManager) initSceneManager() {
-	sceneManager.AddLayer(ebiten_extended.NewLayer(UI_LAYER, UI_LAYER))
-	sceneManager.AddLayer(ebiten_extended.NewLayer(DEFAULT_LAYER, DEFAULT_LAYER))
+	sceneManager.AddLayer(NewLayer(UI_LAYER, UI_LAYER))
+	sceneManager.AddLayer(NewLayer(DEFAULT_LAYER, DEFAULT_LAYER))
 	sceneManager.buildScene()
 }
 
@@ -56,37 +56,37 @@ func (sceneManager *sceneManager) incrementNextIdVal() {
 	sceneManager.setNextIdVal(sceneManager.nextIdVal + 1)
 }
 
-func (sceneManager *sceneManager) AddLayer(layer *ebiten_extended.Layer) {
+func (sceneManager *sceneManager) AddLayer(layer *Layer) {
 	sceneManager.layers = append(sceneManager.layers, layer)
 	sceneManager.buildScene()
 }
 
-func (sceneManager *sceneManager) AddEntity(entity any, name string, layerId int) *ebiten_extended.SceneNode {
-	sceneNode := ebiten_extended.NewSceneNode(entity, name)
-	layer, error := sceneManager.searchLayer(layerId)
-	if error != nil {
-		fmt.Println(error)
-		fmt.Printf("layer %d not found, added node %s to defaul layer", layerId, name)
-		sceneManager.layers[DEFAULT_LAYER].AddNode(sceneNode)
-		return sceneNode
-	}
-	layer.AddNode(sceneNode)
-	return sceneNode
-}
+// func (sceneManager *sceneManager) AddEntity(entity any, name string, layerId int) *SceneNode {
+// 	sceneNode := NewSceneNode(entity, name)
+// 	layer, error := sceneManager.searchLayer(layerId)
+// 	if error != nil {
+// 		fmt.Println(error)
+// 		fmt.Printf("layer %d not found, added node %s to defaul layer", layerId, name)
+// 		sceneManager.layers[DEFAULT_LAYER].AddNode(sceneNode)
+// 		return sceneNode
+// 	}
+// 	layer.AddNode(sceneNode)
+// 	return sceneNode
+// }
 
-func (sceneManager *sceneManager) AddEntityToDefaultLayer(entity any, name string) *ebiten_extended.SceneNode{
-	sceneNode := ebiten_extended.NewSceneNode(entity, name)
-	
+// func (sceneManager *sceneManager) AddNodeToDefaultLayer(entity any, name string) SceneNode{
+// 	sceneNode := NewSceneNode(entity, name)
+
+// 	sceneManager.layers[DEFAULT_LAYER].AddNode(sceneNode)
+
+// 	return sceneNode
+// }
+
+func (sceneManager *sceneManager) AddSceneNodeToDefaultLayer(sceneNode SceneNode) {
 	sceneManager.layers[DEFAULT_LAYER].AddNode(sceneNode)
-
-	return sceneNode
 }
 
-func (sceneManager *sceneManager) AddSceneNodeToDefaultLayer(sceneNode *ebiten_extended.SceneNode) {
-	sceneManager.layers[DEFAULT_LAYER].AddNode(sceneNode)
-}
-
-func (sceneManager *sceneManager) searchLayer(layerId int) (*ebiten_extended.Layer, error) {
+func (sceneManager *sceneManager) searchLayer(layerId int) (*Layer, error) {
 	err := checkLayerId(layerId)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (sceneManager *sceneManager) SetLayerPriority(layerId int, priority int) {
 
 	if err != nil {
 		fmt.Println(err)
-		return 
+		return
 	}
 	layer.SetPriority(priority)
 }
@@ -124,9 +124,51 @@ func (sceneManager *sceneManager) buildScene() {
 }
 
 func (sceneManager *sceneManager) Update() {
-	sceneManager.rootScene.Update()
+	sceneManager.updateNode(sceneManager.rootScene)
+}
+
+func (sceneManager *sceneManager) updateNode(node SceneNode) {
+	if node == nil {
+		return
+	}
+	for _, child := range node.GetChildren() {
+		sceneManager.updateNode(child)
+
+	}
+	if entity, ok := node.(Updatable); ok {
+		entity.Update()
+	}
 }
 
 func (sceneManager *sceneManager) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	sceneManager.rootScene.Draw(target, op)
+	sceneManager.DrawNode(sceneManager.rootScene, target, op)
+}
+
+func (sceneManager *sceneManager) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
+
+	if entity, ok := node.(Drawable); ok {
+		op.GeoM = updateTransform(entity, op.GeoM)
+		entity.Draw(target, op)
+	}
+	for _, child := range node.GetChildren() {
+		sceneManager.DrawNode(child, target, op)
+	}
+}
+
+func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) ebiten.GeoM {
+	rotation_geoM := ebiten.GeoM{}
+	transform := entity.GetTransform()
+	position := transform.GetPosition()
+	pivot := transform.GetPivot()
+	rotation := transform.GetRotation()
+
+	rotation_geoM.Translate(-pivot.X(), -pivot.Y())
+	rotation_geoM.Rotate(float64(rotation%360) * 2 * math.Pi / 360)
+	rotation_geoM.Translate(pivot.X(), pivot.Y())
+
+	parent_geoM.Translate(position.X(), position.Y())
+
+	rotation_geoM.Concat(parent_geoM)
+
+	return rotation_geoM
 }

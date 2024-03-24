@@ -34,19 +34,15 @@ func NewGame() *Game {
 	desertSprite := ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(DesertID),false)
 	
 
-	node1 := ebiten_extended.NewSceneNode(sprite, "sprite1")
-	node2 := ebiten_extended.NewSceneNode(sprite2, "sprite2")
-	node3 := ebiten_extended.NewSceneNode(desertSprite, "desert") 
-	
-	node1.AddChildren(node2)
+	sprite.AddChildren(sprite2)
 
 
 	backgroundLayer := ebiten_extended.NewLayer(BackgroundLayer, 0)
 	aircraftLayer := ebiten_extended.NewLayer(AircraftLayer, 0)
 
-	backgroundLayer.AddNode(node3)
+	backgroundLayer.AddNode(desertSprite)
 
-	aircraftLayer.AddNode(node1)
+	aircraftLayer.AddNode(sprite)
 
 	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
 	ebiten_extended.SceneManager().AddLayer(backgroundLayer)

@@ -1,4 +1,4 @@
-package manager
+package ebiten_extended
 
 import (
 	"bytes"

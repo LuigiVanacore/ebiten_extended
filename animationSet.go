@@ -32,7 +32,7 @@ func NewAnimationSet(spriteSheet *ebiten.Image, frameCount uint, duration float6
 	animationSet:=  &AnimationSet{ spriteSheet:  spriteSheet, frameSize: frameSize, frameCount: frameCount, timePerFrame: timePerFrame, isLooping: isLooping}
 	animationSet.updateFrameImage()
 	animationSet.SetPivotToCenter()
-	animationSet.transform.Move(40,40)
+	animationSet.transform.Translate(40,40)
 	return animationSet
 }
 

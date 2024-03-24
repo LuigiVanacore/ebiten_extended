@@ -4,12 +4,11 @@ import (
 	"fmt"
 
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Sprite struct {
-	transform transform.Transform
+	BaseNode
 	textureRect *math2D.Rectangle
 	texture     *ebiten.Image
 }
@@ -44,36 +43,10 @@ func (s *Sprite) SetTexture(texture *ebiten.Image) {
 	s.texture = texture
 }
 
-func (s *Sprite) SetScale(x, y float64) {
-	s.transform.Scale(x, y)
-}
 func (s *Sprite) SetPivotToCenter() {
 	s.transform.SetPivot(s.GetTextureRect().GetCenter().X(), s.GetTextureRect().GetCenter().Y())
 }
 
-func (s *Sprite) GetTransform() *transform.Transform {
-	return &s.transform
-}
-
-func (s *Sprite) SetTransform(transform transform.Transform) {
-	s.transform = transform
-}
-
-func (s *Sprite) SetPosition(x, y float64) {
-	s.transform.SetPosition(x, y)
-}
-
-func (s *Sprite) GetPosition() math2D.Vector2D {
-	return s.transform.GetPosition()
-}
-
-func (s *Sprite) SetRotation(rotation int) {
-	s.transform.SetRotation(rotation)
-}
-
-func (s *Sprite) GetRotation() int {
-	return s.transform.GetRotation()
-}
 
 func (s *Sprite) updateGeoM(op *ebiten.DrawImageOptions ) {
 	op.GeoM.Translate(-s.transform.GetPivot().X(), -s.transform.GetPivot().Y())

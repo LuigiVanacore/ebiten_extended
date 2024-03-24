@@ -5,11 +5,11 @@ package ebiten_extended
 type Layer struct {
 	id int
 	priority int
-	rootScene *SceneNode
+	rootScene SceneNode
 }
 
 func NewLayer(id int, priority int) *Layer {
-	return &Layer{ id: id, priority: priority, rootScene: NewRootSceneNode()}
+	return &Layer{ id: id, priority: priority, rootScene: NewBaseNode("root")}
 }
 
 
@@ -29,11 +29,11 @@ func (l *Layer) GetPriority() int {
 	return l.priority
 }
 
-func (l *Layer) AddNode( node *SceneNode) {
+func (l *Layer) AddNode( node SceneNode) {
 	l.rootScene.AddChildren(node)
 }
 
-func (l *Layer) GetRootScene() *SceneNode {
+func (l *Layer) GetRootScene() SceneNode {
 	return l.rootScene
 }
 

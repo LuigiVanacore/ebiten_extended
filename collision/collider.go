@@ -1,34 +1,33 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Collider struct {
-	transform     transform.Transform
+	ebiten_extended.BaseNode
 	collisionShape  CollisionShape
 	mask CollisionMask
+	isWorldCordinateUpdated bool
 }
 
 
 
-func NewCollider(transform transform.Transform, shape CollisionShape, mask CollisionMask) *Collider {
-	c := Collider{transform: transform,  mask: mask }
-	shape.SetTransform(&c.transform)
-	return &c
+func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
+	c := &Collider{mask: mask }
+	CollisionManager().AddCollider(c)
+	return c
 }
 
-func (c *Collider) Update() {
-	c.collisionShape.Update()
+func (c *Collider) IsWorldCordinateUpdated() bool {
+	return c.isWorldCordinateUpdated
 }
 
-func (c *Collider) IsColliding(collider Collider) bool {
-	if c.IsCollidible(collider.GetCollisionMask()) {
-		return c.collisionShape.IsColliding(collider.GetShape())
-	}
-	return false
+func (c *Collider) SetWorldCordinateUpdated( flag bool) {
+	c.isWorldCordinateUpdated = flag
 }
+
 
 func (c *Collider) GetCollisionMask() CollisionMask {
 	return c.mask
@@ -40,6 +39,11 @@ func (c *Collider) SetCollisionMask(mask CollisionMask) {
 
 func (c *Collider) GetShape() CollisionShape {
 	return c.collisionShape
+}
+
+func (c *Collider) UpdateCordinate() {
+	c.collisionShape.ToWorldCordinate(c.GetWorldTransform())
+	c.SetWorldCordinateUpdated(true)
 }
 
 func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) {
@@ -54,6 +58,14 @@ func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) 
 
 
 
-func (c *Collider) IsCollidible(mask CollisionMask) bool {
-	return c.mask.IsCollidible(mask)
+func (c *Collider) CanCollideWith(collider *Collider) bool {
+	return c.mask.IsCollidible(collider.GetCollisionMask())
+}
+
+func (c *Collider) IsColliding(collider *Collider) bool {
+	leftWorldTransf := c.GetWorldTransform()
+	rightWorldTransf := collider.GetWorldTransform()
+	shape := c.collisionShape.UpdateTransform(leftWorldTransf)
+	shape2 := collider.collisionShape.UpdateTransform(rightWorldTransf)
+	return shape.IsColliding(shape2)
 }

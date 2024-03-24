@@ -6,27 +6,21 @@ import (
 )
 
 type CollisionRect struct {
-	math2D.Rectangle
-	transform *transform.Transform
+	CollisionBaseShape
+	rectangle math2D.Rectangle
 }
 
-func (c *CollisionRect) SetTransform(transform *transform.Transform) {
-	c.transform = transform
-}
 
-func (c *CollisionRect) Update() {
-	c.updatePosition() 
-}
 
-func (c *CollisionRect) updatePosition() {
-	
+func (c *CollisionRect) ToWorldCordinate(transform transform.Transform) {
+	c.rectangle.SetPosition(transform.GetPosition())
 }
 
 func (c *CollisionRect) IsColliding( collisionShape CollisionShape) bool {
 	switch other := collisionShape.(type) {
 	
 	case *CollisionCircle:
-		return CircleRectangleCollide(other.circle, c.Rectangle )
+		return CircleRectangleCollide(other.circle, c.rectangle )
 	default:
 		return false
 	}

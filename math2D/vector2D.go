@@ -53,7 +53,7 @@ func (v *Vector2D) SetPosition(x, y float64) {
 	v.y = y
 }
 
-func (v *Vector2D) Move(x, y float64) {
+func (v *Vector2D) Translate(x, y float64) {
 	v.x += x
 	v.y += y
 }

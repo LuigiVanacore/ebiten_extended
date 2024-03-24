@@ -6,28 +6,17 @@ import (
 )
 
 type CollisionCircle struct {
+	CollisionBaseShape
 	circle math2D.Circle
-	transform *transform.Transform
 }
 
-func NewCollisionCircle(circle math2D.Circle, transform *transform.Transform) *CollisionCircle {
-	return &CollisionCircle{ circle: circle, transform: transform}
+func NewCollisionCircle(circle math2D.Circle) *CollisionCircle {
+	return &CollisionCircle{ circle: circle}
 }
 
-func (c *CollisionCircle) GetTransform() *transform.Transform {
-	return c.transform
-}
 
-func (c *CollisionCircle) SetTransform(transform *transform.Transform) {
-	c.transform = transform
-}
-
-func (c *CollisionCircle) Update() {
-	c.updatePosition()
-}
-
-func (c *CollisionCircle) updatePosition() {
-	c.circle.SetCenter(c.transform.GetPosition())
+func (c *CollisionCircle) ToWorldCordinate(transform transform.Transform) {
+	c.circle.SetCenter(transform.GetPosition())
 }
 
 
@@ -36,7 +25,7 @@ func (c *CollisionCircle) IsColliding( collisionShape CollisionShape) bool {
 	case *CollisionCircle:
 		return CirclesCollide( c.circle, other.circle)
 	case *CollisionRect:
-		return CircleRectangleCollide( c.circle, other.Rectangle)
+		return CircleRectangleCollide( c.circle, other.rectangle)
 	default:
 		return false
 	}

@@ -26,14 +26,11 @@ func NewGame() *Game {
 
 	sprite2:= ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite2.SetPosition(100,100)
-
-	node1 := ebiten_extended.NewSceneNode(sprite, "sprite1")
-	node2 := ebiten_extended.NewSceneNode(sprite2, "sprite2") 
 	
-	node1.AddChildren(node2)
+	sprite.AddChildren(sprite2)
 
 	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
-	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(node1)
+	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(sprite)
 	ebiten_extended.GameManager().SetIsDebug(true)
 	return &Game{ sprite: sprite}
 }
