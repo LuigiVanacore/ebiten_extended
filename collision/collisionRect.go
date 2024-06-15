@@ -6,13 +6,12 @@ import (
 )
 
 type CollisionRect struct {
-	CollisionBaseShape
 	rectangle math2D.Rectangle
 }
 
 
 
-func (c *CollisionRect) ToWorldCordinate(transform transform.Transform) {
+func (c *CollisionRect) UpdateTransform(transform transform.Transform) {
 	c.rectangle.SetPosition(transform.GetPosition())
 }
 

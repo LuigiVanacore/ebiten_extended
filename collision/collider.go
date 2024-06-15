@@ -41,11 +41,6 @@ func (c *Collider) GetShape() CollisionShape {
 	return c.collisionShape
 }
 
-func (c *Collider) UpdateCordinate() {
-	c.collisionShape.ToWorldCordinate(c.GetWorldTransform())
-	c.SetWorldCordinateUpdated(true)
-}
-
 func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	//if c.debug {
 		//vector.DrawFilledCircle(target, float32(c.Transform.position.X), float32(c.Transform.position.Y), 15, color.White, false)
@@ -65,7 +60,7 @@ func (c *Collider) CanCollideWith(collider *Collider) bool {
 func (c *Collider) IsColliding(collider *Collider) bool {
 	leftWorldTransf := c.GetWorldTransform()
 	rightWorldTransf := collider.GetWorldTransform()
-	shape := c.collisionShape.UpdateTransform(leftWorldTransf)
-	shape2 := collider.collisionShape.UpdateTransform(rightWorldTransf)
-	return shape.IsColliding(shape2)
+	c.collisionShape.UpdateTransform(leftWorldTransf)
+	collider.collisionShape.UpdateTransform(rightWorldTransf)
+	return c.collisionShape.IsColliding(collider.collisionShape)
 }

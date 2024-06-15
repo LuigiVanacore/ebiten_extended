@@ -6,5 +6,5 @@ import (
 
 type CollisionShape interface {
 	IsColliding(collisionShape CollisionShape) bool
-	ToWorldCordinate(transform transform.Transform)
+	UpdateTransform(transform transform.Transform)
 }

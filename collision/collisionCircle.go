@@ -6,7 +6,6 @@ import (
 )
 
 type CollisionCircle struct {
-	CollisionBaseShape
 	circle math2D.Circle
 }
 
@@ -15,7 +14,7 @@ func NewCollisionCircle(circle math2D.Circle) *CollisionCircle {
 }
 
 
-func (c *CollisionCircle) ToWorldCordinate(transform transform.Transform) {
+func (c *CollisionCircle) UpdateTransform(transform transform.Transform) {
 	c.circle.SetCenter(transform.GetPosition())
 }
 

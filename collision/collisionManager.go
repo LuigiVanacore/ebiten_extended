@@ -31,8 +31,6 @@ func (c *collisionManager) CheckCollision() {
 			collider2 := c.colliders[j]
 		//	if collider1.IsAlive() && collider2.IsAlive() {
 				if collider1.CanCollideWith(collider2) {
-					collider1.UpdateCordinate()
-					collider2.UpdateCordinate()
 					if collider1.IsColliding(collider2) {
 
 					}
