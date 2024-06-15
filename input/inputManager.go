@@ -2,14 +2,13 @@ package input
 
 import (
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/hajimehoshi/ebiten"
 )
 
 
 
 var instanceInputManager *inputManager
 
-func ResourceManager() *inputManager {
+func InputManager() *inputManager {
 	if instanceInputManager == nil {
 		instanceInputManager = newInputManager()
 	}
@@ -29,6 +28,18 @@ type inputManager struct {
 
 	mouseEnabled bool
 	cursorPos    math2D.Vector2D
+}
+
+func (i *inputManager) SetMouseEnabled(value bool) {
+	i.mouseEnabled = value
+}
+
+func (i *inputManager) IsMouseEnabled() bool {
+	return i.mouseEnabled
+}
+
+func (i *inputManager) GetCursorPos() math2D.Vector2D {
+	return i.cursorPos
 }
 
 func (i *inputManager) Update() {
