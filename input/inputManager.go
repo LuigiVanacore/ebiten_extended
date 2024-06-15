@@ -2,6 +2,7 @@ package input
 
 import (
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/hajimehoshi/ebiten"
 )
 
 
