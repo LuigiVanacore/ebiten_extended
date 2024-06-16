@@ -21,10 +21,10 @@ type Game struct {
 func NewGame() *Game {
 	ebiten_extended.ResourceManager().LoadImage(resources.Aircraft)
 
-	sprite := ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
-	sprite.SetPosition(screenWidth/2, screenHeight/2)
+	sprite := ebiten_extended.NewSprite("Aircraft_1", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite.SetPosition(0, 0)
 
-	sprite2:= ebiten_extended.NewSprite(ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite2:= ebiten_extended.NewSprite("Aircraft_2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite2.SetPosition(100,100)
 	
 	sprite.AddChildren(sprite2)

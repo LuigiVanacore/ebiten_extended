@@ -2,6 +2,8 @@ package ebiten_extended
 
 import (
 	"fmt"
+
+	"github.com/LuigiVanacore/ebiten_extended/input"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -59,6 +61,7 @@ func (g *gameManager) AddScene(node SceneNode) {
 func (g *gameManager) Update() {
 	
 	if g.isRunning {
+		input.InputManager().Update()
 		SceneManager().Update()
 		
 	}

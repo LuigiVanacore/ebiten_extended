@@ -27,7 +27,7 @@ type Game struct {
 
 func NewGame() *Game {
 	gameFont := loadDefaultFont()
-	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,30), gameFont, color.White)
+	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,90), gameFont, color.White)
 	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(textLabel)
 	return &Game{ textLabel: textLabel}
 }

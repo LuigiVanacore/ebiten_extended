@@ -10,16 +10,17 @@ import (
 )
 
 type LabelText struct {
-	BaseNode
-	message  string
-	color color.Color
-	font  font.Face
+	Node2D
+	message string
+	color   color.Color
+	font    font.Face
 }
 
 func NewLabelText(name string, message string, position math2D.Vector2D, font font.Face, color color.Color) *LabelText {
-	return &LabelText{message: message, BaseNode: *NewBaseNode(name),  font: font, color: color}
+	label := &LabelText{message: message, Node2D: *NewNode2D(name), font: font, color: color}
+	label.SetPosition(position.X(), position.Y())
+	return label
 }
-
 
 func (l *LabelText) SetMessage(message string) {
 	l.message = message

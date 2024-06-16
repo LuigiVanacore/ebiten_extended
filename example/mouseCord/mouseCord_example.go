@@ -3,7 +3,7 @@ package main
 import (
 	"image/color"
 	"log"
-
+	"strconv"
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/input"
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
@@ -16,7 +16,7 @@ import (
 const (
 	screenWidth  = 320
 	screenHeight = 240
-	defaultFontSize = 24
+	defaultFontSize = 14
 	defualtFontDPI = 72
 )
 
@@ -27,22 +27,22 @@ type Game struct {
 func NewGame() *Game {
 	gameFont := loadDefaultFont()
 	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,30), gameFont, color.White)
-	//ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(textLabel)
+	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(textLabel)
+	input.InputManager().SetMouseEnabled(true)
 	return &Game{ textLabel: textLabel}
 }
 
 func (g *Game) Update() error {
 	 cursorPos := input.InputManager().GetCursorPos()
-	 _ = cursorPos
-	// message := "Cursor position: " + strconv.Itoa(int(cursorPos.X())) + ", " + strconv.Itoa(int(cursorPos.Y()))
-	 //g.textLabel.SetMessage(message)
+	 message := "Cursor position: " + strconv.Itoa(int(cursorPos.X())) + ", " + strconv.Itoa(int(cursorPos.Y()))
+	 g.textLabel.SetMessage(message)
 
 	 ebiten_extended.GameManager().Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	//ebiten_extended.GameManager().Draw(screen, &ebiten.DrawImageOptions{})
+	ebiten_extended.GameManager().Draw(screen, &ebiten.DrawImageOptions{})
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

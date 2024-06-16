@@ -2,9 +2,10 @@ package ebiten_extended
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
-	"math"
 )
 
 const (
@@ -30,15 +31,14 @@ type sceneManager struct {
 }
 
 func newSceneManager() *sceneManager {
-	sceneManager := &sceneManager{layers: make([]*Layer, 0), rootScene: &BaseNode{id: 0, name: "root", parent: nil }}
+	sceneManager := &sceneManager{layers: make([]*Layer, 0), rootScene: &Node{id: 0, name: "root", parent: nil}}
 	sceneManager.incrementNextIdVal()
 	return sceneManager
 }
 
 func (sceneManager *sceneManager) initSceneManager() {
-	sceneManager.AddLayer(NewLayer(UI_LAYER, UI_LAYER))
-	sceneManager.AddLayer(NewLayer(DEFAULT_LAYER, DEFAULT_LAYER))
-	sceneManager.buildScene()
+	sceneManager.AddLayer(NewLayer(UI_LAYER, UI_LAYER, "UI"))
+	sceneManager.AddLayer(NewLayer(DEFAULT_LAYER, DEFAULT_LAYER, "default"))
 }
 
 func (sceneManager *sceneManager) GetNextIdVal() uint64 {
@@ -118,9 +118,9 @@ func checkLayerId(layerID int) error {
 }
 
 func (sceneManager *sceneManager) buildScene() {
-	for _, layer := range sceneManager.layers {
-		sceneManager.rootScene.AddChildren(layer.GetRootScene())
-	}
+	layer := sceneManager.layers[len(sceneManager.layers)-1]
+	sceneManager.rootScene.AddChildren(layer.GetRootScene())
+	
 }
 
 func (sceneManager *sceneManager) Update() {

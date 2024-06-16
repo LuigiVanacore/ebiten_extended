@@ -8,17 +8,17 @@ import (
 )
 
 type Sprite struct {
-	BaseNode
+	Node2D
 	textureRect *math2D.Rectangle
 	texture     *ebiten.Image
 }
 
-func NewSprite(texture *ebiten.Image, isPivotToCenter bool) *Sprite {
-	
-	textureRect := math2D.NewRectangle(math2D.NewVector2D(float64(texture.Bounds().Min.X),float64(texture.Bounds().Min.Y)),
-										math2D.NewVector2D(float64(texture.Bounds().Max.X),float64(texture.Bounds().Max.Y)))
+func NewSprite(name string, texture *ebiten.Image, isPivotToCenter bool) *Sprite {
 
-	sprite := &Sprite{textureRect: &textureRect, texture: texture}
+	textureRect := math2D.NewRectangle(math2D.NewVector2D(float64(texture.Bounds().Min.X), float64(texture.Bounds().Min.Y)),
+		math2D.NewVector2D(float64(texture.Bounds().Max.X), float64(texture.Bounds().Max.Y)))
+
+	sprite := &Sprite{Node2D: *NewNode2D(name), textureRect: &textureRect, texture: texture}
 
 	if isPivotToCenter {
 		sprite.SetPivotToCenter()
@@ -47,8 +47,7 @@ func (s *Sprite) SetPivotToCenter() {
 	s.transform.SetPivot(s.GetTextureRect().GetCenter().X(), s.GetTextureRect().GetCenter().Y())
 }
 
-
-func (s *Sprite) updateGeoM(op *ebiten.DrawImageOptions ) {
+func (s *Sprite) updateGeoM(op *ebiten.DrawImageOptions) {
 	op.GeoM.Translate(-s.transform.GetPivot().X(), -s.transform.GetPivot().Y())
 }
 
@@ -59,7 +58,6 @@ func (s *Sprite) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 		target.DrawImage(s.texture, op)
 	}
 }
-
 
 func (s *Sprite) DebugInfo() {
 	if GameManager().IsDebug() {
