@@ -14,6 +14,8 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b h1:GgabKamyOY
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20231102141658-eca20e8abded h1:W0pE6Cn9okp21yrBqVzPDf2NLK6J+i/f6XlqxQJ9iOw=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20231102141658-eca20e8abded/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
+github.com/go-text/typesetting v0.1.1-0.20240325125605-c7936fe59984 h1:NwCC36eQsDf1xVZG9jD7ngXNNjsvk8KXky15ogA1Vo0=
+github.com/go-text/typesetting v0.1.1-0.20240325125605-c7936fe59984/go.mod h1:2+owI/sxa73XA581LAzVuEBZ3WEEV2pXeDswCH/3i1I=
 github.com/gofrs/flock v0.8.0/go.mod h1:F1TvTiK9OcQqauNUHlbJvyl9Qa1QvF/gOUDKA14jxHU=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/hajimehoshi/bitmapfont v1.3.0/go.mod h1:/Qb7yVjHYNUV4JdqNkPs6BSZwLjKqkZOMIp6jZD0KgE=

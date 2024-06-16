@@ -1,16 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"image/color"
 	"log"
 	"strconv"
+
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/input"
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/resources"
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/opentype"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
@@ -49,19 +50,16 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenHeight, screenHeight
 }
 
-func loadDefaultFont() font.Face {
-	tt, err := opentype.Parse(resources.DefaultFont)
+func loadDefaultFont() text.Face {
+
+	tt, err := text.NewGoTextFaceSource(bytes.NewReader(resources.DefaultFont))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:   float64(defaultFontSize) ,
-		DPI:    float64(defualtFontDPI),
-		Hinting: font.HintingFull,
-	})
-	if err != nil {
-		log.Fatal(err)
+	gamefont :=  &text.GoTextFace{
+		Source: tt,
+		Size:   defaultFontSize,
 	}
 	return gamefont
 }
