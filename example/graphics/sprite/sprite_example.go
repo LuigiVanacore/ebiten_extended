@@ -24,7 +24,7 @@ func NewGame() *Game {
 	sprite := ebiten_extended.NewSprite("Aircraft_1", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite.SetPosition(0, 0)
 
-	sprite2:= ebiten_extended.NewSprite("Aircraft_2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite2:= ebiten_extended.NewSprite("Aircraft_2",ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite2.SetPosition(100,100)
 	
 	sprite.AddChildren(sprite2)
