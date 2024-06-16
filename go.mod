@@ -15,7 +15,6 @@ require (
 require (
 	github.com/ebitengine/purego v0.7.0 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20231102141658-eca20e8abded // indirect
-	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/jezek/xgb v1.1.1 // indirect
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
 	golang.org/x/exp/shiny v0.0.0-20231110203233-9a3e6036ecaa // indirect
