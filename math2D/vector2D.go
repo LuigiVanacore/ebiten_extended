@@ -70,11 +70,11 @@ func (v Vector2D) Length() float64 {
 	return math.Sqrt(DotProduct(v,v))
 }
 
-func Add(v1, v2 Vector2D) Vector2D {
+func AddVectors(v1, v2 Vector2D) Vector2D {
 	return Vector2D{x: v1.x + v2.x, y: v1.y + v2.y}
 }
 
-func Sub(v1, v2 Vector2D) Vector2D{
+func SubtractVectors(v1, v2 Vector2D) Vector2D{
 	return Vector2D { x: v1.x - v2.x, y: v1.y - v2.y }
 }
 
