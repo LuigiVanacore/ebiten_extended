@@ -48,6 +48,10 @@ func OneVector2D() Vector2D {
 	return Vector2D{1, 1}
 }
 
+func (v Vector2D) Magnitude() float64 {
+	return math.Sqrt(v.x*v.x + v.y*v.y)
+}
+
 func (v *Vector2D) SetPosition(x, y float64) {
 	v.x = x
 	v.y = y
@@ -66,11 +70,11 @@ func (v Vector2D) Length() float64 {
 	return math.Sqrt(DotProduct(v,v))
 }
 
-func AddVectors(v1, v2 Vector2D) Vector2D {
+func Add(v1, v2 Vector2D) Vector2D {
 	return Vector2D{x: v1.x + v2.x, y: v1.y + v2.y}
 }
 
-func SubtractVectors(v1, v2 Vector2D) Vector2D{
+func Sub(v1, v2 Vector2D) Vector2D{
 	return Vector2D { x: v1.x - v2.x, y: v1.y - v2.y }
 }
 
