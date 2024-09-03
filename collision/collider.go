@@ -6,7 +6,7 @@ import (
 )
 
 type Collider struct {
-	ebiten_extended.Node
+	ebiten_extended.Node2D
 	collisionShape          CollisionShape
 	mask                    CollisionMask
 	isWorldCordinateUpdated bool

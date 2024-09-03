@@ -27,7 +27,7 @@ type Game struct {
 
 func NewGame() *Game {
 	gameFont := loadDefaultFont()
-	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,30), gameFont, color.White)
+	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,0), gameFont, color.White)
 	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(textLabel)
 	input.InputManager().SetMouseEnabled(true)
 	return &Game{ textLabel: textLabel}
@@ -47,7 +47,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenHeight, screenHeight
+	return screenWidth, screenHeight
 }
 
 func loadDefaultFont() text.Face {
