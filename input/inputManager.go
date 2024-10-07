@@ -20,16 +20,29 @@ func InputManager() *inputManager {
 
 func newInputManager() *inputManager {
 	i := &inputManager{}
+	i.keySlice = make([]ebiten.Key, 0, 4)
+
 	return i
 }
 
 type inputManager struct {
 	activeContexts []*InputContext
-	//callbackTable  map[int]InputCallback
+
+	keySlice        []ebiten.Key
+
 
 	mouseEnabled bool
+	mouseHasDrag          bool
+	mouseDragging         bool
+	mouseJustHadDrag      bool
+	mouseJustReleasedDrag bool
+	mousePressed          bool
+	mouseStartPos         math2D.Vector2D
+	mouseDragPos          math2D.Vector2D
 	cursorPos    math2D.Vector2D
 }
+
+
 
 func (i *inputManager) SetMouseEnabled(value bool) {
 	i.mouseEnabled = value
@@ -50,3 +63,6 @@ func (i *inputManager) Update() {
 		i.cursorPos.SetPosition(float64(x), float64(y))
 	}
 }
+
+
+

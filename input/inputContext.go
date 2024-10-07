@@ -3,39 +3,26 @@ package input
 //import "github.com/hajimehoshi/ebiten/v2"
 
 type InputContext struct {
-	//actionMap map[RawInputButton]Action
-	//stateMap map[RawInputButton]State
+	actionMap map[RawInputButton]Action
+
 }
 
-// namespace InputMapping
-// {
+func NewInputContext() *InputContext {
+	return &InputContext{
+		actionMap: make(map[RawInputButton]Action),
+	}
+}
 
-// 	class InputContext
-// 	{
-// 	// Construction and destruction
-// 	public:
-// 		explicit InputContext(const std::wstring& contextfilename);
-// 		~InputContext();
+func (i *InputContext) MapButtonToAction(button RawInputButton) Action {
+	return i.actionMap[button]
+}
 
-// 	// Mapping interface
-// 	public:
-// 		bool MapButtonToAction(RawInputButton button, Action& out) const;
-// 		bool MapButtonToState(RawInputButton button, State& out) const;
-// 		bool MapAxisToRange(RawInputAxis axis, Range& out) const;
+func (i *InputContext) MapActionToButton(action Action) (RawInputButton, bool) {
+	for button, act := range i.actionMap {
+		if act == action {
+			return button, true
+		}
+	}
+	return RawInputButton{}, false
+}
 
-// 		double GetSensitivity(Range range) const;
-
-// 		const RangeConverter& GetConversions() const
-// 		{ return *Conversions; }
-
-// 	// Internal tracking
-// 	private:
-// 		std::map<RawInputButton, Action> ActionMap;
-// 		std::map<RawInputButton, State> StateMap;
-// 		std::map<RawInputAxis, Range> RangeMap;
-
-// 		std::map<Range, double> SensitivityMap;
-// 		RangeConverter* Conversions;
-// 	};
-
-// }

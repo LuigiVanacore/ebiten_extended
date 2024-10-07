@@ -22,7 +22,7 @@ func (c *converter) convert(invalue float64) float64 {
 }
 
 type RangeCoverter struct {
-    
+	conversionMap map[Range]converter
 }
 
 func (r *RangeCoverter) Convert(rangeid Range, invalue float64) float64 {

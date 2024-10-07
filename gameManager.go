@@ -24,13 +24,13 @@ func GameManager() *gameManager {
 }
 
 type gameManager struct {
-	scenes []SceneNode
 	isRunning bool
-	isDebug bool 
+	isDebug bool
+	world *World
 }
 
 func newGameManager() *gameManager {
-	return &gameManager{scenes: make([]SceneNode, 0), isRunning:  true}
+	return &gameManager{isRunning:  true, isDebug: false, world: NewWorld()}
 }
 
 func init() {
@@ -49,20 +49,20 @@ func (g *gameManager) IsDebug() bool {
 	return g.isDebug
 }
 
-func (g *gameManager) SetIsDebug(debugFlag bool ){
-	g.isDebug = debugFlag
-	fmt.Printf("The debug flag is setted as %t", g.isDebug)
+func (g *gameManager) World() *World {
+	return g.world
 }
 
-func (g *gameManager) AddScene(node SceneNode) {
-	g.scenes = append(g.scenes, node)
+func (g *gameManager) SetIsDebug(debugFlag bool ){
+	g.isDebug = debugFlag
+	fmt.Printf("The debug flag is setted as %t", g.isDebug) 
 }
 
 func (g *gameManager) Update() {
 	
 	if g.isRunning {
 		input.InputManager().Update()
-		SceneManager().Update()
+		g.world.Update()
 		
 	}
 
@@ -71,5 +71,5 @@ func (g *gameManager) Update() {
 
 
 func (g *gameManager) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	SceneManager().Draw(target, op)
+	g.world.Draw(target, op)
 }
