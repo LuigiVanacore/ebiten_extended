@@ -8,10 +8,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
-
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 )
 
 
@@ -22,26 +18,25 @@ func ResourceManager() *resourceManager {
 	if instance == nil {
 		instance = newResourceManager()
 	}
-
 	return instance
 }
 
 type resourceManager struct {
-	images []*ebiten.Image
-	fonts   []*font.Face
+	images map[string]*ebiten.Image
+	fonts  []*font.Face
 }
 
 func newResourceManager() *resourceManager {
-	r := &resourceManager{}
-	return r
+	return &resourceManager{
+		images: make(map[string]*ebiten.Image),
+	}
 }
 
-
-func (r *resourceManager) GetTextures() []*ebiten.Image {
+func (r *resourceManager) GetTextures() map[string]*ebiten.Image {
 	return r.images
 }
 
-func (r *resourceManager) GetTexture(textureId uint) *ebiten.Image {
+func (r *resourceManager) GetTexture(textureId string) *ebiten.Image {
 	return r.images[textureId]
 }
 
@@ -49,13 +44,13 @@ func (r *resourceManager) GetFont(fontId uint) *font.Face {
 	return r.fonts[fontId]
 }
 
-func (r * resourceManager) LoadImage(texture []byte){
-	image, _, err := image.Decode(bytes.NewReader(texture))
+func (r *resourceManager) LoadImage(textureId string, texture []byte) {
+	img, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ebitenImage := ebiten.NewImageFromImage(image)
-	r.images = append(r.images, ebitenImage)
+	ebitenImage := ebiten.NewImageFromImage(img)
+	r.images[textureId] = ebitenImage
 }
 
 func (r *resourceManager) LoadFont(f []byte, fontSize float64, dpi float64) {
