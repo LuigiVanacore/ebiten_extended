@@ -36,10 +36,10 @@ func ZeroVector2D() Vector2D {
 }
 
  
-func (v Vector2D) UnitVector2D() Vector2D {
+func (v Vector2D) Normalize() Vector2D {
 	length := v.Length()
 	if length != 0 {
-		return v.DivideScalar( length)
+		return v.DivideScalar(length)
 	}
 	return v
 }
