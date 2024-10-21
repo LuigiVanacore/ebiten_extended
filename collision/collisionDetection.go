@@ -118,7 +118,7 @@ func SegmentCollide(a, b math2D.Segment) bool {
 	}
 
 	if axisA.GetDirection().IsParallel(axisB.GetDirection()) {
-		d := axisA.GetDirection().UnitVector2D() 
+		d := axisA.GetDirection().Normalize() 
 		rangeA := a.ProjectSegment(d, true)
 		rangeB := b.ProjectSegment(d, true)
 		return math2D.OverlappingRanges(rangeA, rangeB)

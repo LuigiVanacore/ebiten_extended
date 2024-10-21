@@ -33,7 +33,7 @@ func (s Segment) ProjectSegment(onto Vector2D, ontoIsUnit bool) Range {
 	if ontoIsUnit {
 		ontoUnit = onto
 	} else {
-		ontoUnit = onto.UnitVector2D()
+		ontoUnit = onto.Normalize()
 	}
 	r := Range{}
 	r.SetMinimun(DotProduct(ontoUnit, s.startPoint))

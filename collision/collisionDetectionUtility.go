@@ -106,7 +106,7 @@ func SeparatingAxisForOrientedRectangle( axis math2D.Segment, r math2D.OrientedR
 
 	n := math2D.SubtractVectors(axis.GetStartPoint(), axis.GetEndPoint())
 
-	n = n.UnitVector2D()
+	n = n.Normalize()
 
 	axisRange := axis.ProjectSegment(n, true)
 	r0Range := rEdge0.ProjectSegment(n, true)
@@ -121,7 +121,7 @@ func SeparatingAxisForRectangle( axis math2D.Segment, r math2D.Rectangle) bool {
 
 	n := math2D.SubtractVectors(axis.GetStartPoint(), axis.GetEndPoint())
 
-	n = n.UnitVector2D()
+	n = n.Normalize()
 
 	rEdgeA := math2D.NewSegment(RectangleCorner(r, 0), RectangleCorner(r, 1))
 	rEdgeB := math2D.NewSegment(RectangleCorner(r, 2), RectangleCorner(r, 3))
