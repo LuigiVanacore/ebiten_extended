@@ -95,10 +95,10 @@ func (g *Game) Update() error {
 		return ErrNormalExit
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyG) {
-		cam.Rotate(10)
+		cam.SetRotation(10)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyR) {
-		cam.Rotate(10)
+		cam.SetRotation(10)
 	}
 
 	// Physics
@@ -213,10 +213,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	cam.Fill(color.RGBA{255, 128, 128, 255})
 	// Draw tiles
 	tileOps := &ebiten.DrawImageOptions{}
-	cam.DrawImage(tiles, cam.GetTranslation(tileOps, 0, 0))
+	cam.DrawImage(tiles, cam.GetRelativeTranslation(tileOps, 0, 0))
 	// Draw the player
 	playerOps := &ebiten.DrawImageOptions{}
-	playerOps = cam.GetTranslation(playerOps, PlayerX, PlayerY)
+	playerOps = cam.GetRelativeTranslation(playerOps, PlayerX, PlayerY)
 	cam.DrawImage(player, playerOps)
 
 	// Draw to screen and zoom

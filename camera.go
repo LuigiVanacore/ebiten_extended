@@ -5,12 +5,11 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Camera struct {
-	transform.Transform
+	Node2D
 	width     uint
 	height    uint
 	zoom 	float64
@@ -70,31 +69,31 @@ func (c *Camera) Fill(color color.Color) {
 
 
 
-func (c *Camera) GetTranslation(ops *ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
+func (c *Camera) GetRelativeTranslation(ops ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
 	size := c.surface.Bounds().Size()
 	ops.GeoM.Translate(float64(size.X)/2, float64(size.Y)/2)
-	ops.GeoM.Translate(-c.GetPosition().X()+x, -c.GetPosition().Y()+y)
-	return ops
+	ops.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
+	return &ops
 }
 
-func (c *Camera) GetRotation(ops *ebiten.DrawImageOptions, rotation, originX, originY float64) *ebiten.DrawImageOptions {
+func (c *Camera) GetRelativeRotation(ops *ebiten.DrawImageOptions, rotation, originX, originY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Translate(originX, originY)
 	ops.GeoM.Rotate(rotation)
 	ops.GeoM.Translate(-originX, -originY)
 	return ops
 }
 
-func (c *Camera) GetScale(ops *ebiten.DrawImageOptions, scaleX, scaleY float64) *ebiten.DrawImageOptions {
+func (c *Camera) GetRelativeScale(ops *ebiten.DrawImageOptions, scaleX, scaleY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Scale(scaleX, scaleY)
 	return ops
 }
 
-func (c *Camera) GetSkew(ops *ebiten.DrawImageOptions, skewX, skewY float64) *ebiten.DrawImageOptions {
+func (c *Camera) GetRelativeSkew(ops *ebiten.DrawImageOptions, skewX, skewY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Skew(skewX, skewY)
 	return ops
 }
 
-func (c *Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
+func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 	c.surface.DrawImage(image, ops)
 }
 
@@ -106,7 +105,7 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 
 	op.GeoM.Translate(-cx, -cy)
 	op.GeoM.Scale(c.zoom, c.zoom)
-	op.GeoM.Rotate(float64(c.Transform.GetRotation()))
+	op.GeoM.Rotate(float64(c.GetRotation()))
 	op.GeoM.Translate(cx*c.zoom, cy*c.zoom)
 
 	screen.DrawImage(c.surface, op)
@@ -114,8 +113,8 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 
 func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
 	w, h := c.width, c.height
-	co := math.Cos(float64(c.Transform.GetRotation()))
-	si := math.Sin(float64(c.Transform.GetRotation()))
+	co := math.Cos(float64(c.GetRotation()))
+	si := math.Sin(float64(c.GetRotation()))
 
 	x, y = x-c.GetPosition().X(), y-c.GetPosition().Y()
 	x, y = co*x-si*y, si*x+co*y
@@ -125,8 +124,8 @@ func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
 
 func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
 	w, h := c.width, c.height
-	co := math.Cos(-float64(c.Transform.GetRotation()))
-	si := math.Sin(-float64(c.Transform.GetRotation()))
+	co := math.Cos(-float64(c.GetRotation()))
+	si := math.Sin(-float64(c.GetRotation()))
 
 	x, y = (x-float64(w)/2)/c.zoom, (y-float64(h)/2)/c.zoom
 	x, y = co*x-si*y, si*x+co*y

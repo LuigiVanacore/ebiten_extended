@@ -74,7 +74,5 @@ func (t *Transform) Concat(transform Transform) {
 	position := transform.GetPosition()
 	t.Translate(position.X(), position.Y())
 	rotation := transform.GetRotation()
-	t.Rotate(rotation)
-	geoM := transform.GetGeoM()
-	t.geoM.Concat(geoM)
+	t.Rotate(rotation + t.rotation)
 }

@@ -1,23 +1,24 @@
-package main 
+package main
 
 import (
 	"log"
+
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
-	screenWidth  = 320
-	screenHeight = 240
-	AircraftID = 0
-	DesertID = 1
+	screenWidth     = 320
+	screenHeight    = 240
+	AircraftID      = 0
+	DesertID        = 1
 	BackgroundLayer = 2
-	AircraftLayer = 3
+	AircraftLayer   = 3
 )
 
 type Game struct {
-	sprite *ebiten_extended.Sprite
+	sprite   *ebiten_extended.SpriteNode
 	rotation int
 }
 
@@ -28,14 +29,12 @@ func NewGame() *Game {
 	sprite := ebiten_extended.NewSprite("aircraftSprite1", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
 	sprite.SetPosition(screenWidth/2, screenHeight/2)
 
-	sprite2:= ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
-	sprite2.SetPosition(100,100)
+	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite2.SetPosition(100, 100)
 
-	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetTexture(DesertID),false)
-	
+	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetTexture(DesertID), false)
 
 	sprite.AddChildren(sprite2)
-
 
 	backgroundLayer := ebiten_extended.NewLayer(BackgroundLayer, 0, "backgroundLayer")
 	aircraftLayer := ebiten_extended.NewLayer(AircraftLayer, 0, "aircraftLayer")
@@ -48,12 +47,12 @@ func NewGame() *Game {
 	ebiten_extended.SceneManager().AddLayer(backgroundLayer)
 	ebiten_extended.SceneManager().AddLayer(aircraftLayer)
 	ebiten_extended.GameManager().SetIsDebug(true)
-	return &Game{ sprite: sprite}
+	return &Game{sprite: sprite}
 }
 
 func (g *Game) Update() error {
 	ebiten_extended.GameManager().Update()
-	g.rotation= g.rotation+1%360
+	g.rotation = g.rotation + 1%360
 	g.sprite.SetRotation(g.rotation)
 	return nil
 }
@@ -70,8 +69,6 @@ func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Sprite Example")
 
-	
-	
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)

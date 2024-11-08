@@ -14,8 +14,8 @@ func NewNode2D(name string) *Node2D {
 	return &Node2D{ Node: *NewNode(name)}
 }
 
-func (s *Node2D) GetTransform() *transform.Transform {
-	return &s.transform
+func (s *Node2D) GetTransform() transform.Transform {
+	return s.transform
 }
 
 func (s *Node2D) SetTransform(transform transform.Transform) {
@@ -47,7 +47,7 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 	rootTransform := transform.Transform{}
 	for node := b.GetParent(); node != nil; node = node.GetParent() {
 		if entity, ok := node.(transform.Transformable); ok {
-			rootTransform.Concat(*entity.GetTransform())
+			rootTransform.Concat(entity.GetTransform())
 		}
 	}
 	return rootTransform

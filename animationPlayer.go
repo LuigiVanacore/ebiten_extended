@@ -8,18 +8,18 @@ import (
 
 
 type AnimationPlayer struct {
-	transform transform.Transform
-	animationMap map[uint]*AnimationSet
-	currentAnimationId uint
+	Node2D
+	animationMap map[string]*AnimationSet
+	currentAnimationId string
 	isPlaying bool
 }
 
 func NewAnimationPlayer() *AnimationPlayer {
-	return &AnimationPlayer{ animationMap: make(map[uint]*AnimationSet)}
+	return &AnimationPlayer{ animationMap: make(map[string]*AnimationSet)}
 }
 
-func (a *AnimationPlayer) GetTransform() *transform.Transform {
-	return &a.transform
+func (a *AnimationPlayer) GetTransform() transform.Transform {
+	return a.transform
 }
 
 func (a *AnimationPlayer) SetTransform(transform transform.Transform) {
@@ -38,25 +38,25 @@ func (a *AnimationPlayer) Stop() {
 	a.isPlaying = false
 }
 
-func (a *AnimationPlayer) GetCurrentAnimation() uint {
+func (a *AnimationPlayer) GetCurrentAnimation() string {
 	return a.currentAnimationId
 }
 
-func (a *AnimationPlayer) SetCurrentAnimation(animationId uint) {
+func (a *AnimationPlayer) SetCurrentAnimation(animationId string) {
 	a.currentAnimationId = animationId
 }
 
-func (a *AnimationPlayer) AddAnimation(animationSet *AnimationSet, animationId uint) {
+func (a *AnimationPlayer) AddAnimation(animationSet *AnimationSet, animationId string) {
 	a.animationMap[animationId] = animationSet
 }
 
-func (a *AnimationPlayer) DeleteAnimation(animationId uint) {
+func (a *AnimationPlayer) DeleteAnimation(animationId string) {
 	delete(a.animationMap, animationId)
 }
 
-func (a *AnimationPlayer) Update(dt float64) {
+func (a *AnimationPlayer) Update() {
 	if a.isPlaying {
-		a.animationMap[a.currentAnimationId].Update(dt)
+		a.animationMap[a.currentAnimationId].Update()
 	}
 }
 

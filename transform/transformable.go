@@ -2,6 +2,6 @@ package transform
 
 
 type Transformable interface {
-	GetTransform() *Transform
+	GetTransform() Transform
 	SetTransform(transform Transform)
 }

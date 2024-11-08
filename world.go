@@ -17,7 +17,8 @@ type World struct {
 }
 
 func NewWorld() *World {
-	return &World{layers: make([]*Layer, 0), rootScene: &Node{id: 0, name: "root", parent: nil}, camera: NewCamera(320, 240)}
+	w, h := ebiten.WindowSize()
+	return &World{layers: make([]*Layer, 0), rootScene: &Node{id: 0, name: "root", parent: nil}, camera: NewCamera(uint(w), uint(h))}
 }
 
 func (world *World) Camera() *Camera {
@@ -82,24 +83,28 @@ func (world *World) updateNode(node SceneNode) {
 }
 
 func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	world.DrawNode(world.rootScene, op)
+	world.camera.surface.Clear()
+	world.DrawNode(world.rootScene,target, op)
 	world.camera.Draw(target)
 }
 
-func (world *World) DrawNode(node SceneNode, op *ebiten.DrawImageOptions) {
+func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	//playerOps := &ebiten.DrawImageOptions{}
 	//playerOps = cam.GetTranslation(playerOps, PlayerX, PlayerY)
 	//cam.DrawImage(player, playerOps)
 
 	// Draw to screen and zoom
-
-	if entity, ok := node.(Drawable); ok {
+	if entity, ok := node.(transform.Transformable); ok {
 		op.GeoM = updateTransform(entity, op.GeoM)
-		position := entity.GetTransform().GetPosition()
-		entity.Draw(world.camera.GetSurface(),  world.camera.GetTranslation(op, position.X(), position.Y()))
+		transform := entity.GetTransform()
+		position := transform.GetPosition()
+
+		if entity, ok := node.(Drawable); ok {
+			entity.Draw(world.camera.GetSurface(), world.camera.GetRelativeTranslation(*op, position.X(), position.Y()))
+		}
 	}
 	for _, child := range node.GetChildren() {
-		world.DrawNode(child, op)
+		world.DrawNode(child,target, op)
 	}
 }
 
@@ -120,3 +125,4 @@ func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) eb
 
 	return updated_GeoM
 }
+

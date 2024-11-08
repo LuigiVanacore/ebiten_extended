@@ -32,11 +32,11 @@ func newResourceManager() *resourceManager {
 	}
 }
 
-func (r *resourceManager) GetTextures() map[string]*ebiten.Image {
+func (r *resourceManager) GetImages() map[string]*ebiten.Image {
 	return r.images
 }
 
-func (r *resourceManager) GetTexture(textureId string) *ebiten.Image {
+func (r *resourceManager) GetImage(textureId string) *ebiten.Image {
 	return r.images[textureId]
 }
 
@@ -44,7 +44,7 @@ func (r *resourceManager) GetFont(fontId uint) *font.Face {
 	return r.fonts[fontId]
 }
 
-func (r *resourceManager) LoadImage(textureId string, texture []byte) {
+func (r *resourceManager) AddImage(textureId string, texture []byte) {
 	img, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {
 		log.Fatal(err)

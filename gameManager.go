@@ -9,7 +9,7 @@ import (
 
 
 const ( 
-	fixedDelta = 1.0 / 60.0
+	FIXED_DELTA float64 = 1.0 / 60.0
 )
 
 var gameManager_instance *gameManager
@@ -24,13 +24,14 @@ func GameManager() *gameManager {
 }
 
 type gameManager struct {
+	clock *Clock
 	isRunning bool
-	isDebug bool
+	debug Debug
 	world *World
 }
 
 func newGameManager() *gameManager {
-	return &gameManager{isRunning:  true, isDebug: false, world: NewWorld()}
+	return &gameManager{clock: NewClock(), isRunning:  true, debug: *NewDebug(false), world: NewWorld()}
 }
 
 func init() {
@@ -46,7 +47,7 @@ func (g *gameManager) Start() {
 }
 
 func (g *gameManager) IsDebug() bool {
-	return g.isDebug
+	return g.debug.Enabled()
 }
 
 func (g *gameManager) World() *World {
@@ -54,16 +55,16 @@ func (g *gameManager) World() *World {
 }
 
 func (g *gameManager) SetIsDebug(debugFlag bool ){
-	g.isDebug = debugFlag
-	fmt.Printf("The debug flag is setted as %t", g.isDebug) 
+	g.debug.SetEnabled(debugFlag)
+	fmt.Printf("The debug flag is setted as %t", g.debug.Enabled()) 
 }
 
 func (g *gameManager) Update() {
-	
+
 	if g.isRunning {
+
 		input.InputManager().Update()
 		g.world.Update()
-		
 	}
 
 }
