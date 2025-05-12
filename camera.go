@@ -69,11 +69,10 @@ func (c *Camera) Fill(color color.Color) {
 
 
 
-func (c *Camera) GetRelativeTranslation(ops ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
-	size := c.surface.Bounds().Size()
-	ops.GeoM.Translate(float64(size.X)/2, float64(size.Y)/2)
-	ops.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
-	return &ops
+func (c *Camera) GetRelativeTranslation(ops *ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
+
+	ops.GeoM.Translate(-c.GetPosition().X()+x, -c.GetPosition().Y()+y)
+	return ops
 }
 
 func (c *Camera) GetRelativeRotation(ops *ebiten.DrawImageOptions, rotation, originX, originY float64) *ebiten.DrawImageOptions {

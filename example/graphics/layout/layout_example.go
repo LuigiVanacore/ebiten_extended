@@ -4,35 +4,35 @@ import (
 	"log"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/resources"
+	"github.com/LuigiVanacore/ebiten_extended/example/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
 	screenWidth     = 320
 	screenHeight    = 240
-	AircraftID      = 0
-	DesertID        = 1
+	AircraftID      = "Aircraft"
+	DesertID        = "Desert"
 	BackgroundLayer = 2
 	AircraftLayer   = 3
 )
 
 type Game struct {
-	sprite   *ebiten_extended.SpriteNode
+	sprite   *ebiten_extended.Sprite
 	rotation int
 }
 
 func NewGame() *Game {
-	ebiten_extended.ResourceManager().LoadImage(resources.Aircraft)
-	ebiten_extended.ResourceManager().LoadImage(resources.Desert)
+	ebiten_extended.ResourceManager().AddImage(AircraftID, resources.Aircraft)
+	ebiten_extended.ResourceManager().AddImage(DesertID, resources.Desert)
 
-	sprite := ebiten_extended.NewSprite("aircraftSprite1", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite := ebiten_extended.NewSprite("aircraftSprite1", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
 	sprite.SetPosition(screenWidth/2, screenHeight/2)
 
-	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
 	sprite2.SetPosition(100, 100)
 
-	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetTexture(DesertID), false)
+	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetImage(DesertID), false)
 
 	sprite.AddChildren(sprite2)
 

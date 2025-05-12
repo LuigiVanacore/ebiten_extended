@@ -8,12 +8,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-
-
 type World struct {
-	rootScene SceneNode
-	layers    []*Layer
+	rootScene Node
+	layers    Layers
 	camera    *Camera
+	nextIdVal uint64
 }
 
 func NewWorld() *World {
@@ -59,11 +58,9 @@ func (world *World) checkLayerId(layerID int) error {
 	return nil
 }
 
-
-
 func (world *World) buildScene() {
 	layer := world.layers[len(world.layers)-1]
-	world.rootScene.AddChildren(layer.GetRootScene())
+	world.rootScene.AddChild(layer.GetRootScene())
 }
 
 func (world *World) Update() {
@@ -84,11 +81,11 @@ func (world *World) updateNode(node SceneNode) {
 
 func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	world.camera.surface.Clear()
-	world.DrawNode(world.rootScene,target, op)
+	world.DrawNode(world.rootScene, target, op)
 	world.camera.Draw(target)
 }
 
-func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
+func (world *World) DrawNode(node Node, target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	//playerOps := &ebiten.DrawImageOptions{}
 	//playerOps = cam.GetTranslation(playerOps, PlayerX, PlayerY)
 	//cam.DrawImage(player, playerOps)
@@ -100,11 +97,11 @@ func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.Dr
 		position := transform.GetPosition()
 
 		if entity, ok := node.(Drawable); ok {
-			entity.Draw(world.camera.GetSurface(), world.camera.GetRelativeTranslation(*op, position.X(), position.Y()))
+			entity.Draw(world.camera.GetSurface(), world.camera.GetRelativeTranslation(op, position.X(), position.Y()))
 		}
 	}
 	for _, child := range node.GetChildren() {
-		world.DrawNode(child,target, op)
+		world.DrawNode(child, target, op)
 	}
 }
 
@@ -125,4 +122,3 @@ func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) eb
 
 	return updated_GeoM
 }
-

@@ -26,7 +26,7 @@ func TestNewTransform(t *testing.T) {
 
 func TestSetPosition(t *testing.T) {
 	transform := NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
-	transform.SetPosition(5, 6)
+	transform.SetPosition(math2D.NewVector2D(5, 6))
 
 	expected := math2D.NewVector2D(5, 6)
 	if !transform.GetPosition().IsEqual(expected) {
@@ -45,7 +45,7 @@ func TestSetRotation(t *testing.T) {
 
 func TestSetPivot(t *testing.T) {
 	transform := NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
-	transform.SetPivot(7, 8)
+	transform.SetPivot(math2D.NewVector2D(7, 8))
 
 	expected := math2D.NewVector2D(7, 8)
 	if !transform.GetPivot().IsEqual(expected) {

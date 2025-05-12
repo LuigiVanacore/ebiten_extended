@@ -3,7 +3,6 @@ package ebiten_extended
 import (
  
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
 )
 
 
@@ -18,13 +17,6 @@ func NewAnimationPlayer() *AnimationPlayer {
 	return &AnimationPlayer{ animationMap: make(map[string]*AnimationSet)}
 }
 
-func (a *AnimationPlayer) GetTransform() transform.Transform {
-	return a.transform
-}
-
-func (a *AnimationPlayer) SetTransform(transform transform.Transform) {
-	a.transform = transform
-}
 
 func (a *AnimationPlayer) IsPlaying() bool {
 	return a.isPlaying
@@ -56,10 +48,16 @@ func (a *AnimationPlayer) DeleteAnimation(animationId string) {
 
 func (a *AnimationPlayer) Update() {
 	if a.isPlaying {
-		a.animationMap[a.currentAnimationId].Update()
+		animationSet := a.animationMap[a.currentAnimationId]
+		if animationSet != nil {
+			animationSet.Update()
+		}
 	}
 }
 
 func (a *AnimationPlayer) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-		a.animationMap[a.currentAnimationId].Draw(target, op)
+		animationSet := a.animationMap[a.currentAnimationId]
+		if animationSet != nil {
+			animationSet.Draw(target, op)
+		}
 }

@@ -1,9 +1,5 @@
 package ebiten_extended
 
-
-
-
-
 var sceneManagerinstance *sceneManager
 
 func SceneManager() *sceneManager {
@@ -16,16 +12,14 @@ func SceneManager() *sceneManager {
 
 type sceneManager struct {
 	nextIdVal uint64
-	rootScene SceneNode
-	layers    []*Layer
+	rootScene *Node
 }
 
 func newSceneManager() *sceneManager {
-	sceneManager := &sceneManager{layers: make([]*Layer, 0), rootScene: &Node{id: 0, name: "root", parent: nil}}
+	sceneManager := &sceneManager{rootScene: &Node{id: 0, name: "root", parent: nil}}
 	sceneManager.incrementNextIdVal()
 	return sceneManager
 }
-
 
 func (sceneManager *sceneManager) GetNextIdVal() uint64 {
 	nextIdVal := sceneManager.nextIdVal
@@ -42,12 +36,9 @@ func (sceneManager *sceneManager) incrementNextIdVal() {
 	sceneManager.setNextIdVal(sceneManager.nextIdVal + 1)
 }
 
-
 // func (sceneManager *sceneManager) AddScene(scene *Scene) {
 // 	sceneManager.scenes = append(sceneManager.scenes, scene)
 // }
-
-
 
 // func (sceneManager *sceneManager) AddEntity(entity any, name string, layerId int) *SceneNode {
 // 	sceneNode := NewSceneNode(entity, name)
@@ -73,7 +64,6 @@ func (sceneManager *sceneManager) incrementNextIdVal() {
 // func (sceneManager *sceneManager) Update() {
 // 	sceneManager.
 // }
-
 
 // func (sceneManager *sceneManager) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 // sceneManager.}

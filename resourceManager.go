@@ -23,12 +23,14 @@ func ResourceManager() *resourceManager {
 
 type resourceManager struct {
 	images map[string]*ebiten.Image
+	animations map[string]*AnimationSet
 	fonts  []*font.Face
 }
 
 func newResourceManager() *resourceManager {
 	return &resourceManager{
 		images: make(map[string]*ebiten.Image),
+		animations: make(map[string]*AnimationSet),
 	}
 }
 
@@ -38,6 +40,22 @@ func (r *resourceManager) GetImages() map[string]*ebiten.Image {
 
 func (r *resourceManager) GetImage(textureId string) *ebiten.Image {
 	return r.images[textureId]
+}
+
+func (r *resourceManager) GetAnimations() map[string]*AnimationSet {
+	return r.animations
+}	
+
+func (r *resourceManager) GetAnimation(animationId string) *AnimationSet {
+	return r.animations[animationId]
+}	
+
+func (r *resourceManager) AddAnimation(animationId string, animationSet *AnimationSet) {
+	r.animations[animationId] = animationSet
+}	
+
+func (r *resourceManager) DeleteAnimation(animationId string) {
+	delete(r.animations, animationId)
 }
 
 func (r *resourceManager) GetFont(fontId uint) *font.Face {
@@ -50,6 +68,11 @@ func (r *resourceManager) AddImage(textureId string, texture []byte) {
 		log.Fatal(err)
 	}
 	ebitenImage := ebiten.NewImageFromImage(img)
+	r.images[textureId] = ebitenImage
+}
+
+func (r *resourceManager) AddImageFromImage(textureId string, image image.Image) {
+	ebitenImage := ebiten.NewImageFromImage(image)
 	r.images[textureId] = ebitenImage
 }
 

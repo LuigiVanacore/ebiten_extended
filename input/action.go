@@ -2,36 +2,41 @@ package input
 
 import "github.com/hajimehoshi/ebiten/v2"
 
+
+type InputType int
+
 const (
-	Hold = iota
+	Hold InputType = iota
 	PRESSED
 	RELEASED
 )
 
+type ButtonType int
+
 const (
-	KEY_BUTTON = iota
+	KEY_BUTTON ButtonType = iota
 	MOUSE_BUTTON
 	GAMEPAD_BUTTON
 )
 
 type Action struct {
-	inputType     int
-	buttonType    int
+	inputType     InputType
+	buttonType    ButtonType
 	keyButton     ebiten.Key
 	mouseButton   ebiten.MouseButton
 	gamepadButton ebiten.GamepadButton
 	gamepadID     ebiten.GamepadID
 }
 
-func NewActionKey(keyButton ebiten.Key, inputType int) *Action {
+func NewActionKey(keyButton ebiten.Key, inputType InputType) *Action {
 	return &Action{inputType: inputType, buttonType: KEY_BUTTON, keyButton: keyButton}
 }
 
-func NewActionMouse(mouseButton ebiten.MouseButton, inputType int) *Action {
+func NewActionMouse(mouseButton ebiten.MouseButton, inputType InputType) *Action {
 	return &Action{inputType: inputType, buttonType: MOUSE_BUTTON, mouseButton: mouseButton}
 }
 
-func NewActionGamepad(gamepadButton ebiten.GamepadButton, gamepadID ebiten.GamepadID, inputType int) *Action {
+func NewActionGamepad(gamepadButton ebiten.GamepadButton, gamepadID ebiten.GamepadID, inputType InputType) *Action {
 	return &Action{inputType: inputType, buttonType: GAMEPAD_BUTTON, gamepadButton: gamepadButton, gamepadID: gamepadID}
 }
 

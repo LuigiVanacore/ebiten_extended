@@ -47,7 +47,7 @@ func TestGetWorldPosition(t *testing.T) {
 	root.AddChild(child)
 
 	rootTransform := transform.Transform{}
-	rootTransform.SetPosition(10, 20)
+	rootTransform.SetPosition(math2D.NewVector2D(10, 20))
 	root.SetTransform(rootTransform)
 
 	worldPosition := child.GetWorldPosition()

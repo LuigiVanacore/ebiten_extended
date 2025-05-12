@@ -20,8 +20,8 @@ func (t *Transform) GetPosition() math2D.Vector2D {
 	return t.position
 }
 
-func (t *Transform) SetPosition(x, y float64) {
-	t.position.SetPosition(x, y)
+func (t *Transform) SetPosition(position math2D.Vector2D) {
+	t.position.SetPosition(position)
 }
 
 func (t *Transform) GetRotation() int {
@@ -32,8 +32,8 @@ func (t *Transform) SetRotation(rotation int) {
 	t.rotation = rotation
 }
 
-func (t *Transform) SetPivot(x, y float64) {
-	t.pivot.SetPosition(x , y)
+func (t *Transform) SetPivot(pivot math2D.Vector2D) {
+	t.pivot.SetPosition(pivot)
 }
 
 func (t *Transform) SetScale(x, y float64) {

@@ -17,7 +17,7 @@ type LabelText struct {
 
 func NewLabelText(name string, message string, position math2D.Vector2D, font text.Face, color color.Color) *LabelText {
 	label := &LabelText{message: message, Node2D: *NewNode2D(name), font: font, color: color}
-	label.SetPosition(position.X(), position.Y())
+	label.SetPosition(position)
 	return label
 }
 
@@ -27,7 +27,7 @@ func (l *LabelText) SetMessage(message string) {
 
 
 func (l *LabelText) updateGeoM(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-l.transform.GetPivot().X(), -l.transform.GetPivot().Y())
+	op.GeoM.Translate(-l.Transform.GetPivot().X(), -l.Transform.GetPivot().Y())
 }
 
 func (l *LabelText) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {

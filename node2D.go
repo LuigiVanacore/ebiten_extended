@@ -7,41 +7,20 @@ import (
 
 type Node2D struct {
 	Node
-	transform transform.Transform
+	transform.Transform
 }
 
 func NewNode2D(name string) *Node2D {
-	return &Node2D{ Node: *NewNode(name)}
+	return &Node2D{Node: *NewNode(name)}
 }
 
 func (s *Node2D) GetTransform() transform.Transform {
-	return s.transform
+	return s.Transform
 }
 
 func (s *Node2D) SetTransform(transform transform.Transform) {
-	s.transform = transform
+	s.Transform = transform
 }
-
-func (s *Node2D) SetPosition(x, y float64) {
-	s.transform.SetPosition(x, y)
-}
-
-func (s *Node2D) GetPosition() math2D.Vector2D {
-	return s.transform.GetPosition()
-}
-
-func (s *Node2D) SetRotation(rotation int) {
-	s.transform.SetRotation(rotation)
-}
-
-func (s *Node2D) GetRotation() int {
-	return s.transform.GetRotation()
-}
-
-func (s *Node2D) SetScale(x, y float64) {
-	s.transform.Scale(x, y)
-}
-
 
 func (b *Node2D) GetWorldTransform() transform.Transform {
 	rootTransform := transform.Transform{}

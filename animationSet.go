@@ -55,5 +55,5 @@ func (a *AnimationSet) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 }
 
 func (a *AnimationSet) IsEnded() bool {
-	return a.currentFrame + 1 >= a.frameCount 
+	return a.currentFrame >= a.frameCount 
 }
