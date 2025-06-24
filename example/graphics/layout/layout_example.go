@@ -5,12 +5,13 @@ import (
 
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/example/resources"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
-	screenWidth     = 320
-	screenHeight    = 240
+	screenWidth     = 640
+	screenHeight    = 480
 	AircraftID      = "Aircraft"
 	DesertID        = "Desert"
 	BackgroundLayer = 2
@@ -26,26 +27,20 @@ func NewGame() *Game {
 	ebiten_extended.ResourceManager().AddImage(AircraftID, resources.Aircraft)
 	ebiten_extended.ResourceManager().AddImage(DesertID, resources.Desert)
 
-	sprite := ebiten_extended.NewSprite("aircraftSprite1", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
-	sprite.SetPosition(screenWidth/2, screenHeight/2)
+	sprite := ebiten_extended.NewSprite("aircraftSprite1", ebiten_extended.ResourceManager().GetImage(AircraftID), AircraftLayer, true)
+	sprite.SetPosition(math2D.NewVector2D(screenWidth/2, screenHeight/2))
 
-	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
-	sprite2.SetPosition(100, 100)
+	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", ebiten_extended.ResourceManager().GetImage(AircraftID), AircraftLayer, true)
+	sprite2.SetPosition(math2D.NewVector2D(100, 100))
 
-	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetImage(DesertID), false)
+	desertSprite := ebiten_extended.NewSprite("desertSprite", ebiten_extended.ResourceManager().GetImage(DesertID), BackgroundLayer, false)
 
-	sprite.AddChildren(sprite2)
+	sprite.AddChild(sprite2)
+ 
 
-	backgroundLayer := ebiten_extended.NewLayer(BackgroundLayer, 0, "backgroundLayer")
-	aircraftLayer := ebiten_extended.NewLayer(AircraftLayer, 0, "aircraftLayer")
-
-	backgroundLayer.AddNode(desertSprite)
-
-	aircraftLayer.AddNode(sprite)
-
-	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
-	ebiten_extended.SceneManager().AddLayer(backgroundLayer)
-	ebiten_extended.SceneManager().AddLayer(aircraftLayer)
+ 
+	ebiten_extended.GameManager().World().AddNode(sprite)
+	ebiten_extended.GameManager().World().AddNode(desertSprite)
 	ebiten_extended.GameManager().SetIsDebug(true)
 	return &Game{sprite: sprite}
 }

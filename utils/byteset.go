@@ -12,6 +12,6 @@ func (c ByteSet) Clear(flag ByteSet) ByteSet {
 }
 
 func (c ByteSet) Has(flag ByteSet) bool {
-	return c&flag != 0
+	return c|flag != 0
 }
 

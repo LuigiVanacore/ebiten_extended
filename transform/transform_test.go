@@ -55,7 +55,7 @@ func TestSetPivot(t *testing.T) {
 
 func TestTranslate(t *testing.T) {
 	transform := NewTransform(math2D.NewVector2D(1, 1), math2D.ZeroVector2D(), 0)
-	transform.Translate(3, 4)
+	transform.Translate(math2D.NewVector2D(3, 4))
 
 	expected := math2D.NewVector2D(4, 5)
 	if !transform.GetPosition().IsEqual(expected) {

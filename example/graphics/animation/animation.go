@@ -32,7 +32,7 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	ebiten_extended.ResourceManager().AddImage(ImageID, runnerImage)
+	ebiten_extended.ResourceManager().AddImage(ImageID, resources.runnerImage)
 	return &Game{}
 }
 

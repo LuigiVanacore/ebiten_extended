@@ -43,6 +43,14 @@ func (s *Sprite) SetTexture(texture *ebiten.Image) {
 	s.texture = texture
 }
 
+func (s *Sprite) GetLayer() int {
+	return s.layerIndex
+}
+
+func (s *Sprite) SetLayer(layerIndex int) {
+	s.layerIndex = layerIndex
+}
+
 func (s *Sprite) SetPivotToCenter() {
 	s.Transform.SetPivot(s.GetTextureRect().GetCenter())
 }

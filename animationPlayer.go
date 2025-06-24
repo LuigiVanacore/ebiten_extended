@@ -8,13 +8,20 @@ import (
 
 type AnimationPlayer struct {
 	Node2D
+	layer int
 	animationMap map[string]*AnimationSet
 	currentAnimationId string
 	isPlaying bool
 }
 
-func NewAnimationPlayer() *AnimationPlayer {
-	return &AnimationPlayer{ animationMap: make(map[string]*AnimationSet)}
+func NewAnimationPlayer(name string, layer int) *AnimationPlayer {
+	return &AnimationPlayer{
+		Node2D:          *NewNode2D(name),
+		layer:           layer,
+		animationMap:    make(map[string]*AnimationSet),
+		currentAnimationId: "",
+		isPlaying:      false,
+	}
 }
 
 
@@ -36,6 +43,14 @@ func (a *AnimationPlayer) GetCurrentAnimation() string {
 
 func (a *AnimationPlayer) SetCurrentAnimation(animationId string) {
 	a.currentAnimationId = animationId
+}
+
+func (a *AnimationPlayer) GetLayer() int {
+	return a.layer
+}
+
+func (a *AnimationPlayer) SetLayer(layer int) {
+	a.layer = layer
 }
 
 func (a *AnimationPlayer) AddAnimation(animationSet *AnimationSet, animationId string) {

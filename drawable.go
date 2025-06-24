@@ -7,5 +7,6 @@ import (
 
 type Drawable interface {
 	transform.Transformable
+	GetLayer() int
 	Draw(target *ebiten.Image, op *ebiten.DrawImageOptions)
 }

@@ -1,6 +1,9 @@
 package ebiten_extended
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 
 
@@ -9,26 +12,27 @@ func DrawNode( node Drawable, target *ebiten.Image, op *ebiten.DrawImageOptions)
 }
 
 type Layers struct {
-	layers [][]func()
+	layers []utils.Stack[func()]
 }
 
-func NewLayer(layersNum int) *Layers {
-	return &Layers{ layers: make([][]func(), layersNum)}
+func NewLayers(layersNum int) *Layers {
+	return &Layers{ layers: make([]utils.Stack[func()], layersNum)}
 }
 
 
-func (l *Layers) AddNodeToLayer(layedIndex int, node Drawable, target *ebiten.Image, op *ebiten.DrawImageOptions) {
+func (l *Layers) AddNodeToLayer(layedIndex int, node Drawable, target *ebiten.Image, op ebiten.DrawImageOptions) {
 	f := func ()  {
-		node.Draw(target, op)
+		node.Draw(target, &op)
 	}
-	l.layers[layedIndex] = append(l.layers[layedIndex], f)
+	l.layers[layedIndex].Push(f)
 }
 
 
 func (l *Layers) DrawLayers() {
-	for _, layer := range l.layers {
-		for _, f := range layer {
-			f()
-		}
-	}
+    for i := range l.layers {
+        for !l.layers[i].IsEmpty() {
+            f, _ := l.layers[i].Pop()
+            f()
+        }
+    }
 }

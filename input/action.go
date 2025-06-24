@@ -3,59 +3,12 @@ package input
 import "github.com/hajimehoshi/ebiten/v2"
 
 
-type InputType int
-
-const (
-	Hold InputType = iota
-	PRESSED
-	RELEASED
-)
-
-type ButtonType int
-
-const (
-	KEY_BUTTON ButtonType = iota
-	MOUSE_BUTTON
-	GAMEPAD_BUTTON
-)
 
 type Action struct {
-	inputType     InputType
-	buttonType    ButtonType
-	keyButton     ebiten.Key
-	mouseButton   ebiten.MouseButton
-	gamepadButton ebiten.GamepadButton
-	gamepadID     ebiten.GamepadID
+	// The key or button associated with the action
+	Key ebiten.Key
+	// The type of action (hold, press once, release once)
 }
-
-func NewActionKey(keyButton ebiten.Key, inputType InputType) *Action {
-	return &Action{inputType: inputType, buttonType: KEY_BUTTON, keyButton: keyButton}
-}
-
-func NewActionMouse(mouseButton ebiten.MouseButton, inputType InputType) *Action {
-	return &Action{inputType: inputType, buttonType: MOUSE_BUTTON, mouseButton: mouseButton}
-}
-
-func NewActionGamepad(gamepadButton ebiten.GamepadButton, gamepadID ebiten.GamepadID, inputType InputType) *Action {
-	return &Action{inputType: inputType, buttonType: GAMEPAD_BUTTON, gamepadButton: gamepadButton, gamepadID: gamepadID}
-}
-
-func (a *Action) Test() bool {
-	res := false
-
-	if a.buttonType == KEY_BUTTON {
-		if a.inputType == PRESSED {
-			res = ebiten.IsKeyPressed(a.keyButton)
-		}
-	} else if a.buttonType == MOUSE_BUTTON {
-		if a.inputType == PRESSED {
-			res = ebiten.IsMouseButtonPressed(a.mouseButton)
-		}
-	}
-	return res
-}
-
-
 
 // class THOR_API Action
 // {
@@ -164,6 +117,10 @@ func (a *Action) Test() bool {
 // /// thor::Action shiftX = shift && x;
 // /// @endcode
 // Action THOR_API				operator&& (const Action& lhs, const Action& rhs);
+func (a *Action) And(b *Action) *Action {
+	return &Action{}
+}
+
 
 // /// @relates Action
 // /// @brief NOT operator of an action: The resulting action is in effect if @a action is not active.
@@ -176,6 +133,15 @@ func (a *Action) Test() bool {
 // /// thor::Action onlyX = !shift && x;
 // /// @endcode
 // Action THOR_API				operator! (const Action& action);
+
+func (a *Action) Not() *Action {
+	return &Action{}
+}
+
+func (a *Action) Or(b *Action) *Action {
+	return &Action{}
+}
+
 
 // /// @relates Action
 // /// @brief Creates a custom action that operates on events

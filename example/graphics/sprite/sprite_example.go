@@ -5,7 +5,7 @@ import (
 
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/resources"
+	"github.com/LuigiVanacore/ebiten_extended/example/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -23,20 +23,16 @@ type Game struct {
 func NewGame() *Game {
 	ebiten_extended.ResourceManager().AddImage(AircraftID, resources.Aircraft)
 
-	sprite := ebiten_extended.NewSprite("Aircraft_1", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
-	sprite.SetPosition(math2D.NewVector2D(0, 0))
+	sprite := ebiten_extended.NewSprite("Aircraft_1", ebiten_extended.ResourceManager().GetImage(AircraftID), 0, true)
+	sprite.SetPosition(math2D.NewVector2D(50, 50))
 
-	sprite2 := ebiten_extended.NewSprite("Aircraft_2", ebiten_extended.ResourceManager().GetImage(AircraftID), true)
-	sprite2.SetPosition(math2D.NewVector2D(50, 100))
+	sprite2 := ebiten_extended.NewSprite("Aircraft_2", ebiten_extended.ResourceManager().GetImage(AircraftID), 0, true)
+	sprite2.SetPosition(math2D.NewVector2D(100, 100))
 
 	sprite.AddChild(sprite2)
 
-	gameLayer := ebiten_extended.NewLayer(2, 2, "GameLayer")
-	gameLayer.AddNode(sprite)
-
-	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
-	//ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(sprite)
-	ebiten_extended.GameManager().World().AddLayer(gameLayer)
+ 
+	ebiten_extended.GameManager().World().AddNode(sprite)
 	ebiten_extended.GameManager().SetIsDebug(false)
 	return &Game{sprite: sprite}
 }

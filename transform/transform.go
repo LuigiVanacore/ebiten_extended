@@ -52,8 +52,8 @@ func (t *Transform) Rotate(rotation int) {
 	t.rotation += rotation
 }
 
-func (t *Transform) Translate(x, y float64) {
-	t.position.Translate(x, y)
+func (t *Transform) Translate(vec math2D.Vector2D) {
+	t.position.Translate(vec.X(), vec.Y())
 }
 
 // func (t *Transform) UpdateGeoM(geom ebiten.GeoM) ebiten.GeoM {
@@ -65,7 +65,7 @@ func (t *Transform) Translate(x, y float64) {
 
 func (t *Transform) Concat(transform Transform) {
 	position := transform.GetPosition()
-	t.Translate(position.X(), position.Y())
+	t.Translate(position)
 	rotation := transform.GetRotation()
 	t.Rotate(rotation + t.rotation)
 }

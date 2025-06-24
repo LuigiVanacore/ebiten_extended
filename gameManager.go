@@ -2,8 +2,6 @@ package ebiten_extended
 
 import (
 	"fmt"
-
-	"github.com/LuigiVanacore/ebiten_extended/input"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -28,6 +26,7 @@ type gameManager struct {
 	isRunning bool
 	debug Debug
 	world *World
+	layers *Layers
 }
 
 func newGameManager() *gameManager {
@@ -63,7 +62,7 @@ func (g *gameManager) Update() {
 
 	if g.isRunning {
 
-		input.InputManager().Update()
+		InputManager().Update()
 		g.world.Update()
 	}
 
@@ -72,5 +71,6 @@ func (g *gameManager) Update() {
 
 
 func (g *gameManager) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
+	op.GeoM.Reset()
 	g.world.Draw(target, op)
 }

@@ -12,11 +12,10 @@ func SceneManager() *sceneManager {
 
 type sceneManager struct {
 	nextIdVal uint64
-	rootScene *Node
 }
 
 func newSceneManager() *sceneManager {
-	sceneManager := &sceneManager{rootScene: &Node{id: 0, name: "root", parent: nil}}
+	sceneManager := &sceneManager{}
 	sceneManager.incrementNextIdVal()
 	return sceneManager
 }

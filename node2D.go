@@ -32,6 +32,10 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 	return rootTransform
 }
 
+func (n *Node2D) AddChild(child SceneNode) {
+	n.Node.AddChild(child)
+}
+
 func (b *Node2D) GetWorldPosition() math2D.Vector2D {
 	worldTransform := b.GetWorldTransform()
 	return worldTransform.GetPosition()

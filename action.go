@@ -2,6 +2,7 @@ package ebiten_extended
 
 import "github.com/hajimehoshi/ebiten/v2"
 
+
 const (
 	REAL_TIME = iota
 	PRESSED

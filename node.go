@@ -26,7 +26,6 @@ func (n *Node) SetName(name string) {
 
 func (s *Node) AddChild(child SceneNode) {
 	child.AttachParent(s)
-
 	s.children = append(s.children, child)
 }
 

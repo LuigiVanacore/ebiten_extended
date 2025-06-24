@@ -2,14 +2,11 @@ package ebiten_extended
 
 import (
 	"image/color"
-	"log"
 
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/opentype"
 )
 
 
@@ -43,25 +40,25 @@ func newTextMessage(message string, position math2D.Vector2D, color color.Color)
 
 func InitTextManager()  {
 	textManager_instance = &textManager{ defaultFontSize: 24, defualtFontDPI: 72, textMessageList:  make([]*textMessage, 0)}
-	textManager_instance.loadDefaultFont()
+	// textManager_instance.loadDefaultFont()
 }
 
-func (t *textManager) loadDefaultFont() {
-		tt, err := opentype.Parse(resources.DefaultFont)
-		if err != nil {
-			log.Fatal(err)
-		}
+// func (t *textManager) loadDefaultFont() {
+// 		tt, err := opentype.Parse(resources.DefaultFont)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
 	
-		gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-			Size:   float64(t.defaultFontSize) ,
-			DPI:    float64(t.defualtFontDPI),
-			Hinting: font.HintingFull,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-		t.defaultFont = gamefont
-}
+// 		gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
+// 			Size:   float64(t.defaultFontSize) ,
+// 			DPI:    float64(t.defualtFontDPI),
+// 			Hinting: font.HintingFull,
+// 		})
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		t.defaultFont = gamefont
+// }
 
 func (t *textManager) WriteText(message string, position math2D.Vector2D, color color.Color) {
 	t.textMessageList = append(t.textMessageList, newTextMessage(message, position, color))
