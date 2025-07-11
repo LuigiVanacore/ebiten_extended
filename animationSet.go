@@ -27,6 +27,13 @@ func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCo
 	return animationSet
 }
 
+func (a *AnimationSet) GetTexture() *ebiten.Image {
+	if len(a.spriteSheet) == 0  {
+		return nil
+	}
+	return a.spriteSheet[a.currentFrame]
+}
+
 func (a *AnimationSet) Update() {
 
 	if a.IsEnded() && !a.isLooped {

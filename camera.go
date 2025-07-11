@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -14,6 +15,7 @@ type Camera struct {
 	height    uint
 	zoom 	float64
 	surface   *ebiten.Image
+	node_to_follow transform.Transformable
 }
 
 
@@ -59,8 +61,8 @@ func (c *Camera) Resize(w, h uint) *Camera {
 }
 
 
-func (c *Camera) Deallocate() {
-	c.surface.Deallocate()
+func (c *Camera) Clear() {
+	c.surface.Clear()
 }
 
 func (c *Camera) Fill(color color.Color) {
@@ -92,8 +94,23 @@ func (c *Camera) GetRelativeSkew(ops *ebiten.DrawImageOptions, skewX, skewY floa
 	return ops
 }
 
+func (c *Camera) SetTransformToFollow(transform transform.Transformable) {
+	if transform == nil {
+		c.node_to_follow = nil
+		return
+	}
+	c.node_to_follow = transform
+}
+
 func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 	c.surface.DrawImage(image, ops)
+}
+
+func (c *Camera) Update() {
+	if c.node_to_follow != nil {
+		transform := c.node_to_follow.GetTransform()
+		c.SetPosition(transform.GetPosition())
+	}
 }
 
 func (c *Camera) Draw(screen *ebiten.Image) {

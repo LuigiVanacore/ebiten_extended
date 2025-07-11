@@ -53,6 +53,14 @@ func (a *AnimationPlayer) SetLayer(layer int) {
 	a.layer = layer
 }
 
+func (a *AnimationPlayer) GetTexture() *ebiten.Image {
+	animationSet := a.animationMap[a.currentAnimationId]
+	if animationSet != nil {
+		return animationSet.GetTexture()
+	}
+	return nil
+}
+
 func (a *AnimationPlayer) AddAnimation(animationSet *AnimationSet, animationId string) {
 	a.animationMap[animationId] = animationSet
 }

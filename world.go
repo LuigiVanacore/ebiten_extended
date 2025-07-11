@@ -15,7 +15,7 @@ type World struct {
 
 func NewWorld() *World {
 	w, h := ebiten.WindowSize()
-	return &World{ rootScene: NewNode("root_world"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers(10)}
+	return &World{ rootScene: NewNode("root_world"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers()}
 }
 
 func (world *World) Camera() *Camera {
@@ -64,6 +64,7 @@ func (world *World) AddNode( node SceneNode) {
 
 func (world *World) Update() {
 	world.updateNode(world.rootScene)
+	world.camera.Update()
 }
 
 func (world *World) updateNode(node SceneNode) {
@@ -82,9 +83,27 @@ func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	world.camera.surface.Clear()
 	world.DrawNode(world.rootScene, target, op)
 	world.layers.DrawLayers()
-	//world.camera.Draw(target)
+	world.camera.Draw(target)
 
 }
+
+// func (world *World) DrawNode(node SceneNode,target *ebiten.Image, op *ebiten.DrawImageOptions) {
+// 	if node == nil  {
+// 		return
+// 	}
+// 	// Draw to screen and zoom
+// 	parent_op := *op
+// 	if entity, ok := node.(transform.Transformable); ok {
+// 	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
+
+// 		if entity, ok := node.(Drawable); ok {
+// 			world.layers.AddNodeToLayer(entity.GetLayer(), entity, target, parent_op)
+// 		}
+// 	}
+// 	for _, child := range node.GetChildren() {
+// 		world.DrawNode(child, target, &parent_op)
+// 	}
+// }
 
 func (world *World) DrawNode(node SceneNode,target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	if node == nil  {
@@ -96,7 +115,10 @@ func (world *World) DrawNode(node SceneNode,target *ebiten.Image, op *ebiten.Dra
 	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
 
 		if entity, ok := node.(Drawable); ok {
-			world.layers.AddNodeToLayer(entity.GetLayer(), entity, target, parent_op)
+			f := func() {
+				world.camera.DrawImage(entity.GetTexture(), world.camera.GetRelativeTranslation(&parent_op, 0, 0))
+			}
+			world.layers.AddNodeToLayerF(entity.GetLayer(), entity, f)
 		}
 	}
 	for _, child := range node.GetChildren() {

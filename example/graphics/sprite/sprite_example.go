@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/example/resources"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -41,6 +42,10 @@ func (g *Game) Update() error {
 	ebiten_extended.GameManager().Update()
 	g.rotation = g.rotation + 1%360
 	g.sprite.SetRotation(g.rotation)
+	fmt.Println("Sprite rotation:", g.rotation)
+	transform := g.sprite.GetTransform()
+	position := transform.GetPosition()
+	fmt.Println("Sprite position:", position.String())
 	return nil
 }
 

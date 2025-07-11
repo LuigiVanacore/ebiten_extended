@@ -36,9 +36,8 @@ func (t *Timer) Start() *Timer {
 }
 
 func (t *Timer) IsEnded() bool {
-	if t.GetElapsedTime() >= t.duration {
-		t.Restart()
-		return true
+	if !t.looped {
+		return t.GetElapsedTime() >= t.duration
 	}
 	return false
 }
