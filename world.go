@@ -8,14 +8,15 @@ import (
 )
 
 type World struct {
-	rootScene *Node
+	root *Node
+	uiRoot *Node
 	camera    *Camera
 	layers  *Layers
 }
 
 func NewWorld() *World {
 	w, h := ebiten.WindowSize()
-	return &World{ rootScene: NewNode("root_world"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers()}
+	return &World{ root: NewNode("root_world"), uiRoot: NewNode("ui_root"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers()}
 }
 
 func (world *World) Camera() *Camera {
@@ -59,11 +60,16 @@ func (world *World) Camera() *Camera {
 // }
 
 func (world *World) AddNode( node SceneNode) {
-	world.rootScene.AddChild(node)
+	world.root.AddChild(node)
+}
+
+func (world *World) AddUINode(node SceneNode) {
+	world.uiRoot.AddChild(node)
 }
 
 func (world *World) Update() {
-	world.updateNode(world.rootScene)
+	world.updateNode(world.root)
+	world.updateNode(world.uiRoot)
 	world.camera.Update()
 }
 
@@ -81,10 +87,10 @@ func (world *World) updateNode(node SceneNode) {
 
 func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	world.camera.surface.Clear()
-	world.DrawNode(world.rootScene, target, op)
+	world.DrawNode(world.root, target, op)
 	world.layers.DrawLayers()
 	world.camera.Draw(target)
-
+	world.DrawUINode(world.uiRoot, target, op)
 }
 
 // func (world *World) DrawNode(node SceneNode,target *ebiten.Image, op *ebiten.DrawImageOptions) {
@@ -115,14 +121,32 @@ func (world *World) DrawNode(node SceneNode,target *ebiten.Image, op *ebiten.Dra
 	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
 
 		if entity, ok := node.(Drawable); ok {
-			f := func() {
-				world.camera.DrawImage(entity.GetTexture(), world.camera.GetRelativeTranslation(&parent_op, 0, 0))
+			f := func() { 
+				entity.Draw(world.camera.surface, world.camera.GetRelativeTranslation(&parent_op, 0, 0))
 			}
 			world.layers.AddNodeToLayerF(entity.GetLayer(), entity, f)
 		}
 	}
 	for _, child := range node.GetChildren() {
 		world.DrawNode(child, target, &parent_op)
+	}
+}
+
+func (world *World) DrawUINode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
+	if node == nil  {
+		return
+	}
+	// Draw to screen and zoom
+	parent_op := *op
+	if entity, ok := node.(transform.Transformable); ok {
+	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
+
+		if entity, ok := node.(Drawable); ok {
+			entity.Draw(target, &parent_op)
+		}
+	}
+	for _, child := range node.GetChildren() {
+		world.DrawUINode(child, target, &parent_op)
 	}
 }
 

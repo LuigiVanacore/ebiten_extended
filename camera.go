@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -100,7 +101,17 @@ func (c *Camera) SetTransformToFollow(transform transform.Transformable) {
 		return
 	}
 	c.node_to_follow = transform
+	transform_node := transform.GetTransform()
+	c.SetPosition(c.CenterPoint(transform_node.GetPosition()))
 }
+
+func (c *Camera) CenterPoint(point math2D.Vector2D) math2D.Vector2D {
+	return math2D.NewVector2D(
+		point.X() - float64(c.width)/2,
+		point.Y() - float64(c.height)/2,
+	)
+}
+
 
 func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 	c.surface.DrawImage(image, ops)
@@ -109,7 +120,7 @@ func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 func (c *Camera) Update() {
 	if c.node_to_follow != nil {
 		transform := c.node_to_follow.GetTransform()
-		c.SetPosition(transform.GetPosition())
+		c.SetPosition(c.CenterPoint(transform.GetPosition()))
 	}
 }
 
@@ -123,6 +134,8 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 	op.GeoM.Scale(c.zoom, c.zoom)
 	op.GeoM.Rotate(float64(c.GetRotation()))
 	op.GeoM.Translate(cx*c.zoom, cy*c.zoom)
+
+	
 
 	screen.DrawImage(c.surface, op)
 }
