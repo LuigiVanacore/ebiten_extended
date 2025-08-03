@@ -20,6 +20,8 @@ func (c *CollisionRect) IsColliding( collisionShape CollisionShape) bool {
 	
 	case *CollisionCircle:
 		return CircleRectangleCollide(other.circle, c.rectangle )
+	case *CollisionRect:
+		return RectanglesCollide(c.rectangle, other.rectangle)
 	default:
 		return false
 	}

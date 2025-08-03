@@ -8,3 +8,4 @@ type CollisionShape interface {
 	IsColliding(collisionShape CollisionShape) bool
 	UpdateTransform(transform transform.Transform)
 }
+ 
