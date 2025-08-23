@@ -61,15 +61,15 @@ func (d *DrawnShape) GetLayer() int {
 func (d *DrawnShape) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	switch d.shapeType {
 		case CiRCLE:
-			vector.DrawFilledCircle(target, float32(d.GetPosition().X()), 
-											float32(d.GetPosition().Y()),
+			vector.DrawFilledCircle(target, float32(op.GeoM.Element(0, 2)), 
+											 float32(op.GeoM.Element(1, 2)),
 											 d.radius, 
 											 d.color, 
 											 d.isAntialiasActive)
 		
 		case RECT:
-			vector.DrawFilledRect(target, float32(d.GetPosition().X()),
-				float32(d.GetPosition().Y()),
+			vector.DrawFilledRect(target, float32(op.GeoM.Element(0, 2) - d.GetPosition().X() - d.size.X()/2), 
+											 float32(op.GeoM.Element(1, 2) - d.GetPosition().Y() - d.size.Y()/2),
 				float32(d.size.X()),
 				float32(d.size.Y()),
 				d.color,

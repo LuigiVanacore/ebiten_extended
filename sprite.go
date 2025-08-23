@@ -52,7 +52,7 @@ func (s *Sprite) SetLayer(layerIndex int) {
 }
 
 func (s *Sprite) SetPivotToCenter() {
-	s.Transform.SetPivot(s.GetTextureRect().GetCenter())
+	s.Transform.SetPivot(s.textureRect.GetCenter())
 }
 
 func (s *Sprite) setPositionToPivot(op *ebiten.DrawImageOptions) {
