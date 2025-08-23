@@ -1,0 +1,48 @@
+site_name: Ebiten-Extended
+site_description: Documentazione del progetto in Go
+site_url: https://LuigiVanacore.github.io/ebiten_extended/
+repo_name: LuigiVanacore/ebiten_extended
+repo_url: github.com/LuigiVanacore/ebiten_extended
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-6
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Introduzione: index.md
+  - Getting Started: getting-started.md
+  - Guide:
+    - Configurazione: guides/configuration.md
+  - API Reference: api.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: github.com/LuigiVanacore/ebiten_extended

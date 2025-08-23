@@ -1,0 +1,33 @@
+name: Docs Site
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs + Material
+        run: |
+          pip install mkdocs mkdocs-material pymdown-extensions
+
+      - name: Build
+        working-directory: docs-site
+        run: mkdocs build --strict
+
+      - name: Deploy to GitHub Pages
+        working-directory: docs-site
+        run: mkdocs gh-deploy --force
