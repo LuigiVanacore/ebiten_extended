@@ -55,11 +55,23 @@ func (a *AnimationPlayer) DeleteAnimation(animationId string) {
 }
 
 func (a *AnimationPlayer) Update() {
-	if a.isPlaying {
-		a.animationMap[a.currentAnimationId].Update()
+	if !a.isPlaying || a.currentAnimationId == "" {
+		return
 	}
+	set, ok := a.animationMap[a.currentAnimationId]
+	if !ok || set == nil {
+		return
+	}
+	set.Update()
 }
 
 func (a *AnimationPlayer) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-		a.animationMap[a.currentAnimationId].Draw(target, op)
+	if a.currentAnimationId == "" {
+		return
+	}
+	set, ok := a.animationMap[a.currentAnimationId]
+	if !ok || set == nil {
+		return
+	}
+	set.Draw(target, op)
 }

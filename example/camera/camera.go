@@ -17,6 +17,7 @@ import (
 // Organization is bad, but it's a messy example to test camera functions
 var (
 	cam    *camera.Camera
+	engine *camera.Engine
 	tiles  *ebiten.Image
 	player *ebiten.Image
 
@@ -68,6 +69,7 @@ type Game struct{}
 
 // Update updates the Game
 func (g *Game) Update() error {
+	engine.Update()
 	PlayerRot += math.Pi / 200
 
 	VelX = 0
@@ -106,7 +108,7 @@ func (g *Game) Update() error {
 		VelY += Gravity
 
 		// Cursor tile position
-		mx, my = cam.GetCursorCoords()
+		mx, my = cam.GetCursorCoords(engine.Input())
 		my = float64((int(my)) / int(TileSize))
 		mx = float64((int(mx)) / int(TileSize))
 
@@ -145,9 +147,9 @@ func (g *Game) Update() error {
 		} else {
 			// Pan when pressed for long enough
 			if time.Now().Sub(MouseDownAt) > MousePanAfter && !CamFollowPlayer {
-				cam.Translate(
-					(float64(LastMouseX)-float64(cx))*1/cam.GetZoom(),
-					(float64(LastMouseY)-float64(cy))*1/cam.GetZoom())
+				dx := (float64(LastMouseX) - float64(cx)) * 1 / cam.GetZoom()
+				dy := (float64(LastMouseY) - float64(cy)) * 1 / cam.GetZoom()
+				cam.SetPosition(cam.GetPosition().X()+dx, cam.GetPosition().Y()+dy)
 			}
 		}
 
@@ -222,7 +224,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw to screen and zoom
 	cam.Draw(screen)
 
-
 }
 
 // Layout sets window size
@@ -244,6 +245,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	cam = camera.NewCamera(uint(w), uint(h))
+	engine = camera.NewEngine()
 
 	game := &Game{}
 

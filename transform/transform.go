@@ -70,9 +70,9 @@ func (t *Transform) UpdateGeoM(geom ebiten.GeoM) ebiten.GeoM {
 	return geom
 }
 
-func (t *Transform) Concat(transform Transform) {
-	position := transform.GetPosition()
-	t.Translate(position.X(), position.Y())
-	rotation := transform.GetRotation()
-	t.Rotate(rotation + t.rotation)
+// Concat applies other's position and rotation after t (result = t * other).
+// Scale/geoM from other are not applied.
+func (t *Transform) Concat(other Transform) {
+	t.Translate(other.GetPosition().X(), other.GetPosition().Y())
+	t.Rotate(other.GetRotation())
 }

@@ -14,24 +14,26 @@ import (
 )
 
 const (
-	screenWidth  = 640	
-	screenHeight = 480
+	screenWidth     = 640
+	screenHeight    = 480
 	defaultFontSize = 24
-	defualtFontDPI = 72
+	defaultFontDPI  = 72
 )
 
 type Game struct {
 	counter        int
 	textLabel *ebiten_extended.LabelText
+	engine    *ebiten_extended.Engine
 }
 
 
 
 func NewGame() *Game {
+	engine := ebiten_extended.NewEngine()
 	gameFont := loadDefaultFont()
 	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,0), gameFont, color.White)
-	ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(textLabel)
-	return &Game{ textLabel: textLabel}
+	engine.World().AddNodeToDefaultLayer(textLabel)
+	return &Game{ textLabel: textLabel, engine: engine}
 }
 
 func (g *Game) Update() error {
@@ -41,12 +43,12 @@ func (g *Game) Update() error {
 	message := "test label text " + strconv.Itoa(g.counter)
 	g.textLabel.SetMessage(message)
 	g.counter++
-	ebiten_extended.GameManager().Update()
+	g.engine.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebiten_extended.GameManager().Draw(screen, &ebiten.DrawImageOptions{})
+	g.engine.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

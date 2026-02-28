@@ -17,15 +17,17 @@ const (
 type Game struct {
 	sprite   *ebiten_extended.SpriteNode
 	rotation int
+	engine   *ebiten_extended.Engine
 }
 
 func NewGame() *Game {
-	ebiten_extended.ResourceManager().LoadImage(AircraftID, resources.Aircraft)
+	engine := ebiten_extended.NewEngine()
+	engine.Resources().AddImage(AircraftID, resources.Aircraft)
 
-	sprite := ebiten_extended.NewSprite("Aircraft_1", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite := ebiten_extended.NewSprite("Aircraft_1", engine.Resources().GetImage(AircraftID), true)
 	sprite.SetPosition(0, 0)
 
-	sprite2 := ebiten_extended.NewSprite("Aircraft_2", ebiten_extended.ResourceManager().GetTexture(AircraftID), true)
+	sprite2 := ebiten_extended.NewSprite("Aircraft_2", engine.Resources().GetImage(AircraftID), true)
 	sprite2.SetPosition(50, 50)
 
 	sprite.AddChildren(sprite2)
@@ -33,22 +35,20 @@ func NewGame() *Game {
 	gameLayer := ebiten_extended.NewLayer(2, 2, "GameLayer")
 	gameLayer.AddNode(sprite)
 
-	//ebiten_extended.SceneManager().AddEntityToDefaultLayer(sprite, "SpriteNode")
-	//ebiten_extended.SceneManager().AddSceneNodeToDefaultLayer(sprite)
-	ebiten_extended.GameManager().World().AddLayer(gameLayer)
-	ebiten_extended.GameManager().SetIsDebug(true)
-	return &Game{sprite: sprite}
+	engine.World().AddLayer(gameLayer)
+	engine.SetIsDebug(true)
+	return &Game{sprite: sprite, engine: engine}
 }
 
 func (g *Game) Update() error {
-	ebiten_extended.GameManager().Update()
+	g.engine.Update()
 	g.rotation = g.rotation + 1%360
 	g.sprite.SetRotation(g.rotation)
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebiten_extended.GameManager().Draw(screen, &ebiten.DrawImageOptions{})
+	g.engine.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

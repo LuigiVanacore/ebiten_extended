@@ -5,25 +5,33 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// OnCollisionFunc is called when this collider overlaps another. Optional; may be nil.
+type OnCollisionFunc func(other *Collider)
+
 type Collider struct {
 	ebiten_extended.Node2D
 	collisionShape          CollisionShape
 	mask                    CollisionMask
-	isWorldCordinateUpdated bool
+	isWorldCoordinateUpdated bool
+	onCollision             OnCollisionFunc
+}
+
+// SetOnCollision sets the callback invoked when this collider hits another.
+func (c *Collider) SetOnCollision(f OnCollisionFunc) {
+	c.onCollision = f
 }
 
 func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
-	c := &Collider{mask: mask}
-	CollisionManager().AddCollider(c)
+	c := &Collider{collisionShape: shape, mask: mask}
 	return c
 }
 
-func (c *Collider) IsWorldCordinateUpdated() bool {
-	return c.isWorldCordinateUpdated
+func (c *Collider) IsWorldCoordinateUpdated() bool {
+	return c.isWorldCoordinateUpdated
 }
 
-func (c *Collider) SetWorldCordinateUpdated(flag bool) {
-	c.isWorldCordinateUpdated = flag
+func (c *Collider) SetWorldCoordinateUpdated(flag bool) {
+	c.isWorldCoordinateUpdated = flag
 }
 
 func (c *Collider) GetCollisionMask() CollisionMask {
@@ -39,20 +47,17 @@ func (c *Collider) GetShape() CollisionShape {
 }
 
 func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	//if c.debug {
-	//vector.DrawFilledCircle(target, float32(c.Transform.position.X), float32(c.Transform.position.Y), 15, color.White, false)
-	//m := c.transform.GetGeoM()
-	/* if shape, ok := c.shape.(*math2D.Circle); ok {
-		vector.StrokeCircle(target, float32(c.transform.GetPosition().X()), float32(c.transform.GetPosition().Y()), float32(shape.GetRadius()), 2, color.White, false)
-	} */
-	//}
+	// Optional: draw collision shape outline for debugging
 }
 
 func (c *Collider) CanCollideWith(collider *Collider) bool {
-	return c.mask.IsCollidible(collider.GetCollisionMask())
+	return c.mask.IsCollidable(collider.GetCollisionMask())
 }
 
 func (c *Collider) IsColliding(collider *Collider) bool {
+	if c.collisionShape == nil || collider.collisionShape == nil {
+		return false
+	}
 	leftWorldTransf := c.GetWorldTransform()
 	rightWorldTransf := collider.GetWorldTransform()
 	c.collisionShape.UpdateTransform(leftWorldTransf)

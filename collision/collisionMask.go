@@ -18,13 +18,12 @@ type CollisionMask struct {
 func NewCollisionMask(identity, mask utils.ByteSet) CollisionMask {
 	return CollisionMask{ identity: identity, mask: mask }
 }
-// ShouldCollide returns true if the shape should
-// collide another one accodring to their tags.
-func (t CollisionMask) IsCollidible(other CollisionMask) bool {
+// IsCollidable returns true if this shape should collide with the other according to their masks.
+func (t CollisionMask) IsCollidable(other CollisionMask) bool {
 	return t.mask.Has(other.GetIdentity())
 }
 
-// GetIdentity returns the valye of the shape identity.
+// GetIdentity returns the value of the shape identity.
 func (t CollisionMask) GetIdentity() utils.ByteSet {
 	return t.identity
 }

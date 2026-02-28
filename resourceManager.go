@@ -12,39 +12,33 @@ import (
 
 
 
-var instance *resourceManager
-
-func ResourceManager() *resourceManager {
-	if instance == nil {
-		instance = newResourceManager()
-	}
-	return instance
-}
-
-type resourceManager struct {
+type ResourceManager struct {
 	images map[string]*ebiten.Image
 	fonts  []*font.Face
 }
 
-func newResourceManager() *resourceManager {
-	return &resourceManager{
+func NewResourceManager() *ResourceManager {
+	return &ResourceManager{
 		images: make(map[string]*ebiten.Image),
 	}
 }
 
-func (r *resourceManager) GetImages() map[string]*ebiten.Image {
+func (r *ResourceManager) GetImages() map[string]*ebiten.Image {
 	return r.images
 }
 
-func (r *resourceManager) GetImage(textureId string) *ebiten.Image {
+func (r *ResourceManager) GetImage(textureId string) *ebiten.Image {
 	return r.images[textureId]
 }
 
-func (r *resourceManager) GetFont(fontId uint) *font.Face {
+func (r *ResourceManager) GetFont(fontId uint) *font.Face {
+	if fontId >= uint(len(r.fonts)) {
+		return nil
+	}
 	return r.fonts[fontId]
 }
 
-func (r *resourceManager) AddImage(textureId string, texture []byte) {
+func (r *ResourceManager) AddImage(textureId string, texture []byte) {
 	img, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {
 		log.Fatal(err)
@@ -53,19 +47,21 @@ func (r *resourceManager) AddImage(textureId string, texture []byte) {
 	r.images[textureId] = ebitenImage
 }
 
-func (r *resourceManager) LoadFont(f []byte, fontSize float64, dpi float64) {
+// LoadFont loads a font from bytes and adds it to the manager.
+// Returns the font index to use with GetFont.
+func (r *ResourceManager) LoadFont(f []byte, fontSize float64, dpi float64) (uint, error) {
 	tt, err := opentype.Parse(f)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
-
 	gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
 		Size:    fontSize,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 	r.fonts = append(r.fonts, &gamefont)
+	return uint(len(r.fonts) - 1), nil
 }

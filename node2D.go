@@ -43,14 +43,20 @@ func (s *Node2D) SetScale(x, y float64) {
 }
 
 
+// GetWorldTransform returns the transform from root to this node (root * ... * parent * self).
 func (b *Node2D) GetWorldTransform() transform.Transform {
-	rootTransform := transform.Transform{}
-	for node := b.GetParent(); node != nil; node = node.GetParent() {
+	var chain []transform.Transform
+	for node := SceneNode(b); node != nil; node = node.GetParent() {
 		if entity, ok := node.(transform.Transformable); ok {
-			rootTransform.Concat(entity.GetTransform())
+			chain = append(chain, entity.GetTransform())
 		}
 	}
-	return rootTransform
+	// Apply from root (last) to self (first)
+	world := transform.Transform{}
+	for i := len(chain) - 1; i >= 0; i-- {
+		world.Concat(chain[i])
+	}
+	return world
 }
 
 func (b *Node2D) GetWorldPosition() math2D.Vector2D {

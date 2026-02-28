@@ -35,12 +35,10 @@ func (t *Timer) Start() *Timer {
 	return t
 }
 
+// IsEnded returns true if the timer duration has elapsed. It does not modify state.
+// Call Restart() explicitly if you want to reset the timer.
 func (t *Timer) IsEnded() bool {
-	if t.GetElapsedTime() >= t.duration {
-		t.Restart()
-		return true
-	}
-	return false
+	return t.GetElapsedTime() >= t.duration
 }
 
 func (t *Timer) Restart() time.Duration {

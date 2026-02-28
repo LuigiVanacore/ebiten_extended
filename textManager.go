@@ -17,16 +17,15 @@ var textManager_instance *textManager
 
 func TextManager() *textManager {
 	if textManager_instance == nil {
-		panic("TextManager is not initialized correctly")
+		InitTextManager()
 	}
-
 	return textManager_instance
 }
 
 type textManager struct {
 	defaultFont font.Face
 	defaultFontSize uint
-	defualtFontDPI uint
+	defaultFontDPI  uint
 	textMessageList []*textMessage
 
 }
@@ -42,7 +41,7 @@ func newTextMessage(message string, position math2D.Vector2D, color color.Color)
 }
 
 func InitTextManager()  {
-	textManager_instance = &textManager{ defaultFontSize: 24, defualtFontDPI: 72, textMessageList:  make([]*textMessage, 0)}
+	textManager_instance = &textManager{defaultFontSize: 24, defaultFontDPI: 72, textMessageList: make([]*textMessage, 0)}
 	textManager_instance.loadDefaultFont()
 }
 
@@ -53,8 +52,8 @@ func (t *textManager) loadDefaultFont() {
 		}
 	
 		gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-			Size:   float64(t.defaultFontSize) ,
-			DPI:    float64(t.defualtFontDPI),
+			Size:    float64(t.defaultFontSize),
+			DPI:     float64(t.defaultFontDPI),
 			Hinting: font.HintingFull,
 		})
 		if err != nil {

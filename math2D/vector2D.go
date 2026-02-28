@@ -91,7 +91,7 @@ func (v Vector2D) Negate() Vector2D {
 	return Vector2D{-v.x, -v.y}
 }
 
-func (v *Vector2D) MultiplayVector(v1 Vector2D) Vector2D {
+func (v *Vector2D) MultiplyVector(v1 Vector2D) Vector2D {
 	return Vector2D{v1.x * v.x, v1.y * v.y}
 }
 

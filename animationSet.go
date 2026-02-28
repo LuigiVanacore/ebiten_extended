@@ -50,8 +50,18 @@ func (a *AnimationSet) updateGeomToPivot(op *ebiten.DrawImageOptions) {
 }
 
 func (a *AnimationSet) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
+	if a.frameCount == 0 || len(a.spriteSheet) == 0 {
+		return
+	}
+	frame := a.currentFrame
+	if frame >= a.frameCount {
+		frame = a.frameCount - 1
+	}
+	if frame >= uint(len(a.spriteSheet)) {
+		return
+	}
 	a.updateGeomToPivot(op)
-	target.DrawImage(a.spriteSheet[a.currentFrame], op)
+	target.DrawImage(a.spriteSheet[frame], op)
 }
 
 func (a *AnimationSet) IsEnded() bool {

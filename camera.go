@@ -69,11 +69,18 @@ func (c *Camera) Fill(color color.Color) {
 
 
 
-func (c *Camera) GetRelativeTranslation(ops ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
+// ApplyRelativeTranslation applies camera-relative translation to op in place
+// (center of surface then offset by camera position). Use this to avoid allocations.
+func (c *Camera) ApplyRelativeTranslation(op *ebiten.DrawImageOptions, x, y float64) {
 	size := c.surface.Bounds().Size()
-	ops.GeoM.Translate(float64(size.X)/2, float64(size.Y)/2)
-	ops.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
-	return &ops
+	op.GeoM.Translate(float64(size.X)/2, float64(size.Y)/2)
+	op.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
+}
+
+// GetRelativeTranslation applies camera-relative translation to op in place and returns op.
+func (c *Camera) GetRelativeTranslation(op *ebiten.DrawImageOptions, x, y float64) *ebiten.DrawImageOptions {
+	c.ApplyRelativeTranslation(op, x, y)
+	return op
 }
 
 func (c *Camera) GetRelativeRotation(ops *ebiten.DrawImageOptions, rotation, originX, originY float64) *ebiten.DrawImageOptions {
@@ -133,7 +140,7 @@ func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
 	return x + c.GetPosition().X(), y + c.GetPosition().Y()
 }
 
-func (c *Camera) GetCursorCoords() (float64, float64) {
-	cursor_position := input.InputManager().GetCursorPos()
+func (c *Camera) GetCursorCoords(inputMgr *input.InputManager) (float64, float64) {
+	cursor_position := inputMgr.GetCursorPos()
 	return c.GetWorldCoords(cursor_position.X(), cursor_position.Y())
 }

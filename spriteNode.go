@@ -1,8 +1,6 @@
 package ebiten_extended
 
 import (
-	"fmt"
-
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -59,7 +57,6 @@ func (s *SpriteNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 }
 
 func (s *SpriteNode) DebugInfo() {
-	if GameManager().IsDebug() {
-		fmt.Printf("The position is x: %f y: %f, the rotation is %d \n", s.GetPosition().X(), s.GetPosition().Y(), s.GetRotation())
-	}
+	// DebugInfo logic has been decoupled from the global engine state.
+	// If you need debug, do it from the engine or inject a debug flag.
 }

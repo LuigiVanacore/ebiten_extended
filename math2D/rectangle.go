@@ -36,7 +36,7 @@ func (r *Rectangle) SetSize(size Vector2D) {
 }
 
 func (r Rectangle) GetCenter() Vector2D {
-	return NewVector2D(r.size.X()/2, r.size.X()/2)
+	return NewVector2D(r.position.X()+r.size.X()/2, r.position.Y()+r.size.Y()/2)
 }
 
 func (r Rectangle) Equal(rectangle Rectangle) bool {

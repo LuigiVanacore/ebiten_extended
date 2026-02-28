@@ -14,6 +14,7 @@ type World struct {
 	rootScene SceneNode
 	layers    []*Layer
 	camera    *Camera
+	postUpdate func() // called after updateNode; e.g. set to collision.CollisionManager().CheckCollision to avoid import cycle
 }
 
 func NewWorld() *World {
@@ -52,9 +53,29 @@ func (world *World) SetLayerPriority(layerId int, priority int) {
 	layer.SetPriority(priority)
 }
 
+// GetOrCreateDefaultLayer returns a layer with MinLayerID, creating it if needed.
+func (world *World) GetOrCreateDefaultLayer() *Layer {
+	for _, l := range world.layers {
+		if l.GetId() == MinLayerID {
+			return l
+		}
+	}
+	layer := NewLayer(MinLayerID, 0, "default")
+	world.AddLayer(layer)
+	return layer
+}
+
+// AddNodeToDefaultLayer adds the node to the default layer of the current world.
+func (world *World) AddNodeToDefaultLayer(node SceneNode) {
+	world.GetOrCreateDefaultLayer().AddNode(node)
+}
+
+// MinLayerID is the minimum valid layer id (0 and 1 are reserved).
+const MinLayerID = 2
+
 func (world *World) checkLayerId(layerID int) error {
-	if layerID < 2 {
-		return fmt.Errorf("Invalid Layer: the layer id is %d but must be >= 2 to be valid", layerID)
+	if layerID < MinLayerID {
+		return fmt.Errorf("invalid layer id %d: must be >= %d", layerID, MinLayerID)
 	}
 	return nil
 }
@@ -66,8 +87,16 @@ func (world *World) buildScene() {
 	world.rootScene.AddChildren(layer.GetRootScene())
 }
 
+// SetPostUpdate sets a callback run after each Update (e.g. collision.CollisionManager().CheckCollision).
+func (world *World) SetPostUpdate(f func()) {
+	world.postUpdate = f
+}
+
 func (world *World) Update() {
 	world.updateNode(world.rootScene)
+	if world.postUpdate != nil {
+		world.postUpdate()
+	}
 }
 
 func (world *World) updateNode(node SceneNode) {
@@ -89,22 +118,21 @@ func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 }
 
 func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	//playerOps := &ebiten.DrawImageOptions{}
-	//playerOps = cam.GetTranslation(playerOps, PlayerX, PlayerY)
-	//cam.DrawImage(player, playerOps)
-
-	// Draw to screen and zoom
 	if entity, ok := node.(transform.Transformable); ok {
 		op.GeoM = updateTransform(entity, op.GeoM)
 		transform := entity.GetTransform()
 		position := transform.GetPosition()
 
-		if entity, ok := node.(Drawable); ok {
-			entity.Draw(world.camera.GetSurface(), world.camera.GetRelativeTranslation(*op, position.X(), position.Y()))
+		if drawable, ok := node.(Drawable); ok {
+			childOp := *op
+			world.camera.ApplyRelativeTranslation(&childOp, position.X(), position.Y())
+			drawable.Draw(world.camera.GetSurface(), &childOp)
 		}
 	}
+	parentGeoM := op.GeoM
 	for _, child := range node.GetChildren() {
-		world.DrawNode(child,target, op)
+		op.GeoM = parentGeoM
+		world.DrawNode(child, target, op)
 	}
 }
 
