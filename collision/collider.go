@@ -2,27 +2,29 @@ package collision
 
 import (
 	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ebiten_extended/event"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// OnCollisionFunc is called when this collider overlaps another. Optional; may be nil.
-type OnCollisionFunc func(other *Collider)
-
 type Collider struct {
 	ebiten_extended.Node2D
-	collisionShape          CollisionShape
-	mask                    CollisionMask
+	collisionShape           CollisionShape
+	mask                     CollisionMask
 	isWorldCoordinateUpdated bool
-	onCollision             OnCollisionFunc
-}
 
-// SetOnCollision sets the callback invoked when this collider hits another.
-func (c *Collider) SetOnCollision(f OnCollisionFunc) {
-	c.onCollision = f
+	OnCollisionEnter *event.Event
+	OnCollisionStay  *event.Event
+	OnCollisionExit  *event.Event
 }
 
 func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
-	c := &Collider{collisionShape: shape, mask: mask}
+	c := &Collider{
+		collisionShape:   shape,
+		mask:             mask,
+		OnCollisionEnter: &event.Event{},
+		OnCollisionStay:  &event.Event{},
+		OnCollisionExit:  &event.Event{},
+	}
 	return c
 }
 

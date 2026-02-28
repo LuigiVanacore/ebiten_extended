@@ -9,17 +9,17 @@ type CollisionRect struct {
 	rectangle math2D.Rectangle
 }
 
-
-
 func (c *CollisionRect) UpdateTransform(transform transform.Transform) {
 	c.rectangle.SetPosition(transform.GetPosition())
 }
 
-func (c *CollisionRect) IsColliding( collisionShape CollisionShape) bool {
+func (c *CollisionRect) IsColliding(collisionShape CollisionShape) bool {
 	switch other := collisionShape.(type) {
-	
+
 	case *CollisionCircle:
-		return CircleRectangleCollide(other.circle, c.rectangle )
+		return CircleRectangleCollide(other.circle, c.rectangle)
+	case *CollisionRect:
+		return RectanglesCollide(other.rectangle, c.rectangle)
 	default:
 		return false
 	}
