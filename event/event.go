@@ -1,6 +1,5 @@
 package event
 
-
 // Void is a helper type that is recommended to be used instead of `struct{}`.
 // You may want to use Void as the event type parameter when there is no
 // useful data to be transmitted.
@@ -15,13 +14,17 @@ type Void struct{}
 // If you need more than 1 argument in your callback, use tuple helper package.
 // For example, a tuple.Value3[int, float, string] can be used to pass
 // three arguments to your callback.
-type Event struct {
-	handlers []eventHandler
+type Event[T any] struct {
+	handlers []eventHandler[T]
 }
 
 // Reset disconnects all connected event listeners (slot functions).
 // After this operation the Event object in its zero-like state, ready to be re-used.
-func (e *Event) Reset() {
+func (e *Event[T]) Reset() {
+	// Clear the array to prevent GC leaks before resetting the slice
+	for i := 0; i < len(e.handlers); i++ {
+		e.handlers[i] = eventHandler[T]{}
+	}
 	e.handlers = e.handlers[:0]
 }
 
@@ -31,7 +34,7 @@ func (e *Event) Reset() {
 // may have rare [Emits] and frequent [Connect].
 //
 // Don't call this method unless you're certain that you need it.
-func (e *Event) Flush() {
+func (e *Event[T]) Flush() {
 	// This method is slightly faster than the self-append alternative.
 	length := 0
 	for _, h := range e.handlers {
@@ -41,6 +44,12 @@ func (e *Event) Flush() {
 		e.handlers[length] = h
 		length++
 	}
+
+	// Prevent memory leaks for disposed callbacks
+	for i := length; i < len(e.handlers); i++ {
+		e.handlers[i] = eventHandler[T]{}
+	}
+
 	e.handlers = e.handlers[:length]
 }
 
@@ -50,8 +59,8 @@ func (e *Event) Flush() {
 // When e does Emit(), e2 would receive it and Emit() as well.
 //
 // The conn argument is used for the underlying Connect() call.
-func (e *Event) Forward(conn connection, e2 *Event) {
-	e.Connect(conn, func(arg any) {
+func (e *Event[T]) Forward(conn connection, e2 *Event[T]) {
+	e.Connect(conn, func(arg T) {
 		e2.Emit(arg)
 	})
 }
@@ -60,8 +69,8 @@ func (e *Event) Forward(conn connection, e2 *Event) {
 // When connection is disposed, an associated callback will be unregistered.
 // If this connection should be persistent, pass a nil value as conn.
 // For a non-nil conn, it's possible to disconnect from event by using Disconnect method.
-func (e *Event) Connect(conn connection, slot func(arg any)) {
-	e.handlers = append(e.handlers, eventHandler{
+func (e *Event[T]) Connect(conn connection, slot func(arg T)) {
+	e.handlers = append(e.handlers, eventHandler[T]{
 		c: conn,
 		f: slot,
 	})
@@ -69,7 +78,7 @@ func (e *Event) Connect(conn connection, slot func(arg any)) {
 
 // Disconnect removes an event listener identified by this connection.
 // Note that you can't disconnect a listener that was connected with nil connection object.
-func (e *Event) Disconnect(conn connection) {
+func (e *Event[T]) Disconnect(conn connection) {
 	for i, h := range e.handlers {
 		if h.c == conn {
 			e.handlers[i].c = theRemovedConnection
@@ -79,7 +88,7 @@ func (e *Event) Disconnect(conn connection) {
 }
 
 // Emit triggers the associated event and calls all active callbacks with provided argument.
-func (e *Event) Emit(arg any) {
+func (e *Event[T]) Emit(arg T) {
 	// This method is slightly faster than the self-append alternative.
 	length := 0
 	for _, h := range e.handlers {
@@ -90,22 +99,28 @@ func (e *Event) Emit(arg any) {
 		e.handlers[length] = h
 		length++
 	}
+
+	// Prevent memory leak for flushed handlers during the emit reslicing
+	for i := length; i < len(e.handlers); i++ {
+		e.handlers[i] = eventHandler[T]{}
+	}
+
 	e.handlers = e.handlers[:length]
 }
 
 // IsEmpty is a shorthand for NumConnections==0.
-func (e *Event) IsEmpty() bool {
+func (e *Event[T]) IsEmpty() bool {
 	return len(e.handlers) == 0
 }
 
 // NumConnections reports the number of alive event connections.
-func (e *Event) NumConnections() int {
+func (e *Event[T]) NumConnections() int {
 	return len(e.handlers)
 }
 
-type eventHandler struct {
+type eventHandler[T any] struct {
 	c connection
-	f func(any)
+	f func(T)
 }
 
 type connection interface {

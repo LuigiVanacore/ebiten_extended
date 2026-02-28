@@ -12,18 +12,18 @@ type Collider struct {
 	mask                     CollisionMask
 	isWorldCoordinateUpdated bool
 
-	OnCollisionEnter *event.Event
-	OnCollisionStay  *event.Event
-	OnCollisionExit  *event.Event
+	OnCollisionEnter *event.Event[*Collider]
+	OnCollisionStay  *event.Event[*Collider]
+	OnCollisionExit  *event.Event[*Collider]
 }
 
 func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
 	c := &Collider{
 		collisionShape:   shape,
 		mask:             mask,
-		OnCollisionEnter: &event.Event{},
-		OnCollisionStay:  &event.Event{},
-		OnCollisionExit:  &event.Event{},
+		OnCollisionEnter: &event.Event[*Collider]{},
+		OnCollisionStay:  &event.Event[*Collider]{},
+		OnCollisionExit:  &event.Event[*Collider]{},
 	}
 	return c
 }

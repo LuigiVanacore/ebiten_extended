@@ -28,13 +28,13 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	stayCalled := 0
 	exitCalled := 0
 
-	c1.OnCollisionEnter.Connect(nil, func(arg any) {
+	c1.OnCollisionEnter.Connect(nil, func(arg *Collider) {
 		enterCalled++
 	})
-	c1.OnCollisionStay.Connect(nil, func(arg any) {
+	c1.OnCollisionStay.Connect(nil, func(arg *Collider) {
 		stayCalled++
 	})
-	c1.OnCollisionExit.Connect(nil, func(arg any) {
+	c1.OnCollisionExit.Connect(nil, func(arg *Collider) {
 		exitCalled++
 	})
 
@@ -89,7 +89,7 @@ func TestSpatialGridSeparation(t *testing.T) {
 
 	enterCalled := 0
 
-	c1.OnCollisionEnter.Connect(nil, func(arg any) {
+	c1.OnCollisionEnter.Connect(nil, func(arg *Collider) {
 		enterCalled++
 	})
 
