@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -21,14 +20,15 @@ const (
 )
 
 type Game struct {
-	textLabel *ebiten_extended.LabelText
+	textLabel *ebiten_extended.TextNode
 	engine    *ebiten_extended.Engine
 }
 
 func NewGame() *Game {
 	engine := ebiten_extended.NewEngine()
 	gameFont := loadDefaultFont()
-	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0, 0), gameFont, color.White)
+	textLabel := ebiten_extended.NewTextNode("labelTest", "test label text", gameFont, color.White)
+	textLabel.SetPosition(0, 0)
 	engine.World().AddNodeToDefaultLayer(textLabel)
 	engine.Input().SetMouseEnabled(true)
 	return &Game{textLabel: textLabel, engine: engine}

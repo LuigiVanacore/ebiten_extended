@@ -6,15 +6,12 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/opentype"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
-
-
 
 type ResourceManager struct {
 	images map[string]*ebiten.Image
-	fonts  []*font.Face
+	fonts  []text.Face
 }
 
 func NewResourceManager() *ResourceManager {
@@ -31,7 +28,7 @@ func (r *ResourceManager) GetImage(textureId string) *ebiten.Image {
 	return r.images[textureId]
 }
 
-func (r *ResourceManager) GetFont(fontId uint) *font.Face {
+func (r *ResourceManager) GetFont(fontId uint) text.Face {
 	if fontId >= uint(len(r.fonts)) {
 		return nil
 	}
@@ -47,21 +44,21 @@ func (r *ResourceManager) AddImage(textureId string, texture []byte) {
 	r.images[textureId] = ebitenImage
 }
 
-// LoadFont loads a font from bytes and adds it to the manager.
+// LoadFont loads an OpenType font from a reader and adds it to the manager.
 // Returns the font index to use with GetFont.
-func (r *ResourceManager) LoadFont(f []byte, fontSize float64, dpi float64) (uint, error) {
-	tt, err := opentype.Parse(f)
+func (r *ResourceManager) LoadFont(f []byte, fontSize float64) (uint, error) {
+	reader := bytes.NewReader(f)
+
+	source, err := text.NewGoTextFaceSource(reader)
 	if err != nil {
 		return 0, err
 	}
-	gamefont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    fontSize,
-		DPI:     dpi,
-		Hinting: font.HintingFull,
-	})
-	if err != nil {
-		return 0, err
+
+	face := &text.GoTextFace{
+		Source: source,
+		Size:   fontSize,
 	}
-	r.fonts = append(r.fonts, &gamefont)
+
+	r.fonts = append(r.fonts, face)
 	return uint(len(r.fonts) - 1), nil
 }

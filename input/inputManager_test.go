@@ -6,7 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func TestGodotLikeInputMapping(t *testing.T) {
+func TestInputManager(t *testing.T) {
 	manager := NewInputManager()
 
 	// 1. Add "shoot" Action mapped to both KEYBOARD and MOUSE

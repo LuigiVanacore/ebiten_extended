@@ -91,6 +91,21 @@ func (i *InputManager) IsActionReleased(actionName string) bool {
 	return true
 }
 
+// IsActionHeld returns true if ANY of the buttons bound to this action have been held down
+// for at least the specified number of ticks (frames).
+func (i *InputManager) IsActionHeld(actionName string, minFrames int) bool {
+	bindings, exists := i.actions[actionName]
+	if !exists {
+		return false
+	}
+	for _, button := range bindings {
+		if button.PressDuration() >= minFrames {
+			return true
+		}
+	}
+	return false
+}
+
 // SetMouseEnabled determines whether the cursor position will be polled during Update.
 func (i *InputManager) SetMouseEnabled(value bool) {
 	i.mouseEnabled = value

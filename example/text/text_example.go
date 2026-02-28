@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -21,24 +20,23 @@ const (
 )
 
 type Game struct {
-	counter        int
-	textLabel *ebiten_extended.LabelText
+	counter   int
+	textLabel *ebiten_extended.TextNode
 	engine    *ebiten_extended.Engine
 }
-
-
 
 func NewGame() *Game {
 	engine := ebiten_extended.NewEngine()
 	gameFont := loadDefaultFont()
-	textLabel := ebiten_extended.NewLabelText("labelTest", "test label text", math2D.NewVector2D(0,0), gameFont, color.White)
+	textLabel := ebiten_extended.NewTextNode("labelTest", "test label text", gameFont, color.White)
+	textLabel.SetPosition(0, 0)
 	engine.World().AddNodeToDefaultLayer(textLabel)
-	return &Game{ textLabel: textLabel, engine: engine}
+	return &Game{textLabel: textLabel, engine: engine}
 }
 
 func (g *Game) Update() error {
 	if g.counter%ebiten.TPS() == 0 {
-		g.counter=0
+		g.counter = 0
 	}
 	message := "test label text " + strconv.Itoa(g.counter)
 	g.textLabel.SetMessage(message)
@@ -62,21 +60,17 @@ func loadDefaultFont() text.Face {
 		log.Fatal(err)
 	}
 
-	gamefont :=  &text.GoTextFace{
+	gamefont := &text.GoTextFace{
 		Source: tt,
 		Size:   defaultFontSize,
 	}
 	return gamefont
 }
 
-
-
 func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Animation (Ebitengine Demo)")
 
-	
-	
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
