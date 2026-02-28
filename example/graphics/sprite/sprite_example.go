@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/resources"
@@ -16,7 +17,7 @@ const (
 
 type Game struct {
 	sprite   *ebiten_extended.SpriteNode
-	rotation int
+	rotation float64
 	engine   *ebiten_extended.Engine
 }
 
@@ -42,7 +43,10 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 	g.engine.Update()
-	g.rotation = g.rotation + 1%360
+	g.rotation += 0.05
+	if g.rotation >= 2*math.Pi {
+		g.rotation -= 2 * math.Pi
+	}
 	g.sprite.SetRotation(g.rotation)
 	return nil
 }

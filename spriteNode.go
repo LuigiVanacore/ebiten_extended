@@ -41,11 +41,14 @@ func (s *SpriteNode) SetTexture(texture *ebiten.Image) {
 }
 
 func (s *SpriteNode) SetPivotToCenter() {
-	s.transform.SetPivot(s.GetTextureRect().GetCenter().X(), s.GetTextureRect().GetCenter().Y())
+	t := s.GetTransform()
+	t.SetPivot(s.GetTextureRect().GetCenter().X(), s.GetTextureRect().GetCenter().Y())
+	s.SetTransform(t)
 }
 
 func (s *SpriteNode) updateGeoM(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-s.transform.GetPivot().X(), -s.transform.GetPivot().Y())
+	t := s.GetTransform()
+	op.GeoM.Translate(-t.GetPivot().X(), -t.GetPivot().Y())
 }
 
 func (s *SpriteNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {

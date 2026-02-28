@@ -1,8 +1,6 @@
 package transform
 
 import (
-	"math"
-
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -10,14 +8,13 @@ import (
 type Transform struct {
 	position math2D.Vector2D
 	pivot    math2D.Vector2D
-	rotation int
+	rotation float64
 	geoM     ebiten.GeoM
 }
 
-func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation int) Transform{
-	return Transform{ position: position, pivot: pivot, rotation: rotation}
+func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation float64) Transform {
+	return Transform{position: position, pivot: pivot, rotation: rotation}
 }
-
 
 func (t *Transform) GetPosition() math2D.Vector2D {
 	return t.position
@@ -27,16 +24,16 @@ func (t *Transform) SetPosition(x, y float64) {
 	t.position.SetPosition(x, y)
 }
 
-func (t *Transform) GetRotation() int {
+func (t *Transform) GetRotation() float64 {
 	return t.rotation
 }
 
-func (t *Transform) SetRotation(rotation int) {
+func (t *Transform) SetRotation(rotation float64) {
 	t.rotation = rotation
 }
 
 func (t *Transform) SetPivot(x, y float64) {
-	t.pivot.SetPosition(x , y)
+	t.pivot.SetPosition(x, y)
 }
 
 func (t *Transform) Scale(x, y float64) {
@@ -55,7 +52,7 @@ func (t *Transform) SetGeoM(geoM ebiten.GeoM) {
 	t.geoM = geoM
 }
 
-func (t *Transform) Rotate(rotation int) {
+func (t *Transform) Rotate(rotation float64) {
 	t.rotation += rotation
 }
 
@@ -65,7 +62,7 @@ func (t *Transform) Translate(x, y float64) {
 
 func (t *Transform) UpdateGeoM(geom ebiten.GeoM) ebiten.GeoM {
 	geom.Translate(-t.pivot.X(), -t.pivot.Y())
-	geom.Rotate(float64(t.rotation%360) * 2 * math.Pi / 360)
+	geom.Rotate(t.rotation)
 	geom.Translate(t.position.X(), t.position.Y())
 	return geom
 }

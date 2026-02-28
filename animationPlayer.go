@@ -1,29 +1,18 @@
 package ebiten_extended
 
 import (
- 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
 )
-
 
 type AnimationPlayer struct {
 	Node2D
-	animationMap map[string]*AnimationSet
+	animationMap       map[string]*AnimationSet
 	currentAnimationId string
-	isPlaying bool
+	isPlaying          bool
 }
 
 func NewAnimationPlayer() *AnimationPlayer {
-	return &AnimationPlayer{ animationMap: make(map[string]*AnimationSet)}
-}
-
-func (a *AnimationPlayer) GetTransform() transform.Transform {
-	return a.transform
-}
-
-func (a *AnimationPlayer) SetTransform(transform transform.Transform) {
-	a.transform = transform
+	return &AnimationPlayer{animationMap: make(map[string]*AnimationSet)}
 }
 
 func (a *AnimationPlayer) IsPlaying() bool {

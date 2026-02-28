@@ -25,14 +25,14 @@ func (l *LabelText) SetMessage(message string) {
 	l.message = message
 }
 
-
 func (l *LabelText) updateGeoM(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-l.transform.GetPivot().X(), -l.transform.GetPivot().Y())
+	t := l.GetTransform()
+	op.GeoM.Translate(-t.GetPivot().X(), -t.GetPivot().Y())
 }
 
 func (l *LabelText) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	l.updateGeoM(op)
-	text_op := &text.DrawOptions{ DrawImageOptions: *op}
+	text_op := &text.DrawOptions{DrawImageOptions: *op}
 	//text_op.ColorM = ebiten.ColorM{}
 	text.Draw(target, l.message, l.font, text_op)
 }

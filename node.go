@@ -1,15 +1,14 @@
 package ebiten_extended
 
-
 import "sync/atomic"
 
 var globalNodeID uint64
 
 type Node struct {
-	id        uint64
-	name      string
-	children  []SceneNode
-	parent    SceneNode
+	id       uint64
+	name     string
+	children []SceneNode
+	parent   SceneNode
 }
 
 func NewNode(name string) *Node {
@@ -60,4 +59,10 @@ func (s *Node) GetChildren() []SceneNode {
 
 func (s *Node) Delete() {
 	s.parent.DetachChild(s)
+}
+
+func (s *Node) MarkDirty() {
+	for _, child := range s.children {
+		child.MarkDirty()
+	}
 }
