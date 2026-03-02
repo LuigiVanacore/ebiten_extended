@@ -1,5 +1,6 @@
 # ebiten_extended
 
+<<<<<<< HEAD
 A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provides a scene graph, layers, camera, sprites, animations, collision detection, input handling, and resource management so you can focus on game logic.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/LuigiVanacore/ebiten_extended.svg)](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
@@ -19,18 +20,43 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 
 ## Installation
 
+=======
+`ebiten_extended` is a support framework for [Ebiten](https://ebiten.org) that simplifies 2D game development in Go. The project provides ready-to-use gameplay components to extend the features of the original engine.
+
+## Features
+
+- Sprite rendering
+- Animations
+- Scene graph
+- Collision detection
+- Time management
+- Resource management
+- Audio management
+
+## Installation
+
+Ensure you have Go 1.22 or later installed, then add the module to your project:
+
+>>>>>>> 153f371edcb4dcf68c2d6633071e13a31c6b0c07
 ```bash
 go get github.com/LuigiVanacore/ebiten_extended
 ```
 
+<<<<<<< HEAD
 Requires Go 1.21+ and [Ebiten v2](https://github.com/hajimehoshi/ebiten).
 
 ## Quick start
+=======
+## Quick Start
+
+Minimal example:
+>>>>>>> 153f371edcb4dcf68c2d6633071e13a31c6b0c07
 
 ```go
 package main
 
 import (
+<<<<<<< HEAD
     "github.com/LuigiVanacore/ebiten_extended"
     "github.com/hajimehoshi/ebiten/v2"
 )
@@ -84,3 +110,17 @@ Use layer IDs ≥ **MinLayerID** (2). IDs 0 and 1 are reserved. Add a node to th
 ## License
 
 See the repository for license information. This project extends Ebiten, which is licensed under the Apache License 2.0.
+=======
+    e "github.com/LuigiVanacore/ebiten_extended"
+)
+
+func main() {
+    // TODO: implement game loop
+    _ = e.World{}
+}
+```
+
+## Contributing
+
+Contributions of any kind are welcome. Open an issue or a pull request to propose improvements or report problems.
+>>>>>>> 153f371edcb4dcf68c2d6633071e13a31c6b0c07

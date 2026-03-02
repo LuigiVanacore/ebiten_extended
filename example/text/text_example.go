@@ -15,6 +15,8 @@ import (
 const (
 	screenWidth     = 640
 	screenHeight    = 480
+	screenWidth     = 640
+	screenHeight    = 480
 	defaultFontSize = 24
 	defaultFontDPI  = 72
 )
@@ -36,6 +38,7 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 	if g.counter%ebiten.TPS() == 0 {
+		g.counter = 0
 		g.counter = 0
 	}
 	message := "test label text " + strconv.Itoa(g.counter)
@@ -61,6 +64,7 @@ func loadDefaultFont() text.Face {
 	}
 
 	gamefont := &text.GoTextFace{
+	gamefont := &text.GoTextFace{
 		Source: tt,
 		Size:   defaultFontSize,
 	}
@@ -71,8 +75,10 @@ func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Animation (Ebitengine Demo)")
 
+
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }
+

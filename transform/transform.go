@@ -2,7 +2,6 @@ package transform
 
 import (
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Transform holds 2D position, pivot, rotation (radians), and an optional GeoM for scale/skew.
@@ -22,8 +21,9 @@ func (t *Transform) GetPosition() math2D.Vector2D {
 	return t.position
 }
 
-func (t *Transform) SetPosition(x, y float64) {
-	t.position.SetPosition(x, y)
+// SetPosition sets the transform's position.
+func (t *Transform) SetPosition(position math2D.Vector2D) {
+	t.position.SetPosition(position)
 }
 
 func (t *Transform) GetRotation() float64 {
@@ -38,10 +38,17 @@ func (t *Transform) SetPivot(x, y float64) {
 	t.pivot.SetPosition(x, y)
 }
 
-func (t *Transform) Scale(x, y float64) {
-	t.geoM.Scale(x, y)
+// SetScale sets the scaling factors.
+func (t *Transform) SetScale(x, y float64) {
+	t.scale = math2D.NewVector2D(x, y)
 }
 
+// GetScale returns the current scaling factors.
+func (t *Transform) GetScale() math2D.Vector2D {
+	return t.scale
+}
+
+// GetPivot returns the current pivot point.
 func (t *Transform) GetPivot() math2D.Vector2D {
 	return t.pivot
 }

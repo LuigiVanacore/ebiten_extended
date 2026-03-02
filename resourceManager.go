@@ -19,6 +19,7 @@ type ResourceManager struct {
 func NewResourceManager() *ResourceManager {
 	return &ResourceManager{
 		images: make(map[string]*ebiten.Image),
+		animations: make(map[string]*AnimationSet),
 	}
 }
 

@@ -95,3 +95,4 @@ func (b *Node2D) GetWorldPosition() math2D.Vector2D {
 	worldTransform := b.GetWorldTransform()
 	return worldTransform.GetPosition()
 }
+

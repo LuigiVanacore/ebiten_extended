@@ -7,17 +7,23 @@ import (
 // AnimationPlayer coordinates playback and switching between multiple named AnimationSet sequences for a node.
 type AnimationPlayer struct {
 	Node2D
-	animationMap       map[string]*AnimationSet
+	layer int
+	animationMap map[string]*AnimationSet
 	currentAnimationId string
 	isPlaying          bool
 }
 
-// NewAnimationPlayer initializes an empty AnimationPlayer mapping string identifiers to individual AnimationSets.
-func NewAnimationPlayer() *AnimationPlayer {
-	return &AnimationPlayer{animationMap: make(map[string]*AnimationSet)}
+func NewAnimationPlayer(name string, layer int) *AnimationPlayer {
+	return &AnimationPlayer{
+		Node2D:          *NewNode2D(name),
+		layer:           layer,
+		animationMap:    make(map[string]*AnimationSet),
+		currentAnimationId: "",
+		isPlaying:      false,
+	}
 }
 
-// IsPlaying returns whether the player is currently actively tracking and updating frames.
+
 func (a *AnimationPlayer) IsPlaying() bool {
 	return a.isPlaying
 }
@@ -42,7 +48,22 @@ func (a *AnimationPlayer) SetCurrentAnimation(animationId string) {
 	a.currentAnimationId = animationId
 }
 
-// AddAnimation indexes a provided AnimationSet into the player's dictionary under the specified key.
+func (a *AnimationPlayer) GetLayer() int {
+	return a.layer
+}
+
+func (a *AnimationPlayer) SetLayer(layer int) {
+	a.layer = layer
+}
+
+func (a *AnimationPlayer) GetTexture() *ebiten.Image {
+	animationSet := a.animationMap[a.currentAnimationId]
+	if animationSet != nil {
+		return animationSet.GetTexture()
+	}
+	return nil
+}
+
 func (a *AnimationPlayer) AddAnimation(animationSet *AnimationSet, animationId string) {
 	a.animationMap[animationId] = animationSet
 }
@@ -54,24 +75,18 @@ func (a *AnimationPlayer) DeleteAnimation(animationId string) {
 
 // Update advances the internal clock constraint of the actively executing sequence.
 func (a *AnimationPlayer) Update() {
-	if !a.isPlaying || a.currentAnimationId == "" {
-		return
+	if a.isPlaying {
+		animationSet := a.animationMap[a.currentAnimationId]
+		if animationSet != nil {
+			animationSet.Update()
+		}
 	}
-	set, ok := a.animationMap[a.currentAnimationId]
-	if !ok || set == nil {
-		return
-	}
-	set.Update()
 }
 
 // Draw overlays the currently processed frame slice from the prevailing active animation sequence to the target image.
 func (a *AnimationPlayer) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	if a.currentAnimationId == "" {
-		return
-	}
-	set, ok := a.animationMap[a.currentAnimationId]
-	if !ok || set == nil {
-		return
-	}
-	set.Draw(target, op)
+		animationSet := a.animationMap[a.currentAnimationId]
+		if animationSet != nil {
+			animationSet.Draw(target, op)
+		}
 }

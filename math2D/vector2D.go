@@ -62,9 +62,9 @@ func (v Vector2D) Magnitude() float64 {
 	return math.Sqrt(v.x*v.x + v.y*v.y)
 }
 
-func (v *Vector2D) SetPosition(x, y float64) {
-	v.x = x
-	v.y = y
+func (v *Vector2D) SetPosition(vector Vector2D) {
+	v.x = vector.x
+	v.y = vector.y
 }
 
 func (v *Vector2D) Translate(x, y float64) {
@@ -105,8 +105,8 @@ func (v *Vector2D) MultiplyVector(v1 Vector2D) Vector2D {
 	return Vector2D{v1.x * v.x, v1.y * v.y}
 }
 
-func (v *Vector2D) DivideVectors(v1 Vector2D) Vector2D {
-	return Vector2D{v1.x / v.x, v1.y / v.y}
+func DivideVectors(v1, v2 Vector2D) Vector2D {
+	return Vector2D{v1.x / v2.x, v1.y / v2.y}
 }
 
 // DotProduct returns the dot product of two vectors.
@@ -114,11 +114,11 @@ func DotProduct(v1, v2 Vector2D) float64 {
 	return v1.x*v2.x + v1.y*v2.y
 }
 
-func (v *Vector2D) MultiplyScalar( s  float64) Vector2D {
+func (v Vector2D) MultiplyScalar( s  float64) Vector2D {
 	return Vector2D{v.x * s, v.y * s}
 }
 
-func(v *Vector2D)   DivideScalar( s float64) Vector2D {
+func(v Vector2D)   DivideScalar( s float64) Vector2D {
 	return Vector2D{v.x / s, v.y / s}
 }
 

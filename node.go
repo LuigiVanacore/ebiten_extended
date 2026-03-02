@@ -11,6 +11,10 @@ type Node struct {
 	name     string
 	children []SceneNode
 	parent   SceneNode
+	id       uint64
+	name     string
+	children []SceneNode
+	parent   SceneNode
 }
 
 // NewNode creates and initializes a new Node with a generated unique ID and given name.
@@ -37,7 +41,6 @@ func (n *Node) SetName(name string) {
 // AddChildren attaches a child SceneNode downstream, establishing a parent-child relationship.
 func (s *Node) AddChildren(child SceneNode) {
 	child.AttachParent(s)
-
 	s.children = append(s.children, child)
 }
 

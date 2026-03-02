@@ -126,6 +126,6 @@ func (i *InputManager) GetCursorPos() math2D.Vector2D {
 func (i *InputManager) Update() {
 	if i.mouseEnabled {
 		x, y := ebiten.CursorPosition()
-		i.cursorPos.SetPosition(float64(x), float64(y))
+		i.cursorPos.SetPosition(math2D.NewVector2D(float64(x), float64(y)))
 	}
 }

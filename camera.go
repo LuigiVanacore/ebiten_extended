@@ -5,6 +5,8 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -16,6 +18,7 @@ type Camera struct {
 	height    uint
 	zoom 	float64
 	surface   *ebiten.Image
+	node_to_follow transform.Transformable
 }
 
 
@@ -129,6 +132,8 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 	op.GeoM.Scale(c.zoom, c.zoom)
 	op.GeoM.Rotate(float64(c.GetRotation()))
 	op.GeoM.Translate(cx*c.zoom, cy*c.zoom)
+
+	
 
 	screen.DrawImage(c.surface, op)
 }

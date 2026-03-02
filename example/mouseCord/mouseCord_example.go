@@ -15,6 +15,8 @@ import (
 const (
 	screenWidth     = 320
 	screenHeight    = 240
+	screenWidth     = 320
+	screenHeight    = 240
 	defaultFontSize = 14
 	defaultFontDPI  = 72
 )
@@ -59,6 +61,7 @@ func loadDefaultFont() text.Face {
 	}
 
 	gamefont := &text.GoTextFace{
+	gamefont := &text.GoTextFace{
 		Source: tt,
 		Size:   defaultFontSize,
 	}
@@ -69,8 +72,10 @@ func main() {
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("MouseCord Example")
 
+
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }
+

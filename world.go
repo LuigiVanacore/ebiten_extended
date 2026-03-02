@@ -21,7 +21,7 @@ type World struct {
 // matching the current window size.
 func NewWorld() *World {
 	w, h := ebiten.WindowSize()
-	return &World{layers: make([]*Layer, 0), rootScene: &Node{id: 0, name: "root", parent: nil}, camera: NewCamera(uint(w), uint(h))}
+	return &World{ root: NewNode("root_world"), uiRoot: NewNode("ui_root"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers()}
 }
 
 // Camera returns the camera associated with the world.
@@ -127,15 +127,14 @@ func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	world.camera.surface.Clear()
 	world.DrawNode(world.rootScene, target, op)
 	world.camera.Draw(target)
+	world.DrawUINode(world.uiRoot, target, op)
 }
 
 // DrawNode recursively draws the given node and its children.
 // It applies the transform matrix of each node to position, rotate, and scale it correctly.
 func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	if entity, ok := node.(transform.Transformable); ok {
-		op.GeoM = updateTransform(entity, op.GeoM)
-		transform := entity.GetTransform()
-		position := transform.GetPosition()
+	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
 
 		if drawable, ok := node.(Drawable); ok {
 			childOp := *op
@@ -163,8 +162,7 @@ func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) eb
 	updated_GeoM.Rotate(rotation)
 	updated_GeoM.Translate(pivot.X(), pivot.Y())
 
-	parent_geoM.Translate(position.X(), position.Y())
-
+	updated_GeoM.Translate(position.X(), position.Y())
 	updated_GeoM.Concat(parent_geoM)
 
 	return updated_GeoM

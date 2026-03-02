@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt" 
 	"log"
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/resources"
+	"github.com/LuigiVanacore/ebiten_extended/example/resources"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -31,7 +33,7 @@ func NewGame() *Game {
 	sprite2 := ebiten_extended.NewSprite("Aircraft_2", engine.Resources().GetImage(AircraftID), true)
 	sprite2.SetPosition(50, 50)
 
-	sprite.AddChildren(sprite2)
+	sprite.AddChild(sprite2)
 
 	gameLayer := ebiten_extended.NewLayer(2, 2, "GameLayer")
 	gameLayer.AddNode(sprite)
@@ -48,6 +50,10 @@ func (g *Game) Update() error {
 		g.rotation -= 2 * math.Pi
 	}
 	g.sprite.SetRotation(g.rotation)
+	fmt.Println("Sprite rotation:", g.rotation)
+	transform := g.sprite.GetTransform()
+	position := transform.GetPosition()
+	fmt.Println("Sprite position:", position.String())
 	return nil
 }
 
