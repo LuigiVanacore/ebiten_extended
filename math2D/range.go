@@ -1,15 +1,14 @@
 package math2D
- 
- 
 
-
+// Range represents a 1D interval with minimum and maximum values.
 type Range struct {
 	minimun float64
 	maximum float64
 }
 
+// NewRange returns a range with the given minimum and maximum.
 func NewRange(minimum, maximum float64) Range {
-	return Range{ minimun: minimum, maximum: maximum}
+	return Range{minimun: minimum, maximum: maximum}
 }
 
 func (r *Range) GetMinimun() float64 {

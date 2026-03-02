@@ -5,37 +5,45 @@ import (
 	"math"
 )
 
-// Struct for manage 2D Vector math
+// Vector2D represents a 2D vector with X and Y components.
+// Use NewVector2D, ZeroVector2D, or OneVector2D to construct.
 type Vector2D struct {
 	x float64
 	y float64
 }
 
+// NewVector2D returns a vector with the given x and y components.
 func NewVector2D(x, y float64) Vector2D {
 	return Vector2D{x, y}
 }
 
+// X returns the x component of the vector.
 func (v Vector2D) X() float64 {
 	return v.x
 }
 
+// Y returns the y component of the vector.
 func (v Vector2D) Y() float64 {
 	return v.y
 }
 
+// SetX sets the x component.
 func (v *Vector2D) SetX(x float64) {
 	v.x = x
 }
 
+// SetY sets the y component.
 func (v *Vector2D) SetY(y float64) {
 	v.y = y
 }
 
+// ZeroVector2D returns the zero vector (0, 0).
 func ZeroVector2D() Vector2D {
 	return Vector2D{0, 0}
 }
 
  
+// Normalize returns a unit-length vector in the same direction; returns v unchanged if length is zero.
 func (v Vector2D) Normalize() Vector2D {
 	length := v.Length()
 	if length != 0 {
@@ -44,10 +52,12 @@ func (v Vector2D) Normalize() Vector2D {
 	return v
 }
 
+// OneVector2D returns the vector (1, 1).
 func OneVector2D() Vector2D {
 	return Vector2D{1, 1}
 }
 
+// Magnitude returns the length of the vector (same as Length).
 func (v Vector2D) Magnitude() float64 {
 	return math.Sqrt(v.x*v.x + v.y*v.y)
 }
@@ -99,7 +109,8 @@ func (v *Vector2D) DivideVectors(v1 Vector2D) Vector2D {
 	return Vector2D{v1.x / v.x, v1.y / v.y}
 }
 
-func DotProduct(v1,v2 Vector2D) float64 {
+// DotProduct returns the dot product of two vectors.
+func DotProduct(v1, v2 Vector2D) float64 {
 	return v1.x*v2.x + v1.y*v2.y
 }
 

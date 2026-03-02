@@ -9,25 +9,30 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
+// ResourceManager organizes and caches loaded game assets such as images and fonts.
 type ResourceManager struct {
 	images map[string]*ebiten.Image
 	fonts  []text.Face
 }
 
+// NewResourceManager creates an empty ResourceManager instance ready for asset loading.
 func NewResourceManager() *ResourceManager {
 	return &ResourceManager{
 		images: make(map[string]*ebiten.Image),
 	}
 }
 
+// GetImages retrieves the complete underlying dictionary mapping of cached ebiten images.
 func (r *ResourceManager) GetImages() map[string]*ebiten.Image {
 	return r.images
 }
 
+// GetImage fetches a specific loaded ebiten image by its arbitrary string identifier.
 func (r *ResourceManager) GetImage(textureId string) *ebiten.Image {
 	return r.images[textureId]
 }
 
+// GetFont provides access to a loaded text face via its sequentially assigned integer ID.
 func (r *ResourceManager) GetFont(fontId uint) text.Face {
 	if fontId >= uint(len(r.fonts)) {
 		return nil
@@ -35,6 +40,7 @@ func (r *ResourceManager) GetFont(fontId uint) text.Face {
 	return r.fonts[fontId]
 }
 
+// AddImage decodes raw image bytes, converts them into an ebiten Image, and binds them to the provided textureId.
 func (r *ResourceManager) AddImage(textureId string, texture []byte) {
 	img, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {

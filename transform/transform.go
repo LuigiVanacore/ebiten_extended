@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// Transform holds 2D position, pivot, rotation (radians), and an optional GeoM for scale/skew.
 type Transform struct {
 	position math2D.Vector2D
 	pivot    math2D.Vector2D
@@ -12,6 +13,7 @@ type Transform struct {
 	geoM     ebiten.GeoM
 }
 
+// NewTransform returns a transform with the given position, pivot, and rotation (radians).
 func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation float64) Transform {
 	return Transform{position: position, pivot: pivot, rotation: rotation}
 }

@@ -7,16 +7,21 @@ type collisionPair struct {
 	c2 *Collider
 }
 
+// CollisionManager holds colliders and runs broad-phase (spatial hash) and narrow-phase
+// detection each frame. Set CellSize (e.g. 100) for the grid cell size in pixels.
+// Call CheckCollision every frame (e.g. in World.SetPostUpdate).
 type CollisionManager struct {
 	colliders []*Collider
 
-	CellSize int // e.g. 100 pixels
+	// CellSize is the spatial hash grid cell size in pixels (e.g. 100).
+	CellSize int
 
 	// Tracks collisions that happened in the previous frame to deduce Enter/Stay/Exit
 	// The uint64 key is an immutable hash of: min(id1, id2)<<32 | max(id1, id2).
 	previousCollisions map[uint64]collisionPair
 }
 
+// NewCollisionManager returns a new collision manager with default CellSize 100.
 func NewCollisionManager() *CollisionManager {
 	return &CollisionManager{
 		colliders:          make([]*Collider, 0),
@@ -25,6 +30,7 @@ func NewCollisionManager() *CollisionManager {
 	}
 }
 
+// AddCollider registers a collider so it is included in CheckCollision.
 func (c *CollisionManager) AddCollider(collider *Collider) {
 	c.colliders = append(c.colliders, collider)
 }

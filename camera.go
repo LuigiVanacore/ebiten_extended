@@ -8,6 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// Camera represents a 2D camera that provides the viewpoint for the scene.
+// It inherits from Node2D and renders everything within its view onto a surface.
 type Camera struct {
 	Node2D
 	width     uint
@@ -17,6 +19,7 @@ type Camera struct {
 }
 
 
+// NewCamera creates and initializes a new Camera with the specified width and height.
 func NewCamera(w, h uint) *Camera {
 	c := &Camera{
 		width:  w,
@@ -27,11 +30,14 @@ func NewCamera(w, h uint) *Camera {
 	return c
 }
 
+// GetZoom returns the current zoom level of the camera.
 func (c *Camera) GetZoom() float64 {
 	return c.zoom
 }
 
 
+// SetZoom sets the zoom level of the camera (clamped to a minimum of 0.01)
+// and dynamically resizes its rendering surface to accommodate the zoom.
 func (c *Camera) SetZoom(zoom float64) *Camera {
 	c.zoom = zoom
 	if c.zoom <= 0.01 {
@@ -41,10 +47,13 @@ func (c *Camera) SetZoom(zoom float64) *Camera {
 	return c
 }
 
+// GetSurface returns the image surface onto which this camera captures the scene.
 func (c *Camera) GetSurface() *ebiten.Image {
 	return c.surface
 }
 
+// Resize changes the base dimensions of the camera and reallocates its
+// surface memory if the new dimensions, considering zoom, don't exceed max limits.
 func (c *Camera) Resize(w, h uint) *Camera {
 	c.width = w
 	c.height = h
@@ -58,11 +67,12 @@ func (c *Camera) Resize(w, h uint) *Camera {
 	return c
 }
 
-
+// Deallocate releases the resources associated with the camera's surface.
 func (c *Camera) Deallocate() {
 	c.surface.Deallocate()
 }
 
+// Fill clears the camera's surface with a predefined background color.
 func (c *Camera) Fill(color color.Color) {
 	c.surface.Fill(color)
 }
@@ -83,6 +93,7 @@ func (c *Camera) GetRelativeTranslation(op *ebiten.DrawImageOptions, x, y float6
 	return op
 }
 
+// GetRelativeRotation calculates and applies camera-relative rotation around a specific origin point, returning op.
 func (c *Camera) GetRelativeRotation(ops *ebiten.DrawImageOptions, rotation, originX, originY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Translate(originX, originY)
 	ops.GeoM.Rotate(rotation)
@@ -90,20 +101,24 @@ func (c *Camera) GetRelativeRotation(ops *ebiten.DrawImageOptions, rotation, ori
 	return ops
 }
 
+// GetRelativeScale applies camera-relative scaling directly to the ops matrix.
 func (c *Camera) GetRelativeScale(ops *ebiten.DrawImageOptions, scaleX, scaleY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Scale(scaleX, scaleY)
 	return ops
 }
 
+// GetRelativeSkew applies camera-relative skewing directly to the ops matrix.
 func (c *Camera) GetRelativeSkew(ops *ebiten.DrawImageOptions, skewX, skewY float64) *ebiten.DrawImageOptions {
 	ops.GeoM.Skew(skewX, skewY)
 	return ops
 }
 
+// DrawImage handles drawing a given image directly onto the camera's surface using provided options.
 func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 	c.surface.DrawImage(image, ops)
 }
 
+// Draw transfers the camera's rendered scene surface onto the final screen, applying overall rotation and zoom.
 func (c *Camera) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	size := c.surface.Bounds().Size()
@@ -118,6 +133,7 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 	screen.DrawImage(c.surface, op)
 }
 
+// GetScreenCoords converts generic world coordinates (x, y) into local camera screen coordinates.
 func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
 	w, h := c.width, c.height
 	co := math.Cos(float64(c.GetRotation()))
@@ -129,6 +145,7 @@ func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
 	return x*c.zoom + float64(w)/2, y*c.zoom + float64(h)/2
 }
 
+// GetWorldCoords converts raw screen coordinates (e.g., from a mouse) into world coordinates.
 func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
 	w, h := c.width, c.height
 	co := math.Cos(-float64(c.GetRotation()))
@@ -140,6 +157,7 @@ func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
 	return x + c.GetPosition().X(), y + c.GetPosition().Y()
 }
 
+// GetCursorCoords utilizes the provided InputManager to retrieve mouse cursor pos naturally mapped into world coordinates.
 func (c *Camera) GetCursorCoords(inputMgr *input.InputManager) (float64, float64) {
 	cursor_position := inputMgr.GetCursorPos()
 	return c.GetWorldCoords(cursor_position.X(), cursor_position.Y())

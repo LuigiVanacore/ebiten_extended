@@ -1,12 +1,12 @@
 package math2D
 
- 
-
+// Rectangle represents an axis-aligned rectangle by its top-left position and size (width, height).
 type Rectangle struct {
 	position Vector2D
 	size     Vector2D
 }
 
+// NewRectangle returns a rectangle with the given position and size.
 func NewRectangle(position Vector2D, size Vector2D) Rectangle {
 	return Rectangle{
 		position: position,

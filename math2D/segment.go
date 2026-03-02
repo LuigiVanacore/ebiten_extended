@@ -1,11 +1,12 @@
 package math2D
- 
 
+// Segment represents a finite line segment between two points.
 type Segment struct {
 	startPoint Vector2D
 	endPoint   Vector2D
 }
 
+// NewSegment returns a segment from startPoint to endPoint.
 func NewSegment(startPoint, endPoint Vector2D) Segment {
 	return Segment{startPoint: startPoint, endPoint: endPoint}
 }

@@ -6,6 +6,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// Collider is a Node2D with a collision shape and mask. Subscribe to OnCollisionEnter,
+// OnCollisionStay, and OnCollisionExit for lifecycle events; add to a CollisionManager and
+// run CheckCollision each frame.
 type Collider struct {
 	ebiten_extended.Node2D
 	collisionShape           CollisionShape
@@ -17,6 +20,7 @@ type Collider struct {
 	OnCollisionExit  *event.Event[*Collider]
 }
 
+// NewCollider returns a new collider with the given shape and mask. Add it to a CollisionManager with AddCollider.
 func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
 	c := &Collider{
 		collisionShape:   shape,

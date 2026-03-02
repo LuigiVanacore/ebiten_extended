@@ -8,6 +8,7 @@ import (
 
 
 
+// AnimationSet represents a singular, self-contained repeating or one-shot frame sequence.
 type AnimationSet struct {
 	spriteSheet []*ebiten.Image
 	pivot math2D.Vector2D
@@ -18,6 +19,7 @@ type AnimationSet struct {
 	isLooped bool
 }
 
+// NewAnimationSet establishes a playback sequence containing slice references, a duration constraint, and loop flag.
 func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCount uint, duration float64, isLooped bool) *AnimationSet {
 	timePerFrame :=  1 / duration
 	if ( duration == 0) {
@@ -27,6 +29,7 @@ func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCo
 	return animationSet
 }
 
+// Update steps forward the animation sequence's relative frame pointer respecting its defined time signature boundaries.
 func (a *AnimationSet) Update() {
 
 	if a.IsEnded() && !a.isLooped {
@@ -49,6 +52,7 @@ func (a *AnimationSet) updateGeomToPivot(op *ebiten.DrawImageOptions) {
 	op.GeoM.Translate(-a.pivot.X(), -a.pivot.Y())
 }
 
+// Draw displays the presently active chronological frame texture bounded within the assigned configuration sequence onto the target.
 func (a *AnimationSet) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	if a.frameCount == 0 || len(a.spriteSheet) == 0 {
 		return
@@ -64,6 +68,7 @@ func (a *AnimationSet) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	target.DrawImage(a.spriteSheet[frame], op)
 }
 
+// IsEnded evaluates whether a non-looping animation set profile has run completely through to its specified finish.
 func (a *AnimationSet) IsEnded() bool {
 	return a.currentFrame + 1 >= a.frameCount 
 }
