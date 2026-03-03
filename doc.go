@@ -5,7 +5,7 @@
 //
 // # Core concepts
 //
-//   - [Engine]: Entry point that owns the [World], [ResourceManager], input, and clock.
+//   - [Engine]: Entry point that owns the [World], [ResourceManager], [AudioManager], input, and clock.
 //     Implement ebiten.Game by delegating Update/Draw/Layout to the engine.
 //   - [World]: Holds the scene tree, [Layers], and [Camera]. Update runs the game tick;
 //     Draw renders the scene through the camera.

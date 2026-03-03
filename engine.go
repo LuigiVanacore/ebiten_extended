@@ -10,11 +10,12 @@ const (
 	FIXED_DELTA float64 = 1.0 / 60.0
 )
 
-// Engine represents the core of the framework, managing the game world, input, resources, clock, and debug systems.
+// Engine represents the core of the framework, managing the game world, input, resources, audio, clock, and debug systems.
 type Engine struct {
 	world           *World
 	inputManager    *input.InputManager
 	resourceManager *ResourceManager
+	audioManager    *AudioManager
 	clock           *Clock
 	debug           *Debug
 }
@@ -25,6 +26,7 @@ func NewEngine() *Engine {
 		world:           NewWorld(),
 		inputManager:    input.NewInputManager(),
 		resourceManager: NewResourceManager(),
+		audioManager:    NewAudioManager(),
 		clock:           NewClock(),
 		debug:           NewDebug(false),
 	}
@@ -45,6 +47,11 @@ func (e *Engine) Input() *input.InputManager {
 // Resources returns the resource manager handling game assets.
 func (e *Engine) Resources() *ResourceManager {
 	return e.resourceManager
+}
+
+// Audio returns the audio manager for sounds and music.
+func (e *Engine) Audio() *AudioManager {
+	return e.audioManager
 }
 
 // IsDebug returns whether debug mode is currently enabled.
