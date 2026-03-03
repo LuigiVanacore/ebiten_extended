@@ -1,6 +1,0 @@
-Be sure to ALWAYS follow these instructions when working on this project:
-
-# Project Rules
-1. **Always Commit Changes**: When you execute code modifications, refactorings, or add new features, you MUST create a git commit at the end of the executing phase with a clear, descriptive message summarizing the changes made.
-2. **No Singletons**: Do not use global state (`var instance *Struct`) in Go. Use Dependency Injection via the `Engine` object or explicit passing.
-3. **Performance First**: Avoid allocations in the game loop (`Update` and `Draw`). Variables generated every frame stress the Garbage Collector.

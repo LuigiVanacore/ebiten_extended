@@ -10,8 +10,10 @@
 /out/
 *.test
 *.out
+coverage
 coverage.out
 coverage.html
+*_coverage
 
 # Go workspace
 go.work
