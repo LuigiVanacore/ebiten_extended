@@ -110,18 +110,46 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() error {
-	// Input: jump / move
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
+	// Input: jump / move (keyboard + gamepad)
+	jump := ebiten.IsKeyPressed(ebiten.KeySpace)
+	moveLeft := ebiten.IsKeyPressed(ebiten.KeyArrowLeft)
+	moveRight := ebiten.IsKeyPressed(ebiten.KeyArrowRight)
+
+	// Gamepad: first connected controller
+	ids := ebiten.AppendGamepadIDs(nil)
+	if len(ids) > 0 {
+		id := ids[0]
+		if ebiten.IsStandardGamepadLayoutAvailable(id) {
+			jump = jump || ebiten.IsStandardGamepadButtonPressed(id, ebiten.StandardGamepadButtonRightBottom) // A / Cross
+			lx := ebiten.StandardGamepadAxisValue(id, ebiten.StandardGamepadAxisLeftStickHorizontal)
+			if lx < -0.3 {
+				moveLeft = true
+			}
+			if lx > 0.3 {
+				moveRight = true
+			}
+		} else {
+			jump = jump || ebiten.IsGamepadButtonPressed(id, ebiten.GamepadButton0) // fallback: button 0
+			lx := ebiten.GamepadAxisValue(id, 0)
+			if lx < -0.3 {
+				moveLeft = true
+			}
+			if lx > 0.3 {
+				moveRight = true
+			}
+		}
+	}
+
+	if jump {
 		v := g.player.GetVelocity()
-		// Jump only when roughly grounded (vertical velocity near zero after collision resolution)
 		if v.Y() > -15 && v.Y() < 15 {
 			g.player.ApplyImpulse(math2D.NewVector2D(0, -350))
 		}
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+	if moveLeft {
 		g.player.ApplyImpulse(math2D.NewVector2D(-8, 0))
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+	if moveRight {
 		g.player.ApplyImpulse(math2D.NewVector2D(8, 0))
 	}
 
@@ -138,7 +166,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Physics - Arrow keys move, Space jump (click window if keys don't work)")
+	ebiten.SetWindowTitle("Physics - Keys: Arrows move, Space jump. Gamepad: left stick, A/Cross jump")
 	ebiten.SetRunnableOnUnfocused(true) // Run even when window loses focus
 	if err := ebiten.RunGame(NewGame()); err != nil {
 		log.Fatal(err)

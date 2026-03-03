@@ -34,4 +34,12 @@ func TestInputManager(t *testing.T) {
 	if manager.IsActionPressed("jump") {
 		t.Error("Removed action must not report as pressed")
 	}
+
+	// 3. ActionID-based API
+	manager.RegisterAction(ActionID(1), NewKeyAction(ebiten.KeySpace, ActionHold))
+	manager.Update()
+	// In test context keys are not pressed
+	if manager.IsActionActive(ActionID(1)) {
+		t.Error("Did not expect ActionID 1 to be active")
+	}
 }

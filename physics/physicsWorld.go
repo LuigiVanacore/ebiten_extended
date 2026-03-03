@@ -138,15 +138,53 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	posB := b.GetPosition()
 	b.SetPosition(posB.X()+pushB.X(), posB.Y()+pushB.Y())
 
-	// Zero velocity component along collision normal so bodies "land" instead of jittering.
-	// Normal points from B toward A; skip for static bodies.
-	va := a.GetVelocity()
-	if !a.Static && math2D.DotProduct(va, res.Normal) < 0 {
-		a.SetVelocity(math2D.SubtractVectors(va, res.Normal.MultiplyScalar(math2D.DotProduct(va, res.Normal))))
+	// Velocity response: restitution (bounce) on normal, friction on tangent.
+	// Restitution: use non-static body when one is static, else min of both.
+	// Friction: average of both.
+	restitution := b.Restitution
+	if a.Static {
+		restitution = b.Restitution
+	} else if b.Static {
+		restitution = a.Restitution
+	} else if a.Restitution < restitution {
+		restitution = a.Restitution
 	}
+	friction := (a.Friction + b.Friction) / 2
+	if friction > 1 {
+		friction = 1
+	}
+
+	applyVelocityResponse := func(body *RigidBody2D, v math2D.Vector2D, normalCompIntoSurface float64) {
+		if body.Static {
+			return
+		}
+		// Normal: reflect with restitution only when moving into surface.
+		var newNormalComp float64
+		if normalCompIntoSurface < 0 {
+			newNormalComp = -restitution * normalCompIntoSurface
+		} else {
+			newNormalComp = normalCompIntoSurface
+		}
+
+		// Tangent: always reduce by friction when in contact.
+		tangent := math2D.SubtractVectors(v, res.Normal.MultiplyScalar(normalCompIntoSurface))
+		vNew := math2D.AddVectors(
+			res.Normal.MultiplyScalar(newNormalComp),
+			tangent.MultiplyScalar(1-friction),
+		)
+		body.SetVelocity(vNew)
+	}
+
+	va := a.GetVelocity()
+	normalCompA := math2D.DotProduct(va, res.Normal)
+	if !a.Static {
+		applyVelocityResponse(a, va, normalCompA)
+	}
+
 	vb := b.GetVelocity()
-	if !b.Static && math2D.DotProduct(vb, res.Normal) > 0 {
-		b.SetVelocity(math2D.SubtractVectors(vb, res.Normal.MultiplyScalar(math2D.DotProduct(vb, res.Normal))))
+	normalCompB := math2D.DotProduct(vb, res.Normal)
+	if !b.Static {
+		applyVelocityResponse(b, vb, normalCompB)
 	}
 }
 

@@ -142,3 +142,82 @@ func TestPhysicsWorld_VelocityZeroedOnCollision(t *testing.T) {
 		t.Errorf("Ball landing on floor should have low vy (velocity zeroed on impact), got %v", vy)
 	}
 }
+
+func TestPhysicsWorld_RestitutionBounce(t *testing.T) {
+	world := NewPhysicsWorld()
+	world.Gravity = math2D.NewVector2D(0, 0)
+	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
+
+	// Floor center (50,120), size 200x20 → top Y=110. Ball radius 10.
+	// Ball center must be above floor top so CircleRectangleCollideResult gets correct normal.
+	// Start at 100 (bottom=110 touch), one step moves into floor.
+	ball := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	ball.SetPosition(50, 100)
+	ball.SetVelocity(math2D.NewVector2D(0, 100))
+	ball.Restitution = 0.8
+	ball.UsesGravity = false
+
+	floor := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
+	floor.SetPosition(50, 120)
+	floor.UsesGravity = false
+	floor.Static = true
+
+	world.AddRigidBody(ball)
+	world.AddRigidBody(floor)
+
+	// Step until overlap (ball vy=100, moves 1.6/frame)
+	for i := 0; i < 10; i++ {
+		world.Step(0.016)
+		if ball.GetVelocity().Y() < 0 {
+			break
+		}
+	}
+
+	vy := ball.GetVelocity().Y()
+	if vy > -5 {
+		t.Errorf("Ball with Restitution=0.8 should bounce up (negative vy), got %v", vy)
+	}
+}
+
+func TestPhysicsWorld_FrictionReducesSliding(t *testing.T) {
+	world := NewPhysicsWorld()
+	world.Gravity = math2D.NewVector2D(0, 0)
+	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
+
+	// Floor center (50,120), size 200x20 → top Y=110. Box 20x20 → half=10.
+	// Place box on floor (overlapping) so friction applies.
+	box := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))), mask)
+	box.SetPosition(50, 105) // center; bottom=115, overlaps floor top=110
+	box.SetVelocity(math2D.NewVector2D(100, 0))
+	box.Friction = 1.0
+	box.UsesGravity = false
+
+	floor := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
+	floor.SetPosition(50, 120)
+	floor.UsesGravity = false
+	floor.Static = true
+	floor.Friction = 1.0
+
+	world.AddRigidBody(box)
+	world.AddRigidBody(floor)
+
+	for i := 0; i < 20; i++ {
+		world.Step(0.016)
+	}
+
+	vx := box.GetVelocity().X()
+	if vx > 20 {
+		t.Errorf("Box with Friction=1 should slide slowly, got vx=%v", vx)
+	}
+}
+
+func TestRigidBody2D_DefaultFrictionRestitution(t *testing.T) {
+	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
+	body := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	if body.Friction != 0.5 {
+		t.Errorf("Default Friction = %v, want 0.5", body.Friction)
+	}
+	if body.Restitution != 0 {
+		t.Errorf("Default Restitution = %v, want 0", body.Restitution)
+	}
+}

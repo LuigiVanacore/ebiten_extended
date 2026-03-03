@@ -1,10 +1,19 @@
-// Package input provides an input manager that maps abstract action names to
-// physical buttons (keyboard, mouse, gamepad) and tracks cursor position.
+// Package input provides a unified input manager for keyboard, mouse, and gamepad.
 //
-// Create an InputManager with NewInputManager. Use AddAction to bind action names
-// (e.g. "move_up") to RawInputButton values. Then query IsActionPressed,
-// IsActionJustPressed, IsActionJustReleased, IsActionReleased, or IsActionHeld.
-// Enable cursor tracking with SetMouseEnabled(true) and read GetCursorPos (screen
-// coordinates; use the world's Camera to convert to world space if needed).
-// Call Update each frame so cursor and button state are current.
+// Two APIs are available:
+//
+// 1) String-based actions: AddAction(name, RawInputButton) maps names to physical
+// inputs. Use IsActionPressed, IsActionJustPressed, IsActionJustReleased, IsActionReleased,
+// or IsActionHeld. RawInputButton supports NewKeyRawInputButton, NewMouseRawInputButton,
+// NewGamePadRawInputButton.
+//
+// 2) ActionID-based: RegisterAction(ActionID, Action) with NewKeyAction, NewMouseButtonAction,
+// NewGamePadButtonAction, or NewJoystickAxisAction. Use IsActionActive(ActionID).
+// Action modes: ActionHold, ActionPressOnce, ActionReleaseOnce.
+//
+// Gamepad: GetLeftStick, GetRightStick (with StickDeadzone), GamepadIDs,
+// IsGamepadButtonPressed, IsGamepadButtonJustPressed, IsStandardGamepadButtonPressed.
+//
+// Get InputManager from Engine.Input() or create with NewInputManager. Call Update each frame.
+// Enable cursor with SetMouseEnabled(true) and read GetCursorPos.
 package input
