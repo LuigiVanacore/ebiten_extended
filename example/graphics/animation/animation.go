@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"image"
 	_ "image/png"
 	"log"
@@ -12,7 +11,7 @@ import (
 )
 
 const (
-	screenWidth  = 320
+	screenWidth = 320
 	screenHeight = 240
 
 	frameOX     = 0
@@ -20,20 +19,20 @@ const (
 	frameWidth  = 32
 	frameHeight = 32
 	frameCount  = 8
-	ImageID = "Runner"
-)
-
-var (
-	runnerImage *ebiten.Image
+	imageID     = "Runner"
 )
 
 type Game struct {
+	engine *ebiten_extended.Engine
 	count int
 }
 
 func NewGame() *Game {
-	ebiten_extended.ResourceManager().AddImage(ImageID, resources.runnerImage)
-	return &Game{}
+	engine := ebiten_extended.NewEngine()
+	if err := engine.Resources().AddImage(imageID, images.Runner_png); err != nil {
+		log.Fatal(err)
+	}
+	return &Game{engine: engine}
 }
 
 func (g *Game) Update() error {
@@ -42,6 +41,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	runnerImage := g.engine.Resources().GetImage(imageID)
+	if runnerImage == nil {
+		return
+	}
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
 	op.GeoM.Translate(screenWidth/2, screenHeight/2)
@@ -55,16 +58,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	// Decode an image from the image file's byte slice.
-	img, _, err := image.Decode(bytes.NewReader(images.Runner_png))
-	if err != nil {
-		log.Fatal(err)
-	}
-	runnerImage = ebiten.NewImageFromImage(img)
-
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Animation (Ebitengine Demo)")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+
+	game := NewGame()
+	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }

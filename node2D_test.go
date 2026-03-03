@@ -30,7 +30,7 @@ func TestSetAndGetTransform(t *testing.T) {
 func TestGetWorldTransform(t *testing.T) {
 	root := NewNode2D("Root")
 	child := NewNode2D("Child")
-	root.AddChild(child)
+	root.AddChildren(child)
 
 	rootTransform := transform.Transform{}
 	root.SetTransform(rootTransform)
@@ -44,11 +44,9 @@ func TestGetWorldTransform(t *testing.T) {
 func TestGetWorldPosition(t *testing.T) {
 	root := NewNode2D("Root")
 	child := NewNode2D("Child")
-	root.AddChild(child)
+	root.AddChildren(child)
 
-	rootTransform := transform.Transform{}
-	rootTransform.SetPosition(math2D.NewVector2D(10, 20))
-	root.SetTransform(rootTransform)
+	root.SetPosition(10, 20)
 
 	worldPosition := child.GetWorldPosition()
 	expectedPosition := math2D.NewVector2D(10, 20)

@@ -9,18 +9,21 @@ type CollisionRect struct {
 	rectangle math2D.Rectangle
 }
 
-func (c *CollisionRect) UpdateTransform(transform transform.Transform) {
-	c.rectangle.SetPosition(transform.GetPosition())
+// NewCollisionRect creates a CollisionRect from a math2D.Rectangle.
+func NewCollisionRect(rectangle math2D.Rectangle) *CollisionRect {
+	return &CollisionRect{rectangle: rectangle}
 }
 
-func (c *CollisionRect) IsColliding(collisionShape CollisionShape) bool {
-	switch other := collisionShape.(type) {
-
-	case *CollisionCircle:
-		return CircleRectangleCollide(other.circle, c.rectangle)
-	case *CollisionRect:
-		return RectanglesCollide(other.rectangle, c.rectangle)
-	default:
-		return false
-	}
+func (c *CollisionRect) shapeKind() shapeKind {
+	return kindRect
 }
+
+func (c *CollisionRect) UpdateTransform(t transform.Transform) {
+	// Use center to match DrawnRectangle convention (position = center of shape)
+	c.rectangle.SetCenter(t.GetPosition())
+}
+
+func (c *CollisionRect) IsColliding(other CollisionShape) bool {
+	return ShapeCollides(c, other)
+}
+

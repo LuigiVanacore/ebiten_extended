@@ -71,6 +71,28 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	}
 }
 
+func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
+	manager := NewCollisionManager()
+	shape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
+	c1 := NewCollider(shape, mask)
+	c2 := NewCollider(shape, mask)
+	c1.SetPosition(0, 0)
+	c2.SetPosition(0, 0)
+
+	manager.AddCollider(c1)
+	manager.AddCollider(c2)
+
+	enterCount := 0
+	c1.OnCollisionEnter.Connect(nil, func(*Collider) { enterCount++ })
+
+	manager.CheckCollision()
+
+	if enterCount != 1 {
+		t.Errorf("AddCollider retrocompat: expected 1 Enter, got %d", enterCount)
+	}
+}
+
 func TestSpatialGridSeparation(t *testing.T) {
 	manager := NewCollisionManager()
 

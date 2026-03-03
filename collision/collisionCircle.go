@@ -10,23 +10,19 @@ type CollisionCircle struct {
 }
 
 func NewCollisionCircle(circle math2D.Circle) *CollisionCircle {
-	return &CollisionCircle{ circle: circle}
+	return &CollisionCircle{circle: circle}
 }
 
-
-func (c *CollisionCircle) UpdateTransform(transform transform.Transform) {
-	c.circle.SetCenter(transform.GetPosition())
+func (c *CollisionCircle) shapeKind() shapeKind {
+	return kindCircle
 }
 
-
-func (c *CollisionCircle) IsColliding( collisionShape CollisionShape) bool {
-	switch other := collisionShape.(type) {
-	case *CollisionCircle:
-		return CirclesCollide( c.circle, other.circle)
-	case *CollisionRect:
-		return CircleRectangleCollide( c.circle, other.rectangle)
-	default:
-		return false
-	}
+func (c *CollisionCircle) UpdateTransform(t transform.Transform) {
+	c.circle.SetCenter(t.GetPosition())
 }
+
+func (c *CollisionCircle) IsColliding(other CollisionShape) bool {
+	return ShapeCollides(c, other)
+}
+
 

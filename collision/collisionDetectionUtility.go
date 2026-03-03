@@ -38,6 +38,23 @@ func ClampOnRectangle(p math2D.Vector2D, r math2D.Rectangle) math2D.Vector2D {
 								ClampOnRange(p.Y(), r.GetPosition().Y(),r.GetPosition().Y() + r.GetSize().Y()))
 }
 
+// ShapeAABB returns the axis-aligned bounding box (minX, minY, maxX, maxY) of the shape in world space.
+// UpdateTransform must be called on the shape before calling this.
+func ShapeAABB(shape CollisionShape) (minX, minY, maxX, maxY float64) {
+	switch s := shape.(type) {
+	case *CollisionCircle:
+		center := s.circle.GetCenterPosition()
+		r := s.circle.GetRadius()
+		return center.X() - r, center.Y() - r, center.X() + r, center.Y() + r
+	case *CollisionRect:
+		pos := s.rectangle.GetPosition()
+		size := s.rectangle.GetSize()
+		return pos.X(), pos.Y(), pos.X() + size.X(), pos.Y() + size.Y()
+	default:
+		return 0, 0, 0, 0
+	}
+}
+
  
 
 func RectangleCorner(r math2D.Rectangle, nr int) math2D.Vector2D {

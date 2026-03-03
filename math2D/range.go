@@ -2,25 +2,25 @@ package math2D
 
 // Range represents a 1D interval with minimum and maximum values.
 type Range struct {
-	minimun float64
+	minimum float64
 	maximum float64
 }
 
 // NewRange returns a range with the given minimum and maximum.
 func NewRange(minimum, maximum float64) Range {
-	return Range{minimun: minimum, maximum: maximum}
+	return Range{minimum: minimum, maximum: maximum}
 }
 
-func (r *Range) GetMinimun() float64 {
-	return r.minimun
+func (r *Range) GetMinimum() float64 {
+	return r.minimum
 }
 
 func (r *Range) GetMaximum() float64 {
 	return r.maximum
 }
 
-func (r *Range) SetMinimun(minimun float64) *Range {
-	r.minimun = minimun
+func (r *Range) SetMinimum(minimum float64) *Range {
+	r.minimum = minimum
 	return r
 }
 
@@ -30,15 +30,15 @@ func (r *Range) SetMaximum(maximum float64) *Range {
 }
 
 func OverlappingRanges(a, b Range) bool {
-	return b.minimun <= a.maximum && a.minimun <= b.maximum
+	return b.minimum <= a.maximum && a.minimum <= b.maximum
 }
 
 func RangeHull(a, b Range) Range {
 	var hull Range 
-	if a.minimun < b.minimun {
-		hull.minimun = a.minimun
+	if a.minimum < b.minimum {
+		hull.minimum = a.minimum
 	} else {
-		hull.minimun = b.minimun
+		hull.minimum = b.minimum
 	}
 	if a.maximum > b.maximum {
 		hull.maximum = a.maximum
@@ -50,9 +50,9 @@ func RangeHull(a, b Range) Range {
 
 func (r Range) SortRange() Range {
 	sorted := r
-	if r.minimun > r.maximum {
-		sorted.minimun = r.maximum
-		sorted.maximum = r.minimun
+	if r.minimum > r.maximum {
+		sorted.minimum = r.maximum
+		sorted.maximum = r.minimum
 	}
 	return sorted
 }

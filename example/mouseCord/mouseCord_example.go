@@ -7,14 +7,12 @@ import (
 	"strconv"
 
 	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/resources"
+	exampleresources "github.com/LuigiVanacore/ebiten_extended/example/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
-	screenWidth     = 320
-	screenHeight    = 240
 	screenWidth     = 320
 	screenHeight    = 240
 	defaultFontSize = 14
@@ -55,12 +53,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func loadDefaultFont() text.Face {
 
-	tt, err := text.NewGoTextFaceSource(bytes.NewReader(resources.DefaultFont))
+	tt, err := text.NewGoTextFaceSource(bytes.NewReader(exampleresources.DefaultFont))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	gamefont := &text.GoTextFace{
 	gamefont := &text.GoTextFace{
 		Source: tt,
 		Size:   defaultFontSize,

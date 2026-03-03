@@ -6,8 +6,9 @@ import (
 )
 
 // Drawable formalizes an interface for objects possessing both spatial awareness (transform) and the capacity to render themselves.
+// GetLayer returns the z-order for sibling drawables within the same layer (lower = drawn first/behind).
 type Drawable interface {
 	transform.Transformable
-	GetLayer() int 
+	GetLayer() int
 	Draw(target *ebiten.Image, op *ebiten.DrawImageOptions)
 }

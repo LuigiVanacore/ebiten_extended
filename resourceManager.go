@@ -3,7 +3,6 @@ package ebiten_extended
 import (
 	"bytes"
 	"image"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -19,7 +18,6 @@ type ResourceManager struct {
 func NewResourceManager() *ResourceManager {
 	return &ResourceManager{
 		images: make(map[string]*ebiten.Image),
-		animations: make(map[string]*AnimationSet),
 	}
 }
 
@@ -42,13 +40,15 @@ func (r *ResourceManager) GetFont(fontId uint) text.Face {
 }
 
 // AddImage decodes raw image bytes, converts them into an ebiten Image, and binds them to the provided textureId.
-func (r *ResourceManager) AddImage(textureId string, texture []byte) {
+// Returns an error if decoding fails.
+func (r *ResourceManager) AddImage(textureId string, texture []byte) error {
 	img, _, err := image.Decode(bytes.NewReader(texture))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	ebitenImage := ebiten.NewImageFromImage(img)
 	r.images[textureId] = ebitenImage
+	return nil
 }
 
 // LoadFont loads an OpenType font from a reader and adds it to the manager.

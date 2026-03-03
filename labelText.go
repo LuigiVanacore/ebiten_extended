@@ -15,15 +15,9 @@ type TextNode struct {
 	font    text.Face
 }
 
-<<<<<<< HEAD
 // NewTextNode instantiates a display entity resolving specific text output using the assigned typography face format.
 func NewTextNode(name string, message string, font text.Face, c color.Color) *TextNode {
 	label := &TextNode{message: message, Node2D: *NewNode2D(name), font: font, color: c}
-=======
-func NewLabelText(name string, message string, position math2D.Vector2D, font text.Face, color color.Color) *LabelText {
-	label := &LabelText{message: message, Node2D: *NewNode2D(name), font: font, color: color}
-	label.SetPosition(position)
->>>>>>> 153f371edcb4dcf68c2d6633071e13a31c6b0c07
 	return label
 }
 
@@ -38,13 +32,7 @@ func (l *TextNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 		return
 	}
 
-<<<<<<< HEAD
 	worldPos := l.GetWorldPosition()
-=======
-func (l *LabelText) updateGeoM(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-l.Transform.GetPivot().X(), -l.Transform.GetPivot().Y())
-}
->>>>>>> 153f371edcb4dcf68c2d6633071e13a31c6b0c07
 
 	textOp := &text.DrawOptions{}
 	textOp.GeoM.Translate(worldPos.X(), worldPos.Y())

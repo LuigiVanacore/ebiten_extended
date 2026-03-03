@@ -43,9 +43,9 @@ func (r *Rectangle) GetCenter() Vector2D {
 func (r *Rectangle) SetCenter(center Vector2D) {
 	r.position.SetX(center.X() - r.size.X()/2)
 	r.position.SetY(center.Y() - r.size.Y()/2)
-func (r Rectangle) GetCenter() Vector2D {
-	return NewVector2D(r.position.X()+r.size.X()/2, r.position.Y()+r.size.Y()/2)
 }
+
+ 
 
 func (r *Rectangle) SetCenterX(x float64) {
 	r.position.SetX(x - r.size.X()/2)

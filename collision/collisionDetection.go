@@ -229,9 +229,9 @@ func RectangleSegmentCollide(r math2D.Rectangle, s math2D.Segment) bool {
 		return false
 	}
 	
-	rRange.SetMinimun(r.GetPosition().Y())
+	rRange.SetMinimum(r.GetPosition().Y())
 	rRange.SetMaximum(r.GetPosition().Y() + r.GetSize().Y())
-	sRange.SetMinimun(s.GetStartPoint().Y())
+	sRange.SetMinimum(s.GetStartPoint().Y())
 	sRange.SetMaximum( s.GetEndPoint().Y())
 	sRange = sRange.SortRange()
 	if !math2D.OverlappingRanges(rRange, sRange) {

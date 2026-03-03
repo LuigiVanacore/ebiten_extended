@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -82,11 +81,9 @@ func (c *Camera) Fill(color color.Color) {
 
 
 
-// ApplyRelativeTranslation applies camera-relative translation to op in place
-// (center of surface then offset by camera position). Use this to avoid allocations.
+// ApplyRelativeTranslation applies camera-relative translation to op in place.
+// World (0,0) maps to the top-left of the camera surface; camera position acts as view offset.
 func (c *Camera) ApplyRelativeTranslation(op *ebiten.DrawImageOptions, x, y float64) {
-	size := c.surface.Bounds().Size()
-	op.GeoM.Translate(float64(size.X)/2, float64(size.Y)/2)
 	op.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
 }
 
@@ -138,25 +135,23 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 	screen.DrawImage(c.surface, op)
 }
 
-// GetScreenCoords converts generic world coordinates (x, y) into local camera screen coordinates.
+// GetScreenCoords converts world coordinates (x, y) into camera surface coordinates (top-left origin).
 func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
-	w, h := c.width, c.height
 	co := math.Cos(float64(c.GetRotation()))
 	si := math.Sin(float64(c.GetRotation()))
 
 	x, y = x-c.GetPosition().X(), y-c.GetPosition().Y()
 	x, y = co*x-si*y, si*x+co*y
 
-	return x*c.zoom + float64(w)/2, y*c.zoom + float64(h)/2
+	return x * c.zoom, y * c.zoom
 }
 
-// GetWorldCoords converts raw screen coordinates (e.g., from a mouse) into world coordinates.
+// GetWorldCoords converts screen coordinates (e.g., from a mouse, top-left origin) into world coordinates.
 func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
-	w, h := c.width, c.height
 	co := math.Cos(-float64(c.GetRotation()))
 	si := math.Sin(-float64(c.GetRotation()))
 
-	x, y = (x-float64(w)/2)/c.zoom, (y-float64(h)/2)/c.zoom
+	x, y = x/c.zoom, y/c.zoom
 	x, y = co*x-si*y, si*x+co*y
 
 	return x + c.GetPosition().X(), y + c.GetPosition().Y()

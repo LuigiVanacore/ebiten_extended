@@ -11,10 +11,6 @@ type Node struct {
 	name     string
 	children []SceneNode
 	parent   SceneNode
-	id       uint64
-	name     string
-	children []SceneNode
-	parent   SceneNode
 }
 
 // NewNode creates and initializes a new Node with a generated unique ID and given name.

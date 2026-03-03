@@ -1,116 +1,91 @@
 package event
 
-import (
-	"testing"
-)
+import "testing"
 
-// mockEvent implements the Event interface for testing.
-type mockEvent struct {
-	id EventID
+// testConnection is a simple implementation of the connection interface for tests.
+type testConnection struct {
+	disposed bool
 }
 
-func (e *mockEvent) GetEventID() EventID {
-	return e.id
-}
+func (c *testConnection) IsDisposed() bool { return c.disposed }
 
-func TestSubscribeAndPublish(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(1)
-	called := false
+// TestConnectAndEmit verifies that a connected handler is called when Emit is invoked.
+func TestConnectAndEmit(t *testing.T) {
+	var got int
+	var called bool
 
-	handler := func(e Event) {
+	var e Event[int]
+	e.Connect(nil, func(v int) {
 		called = true
-	}
+		got = v
+	})
 
-	bus.Subscribe(eventID, handler)
-	bus.Publish(&mockEvent{id: eventID})
+	e.Emit(42)
 
 	if !called {
-		t.Errorf("Expected handler to be called on publish")
+		t.Fatalf("expected handler to be called")
+	}
+	if got != 42 {
+		t.Fatalf("expected value 42, got %d", got)
+	}
+	if e.NumConnections() != 1 {
+		t.Fatalf("expected 1 connection, got %d", e.NumConnections())
 	}
 }
 
-func TestUnsubscribe(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(2)
-	called := false
+// TestDisconnect ensures that Disconnect prevents further calls to a handler.
+func TestDisconnect(t *testing.T) {
+	var called bool
+	var e Event[int]
 
-	handler := func(e Event) {
+	conn := &testConnection{}
+	e.Connect(conn, func(v int) {
 		called = true
-	}
+	})
 
-	index := bus.Subscribe(eventID, handler)
-	bus.Unsubscribe(eventID, index)
-	bus.Publish(&mockEvent{id: eventID})
+	e.Disconnect(conn)
+	e.Emit(1)
 
 	if called {
-		t.Errorf("Handler should not be called after unsubscribe")
+		t.Fatalf("handler should not be called after Disconnect")
 	}
 }
 
-func TestUnsubscribeAll(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(3)
-	called := false
+// TestReset clears all handlers and leaves the event empty.
+func TestReset(t *testing.T) {
+	var called bool
+	var e Event[int]
 
-	handler := func(e Event) {
+	e.Connect(nil, func(v int) {
 		called = true
+	})
+
+	e.Reset()
+
+	if !e.IsEmpty() || e.NumConnections() != 0 {
+		t.Fatalf("expected event to be empty after Reset, got NumConnections=%d", e.NumConnections())
 	}
 
-	bus.Subscribe(eventID, handler)
-	bus.UnsubscribeAll(eventID)
-	bus.Publish(&mockEvent{id: eventID})
-
+	e.Emit(10)
 	if called {
-		t.Errorf("Handler should not be called after UnsubscribeAll")
+		t.Fatalf("handler should not be called after Reset")
 	}
 }
 
-func TestClear(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(4)
-	called := false
+// TestForward wires one event into another using Forward and ensures the second event fires.
+func TestForward(t *testing.T) {
+	var src Event[int]
+	var dst Event[int]
 
-	handler := func(e Event) {
+	var called bool
+	dst.Connect(nil, func(v int) {
 		called = true
-	}
+	})
 
-	bus.Subscribe(eventID, handler)
-	bus.Clear()
-	bus.Publish(&mockEvent{id: eventID})
+	src.Forward(nil, &dst)
+	src.Emit(5)
 
-	if called {
-		t.Errorf("Handler should not be called after Clear")
-	}
-}
-
-func TestGetSubscribers(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(5)
-
-	handler1 := func(e Event) {}
-	handler2 := func(e Event) {}
-
-	bus.Subscribe(eventID, handler1)
-	bus.Subscribe(eventID, handler2)
-
-	subs := bus.GetSubscribers(eventID)
-	if len(subs) != 2 {
-		t.Errorf("Expected 2 subscribers, got %d", len(subs))
-	}
-}
-
-func TestUnsubscribeInvalidIndex(t *testing.T) {
-	bus := NewEventBus()
-	eventID := EventID(6)
-
-	handler := func(e Event) {}
-
-	bus.Subscribe(eventID, handler)
-	// Try to unsubscribe with an invalid index (out of range)
-	bus.Unsubscribe(eventID, IndexSubscriber(10))
-	// Should not panic or remove the handler
-	if len(bus.GetSubscribers(eventID)) != 1 {
-		t.Errorf("Handler should not be removed with invalid index")
+	if !called {
+		t.Fatalf("expected forwarded event handler to be called")
 	}
 }

@@ -37,7 +37,7 @@ func (s Segment) ProjectSegment(onto Vector2D, ontoIsUnit bool) Range {
 		ontoUnit = onto.Normalize()
 	}
 	r := Range{}
-	r.SetMinimun(DotProduct(ontoUnit, s.startPoint))
+	r.SetMinimum(DotProduct(ontoUnit, s.startPoint))
 	r.SetMaximum(DotProduct(ontoUnit, s.endPoint))
 	r = r.SortRange()
 	return r

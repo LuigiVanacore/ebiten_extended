@@ -1,8 +1,6 @@
 package ebiten_extended
 
 import (
-	"fmt"
-
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -52,23 +50,21 @@ func (s *Sprite) SetLayer(layerIndex int) {
 }
 
 func (s *Sprite) SetPivotToCenter() {
-	s.Transform.SetPivot(s.textureRect.GetCenter())
+	tr := s.GetTransform()
+	center := s.textureRect.GetCenter()
+	tr.SetPivot(center.X(), center.Y())
+	s.SetTransform(tr)
 }
 
 func (s *Sprite) setPositionToPivot(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-s.Transform.GetPivot().X(), -s.Transform.GetPivot().Y())
+	tr := s.GetTransform()
+	pivot := tr.GetPivot()
+	op.GeoM.Translate(-pivot.X(), -pivot.Y())
 }
 
 func (s *Sprite) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	s.DebugInfo()
 	if s.texture != nil {
 		s.setPositionToPivot(op)
 		target.DrawImage(s.texture, op)
-	}
-}
-
-func (s *Sprite) DebugInfo() {
-	if GameManager().IsDebug() {
-		fmt.Printf("The position is x: %f y: %f, the rotation is %d \n", s.GetPosition().X(), s.GetPosition().Y(), s.GetRotation())
 	}
 }

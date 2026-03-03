@@ -1,27 +1,34 @@
 package ebiten_extended
 
 import (
-	"fmt"
+	"sort"
 
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// DefaultLayerIndex is the layer index used by AddNodeToDefaultLayer.
+const DefaultLayerIndex = 0
+
 // World represents the main game world, managing the scene graph, layers, and camera.
 // It handles updating and drawing all nodes within the game.
 type World struct {
 	rootScene  SceneNode
-	layers     []*Layer
+	layerRoots []SceneNode // layerRoots[i] = root node for layer index i
+	drawLayers *Layers
 	camera     *Camera
 	postUpdate func() // called after updateNode; e.g. set to collision.CollisionManager().CheckCollision to avoid import cycle
 }
 
 // NewWorld creates and initializes a new World instance.
-// It sets up the root scene node, initializes the layer slice, and creates a camera
-// matching the current window size.
 func NewWorld() *World {
 	w, h := ebiten.WindowSize()
-	return &World{ root: NewNode("root_world"), uiRoot: NewNode("ui_root"), camera: NewCamera(uint(w), uint(h)), layers: NewLayers()}
+	return &World{
+		rootScene:  NewNode("root_world"),
+		layerRoots: make([]SceneNode, 0),
+		drawLayers: NewLayers(),
+		camera:     NewCamera(uint(w), uint(h)),
+	}
 }
 
 // Camera returns the camera associated with the world.
@@ -29,68 +36,23 @@ func (world *World) Camera() *Camera {
 	return world.camera
 }
 
-// AddLayer adds a new Layer to the world's layer list and rebuilds the scene graph.
-func (world *World) AddLayer(layer *Layer) {
-	world.layers = append(world.layers, layer)
-	world.buildScene()
-}
-
-// searchLayer looks for a layer by its ID and returns it, or an error if not found.
-func (world *World) searchLayer(layerId int) (*Layer, error) {
-	err := world.checkLayerId(layerId)
-	if err != nil {
-		return nil, err
-	}
-	for _, layer := range world.layers {
-		if layer.GetId() == layerId {
-			return layer, nil
-		}
-	}
-	return nil, fmt.Errorf("error: layer not found %d", layerId)
-}
-
-// SetLayerPriority searches for a layer by its ID and updates its priority (rendering order/Z-index).
-func (world *World) SetLayerPriority(layerId int, priority int) {
-	layer, err := world.searchLayer(layerId)
-	if err != nil {
-		fmt.Println(err)
+// AddNodeToLayer adds a node to the layer at the given index.
+// Lower layer indices are drawn first (background). The index is created if it doesn't exist.
+func (world *World) AddNodeToLayer(node SceneNode, layerIndex int) {
+	if layerIndex < 0 {
 		return
 	}
-	layer.SetPriority(priority)
-}
-
-// GetOrCreateDefaultLayer returns a layer with MinLayerID, creating it if needed.
-func (world *World) GetOrCreateDefaultLayer() *Layer {
-	for _, l := range world.layers {
-		if l.GetId() == MinLayerID {
-			return l
-		}
+	for layerIndex >= len(world.layerRoots) {
+		root := NewNode("layer_root")
+		world.layerRoots = append(world.layerRoots, root)
+		world.rootScene.AddChildren(root)
 	}
-	layer := NewLayer(MinLayerID, 0, "default")
-	world.AddLayer(layer)
-	return layer
+	world.layerRoots[layerIndex].AddChildren(node)
 }
 
-// AddNodeToDefaultLayer adds the node to the default layer of the current world.
+// AddNodeToDefaultLayer adds the node to the default layer (index 0).
 func (world *World) AddNodeToDefaultLayer(node SceneNode) {
-	world.GetOrCreateDefaultLayer().AddNode(node)
-}
-
-// MinLayerID is the minimum valid layer id (0 and 1 are reserved).
-const MinLayerID = 2
-
-// checkLayerId validates a layer ID, ensuring it is greater than or equal to MinLayerID.
-func (world *World) checkLayerId(layerID int) error {
-	if layerID < MinLayerID {
-		return fmt.Errorf("invalid layer id %d: must be >= %d", layerID, MinLayerID)
-	}
-	return nil
-}
-
-// buildScene attaches the most recently added layer's root scene to the world's root scene.
-func (world *World) buildScene() {
-	layer := world.layers[len(world.layers)-1]
-	world.rootScene.AddChildren(layer.GetRootScene())
+	world.AddNodeToLayer(node, DefaultLayerIndex)
 }
 
 // SetPostUpdate sets a callback run after each Update (e.g. collision.CollisionManager().CheckCollision).
@@ -121,49 +83,64 @@ func (world *World) updateNode(node SceneNode) {
 	}
 }
 
-// Draw renders the world onto the target image.
-// It clears the camera surface, draws the scene graph, and then draws the camera.
-func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	world.camera.surface.Clear()
-	world.DrawNode(world.rootScene, target, op)
-	world.camera.Draw(target)
-	world.DrawUINode(world.uiRoot, target, op)
-}
-
-// DrawNode recursively draws the given node and its children.
-// It applies the transform matrix of each node to position, rotate, and scale it correctly.
-func (world *World) DrawNode(node SceneNode, target *ebiten.Image, op *ebiten.DrawImageOptions) {
+// queueNodeToLayers traverses the node subtree and queues draw callbacks to drawLayers.
+func (world *World) queueNodeToLayers(node SceneNode, parentGeoM ebiten.GeoM, layerIndex int) {
+	if node == nil {
+		return
+	}
+	op := ebiten.DrawImageOptions{}
 	if entity, ok := node.(transform.Transformable); ok {
-	    parent_op.GeoM = updateTransform(entity, parent_op.GeoM)
-
+		op.GeoM = updateTransform(entity, parentGeoM)
 		if drawable, ok := node.(Drawable); ok {
-			childOp := *op
-			world.camera.ApplyRelativeTranslation(&childOp, position.X(), position.Y())
-			drawable.Draw(world.camera.GetSurface(), &childOp)
+			childOp := op
+			world.camera.ApplyRelativeTranslation(&childOp, 0, 0)
+			_ = world.drawLayers.AddNodeToLayer(layerIndex, drawable, world.camera.GetSurface(), childOp)
 		}
 	}
-	parentGeoM := op.GeoM
-	for _, child := range node.GetChildren() {
-		op.GeoM = parentGeoM
-		world.DrawNode(child, target, op)
+	children := node.GetChildren()
+	// Sort descending: we push to a stack (LIFO), so higher GetLayer first => drawn last (on top)
+	sort.Slice(children, func(i, j int) bool {
+		li, lj := 0, 0
+		if d, ok := children[i].(Drawable); ok {
+			li = d.GetLayer()
+		}
+		if d, ok := children[j].(Drawable); ok {
+			lj = d.GetLayer()
+		}
+		return li > lj
+	})
+	for _, child := range children {
+		world.queueNodeToLayers(child, op.GeoM, layerIndex)
 	}
+}
+
+// Draw renders the world onto the target image.
+// It clears the camera surface, queues all nodes to layers by traverse order, draws layers, and then draws the camera.
+func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
+	world.camera.surface.Clear()
+	baseGeoM := ebiten.GeoM{}
+	for i := range world.layerRoots {
+		world.queueNodeToLayers(world.layerRoots[i], baseGeoM, i)
+	}
+	world.drawLayers.DrawLayers()
+	world.camera.Draw(target)
 }
 
 // updateTransform calculates the updated geometric matrix (GeoM) for an entity
 // based on its transform (position, rotation, pivot) and its parent's transform matrix.
-func updateTransform(entity transform.Transformable, parent_geoM ebiten.GeoM) ebiten.GeoM {
-	updated_GeoM := ebiten.GeoM{}
-	transform := entity.GetTransform()
-	position := transform.GetPosition()
-	pivot := transform.GetPivot()
-	rotation := transform.GetRotation()
+// parentGeoM is not mutated so siblings are positioned correctly.
+func updateTransform(entity transform.Transformable, parentGeoM ebiten.GeoM) ebiten.GeoM {
+	updated := ebiten.GeoM{}
+	tr := entity.GetTransform()
+	position := tr.GetPosition()
+	pivot := tr.GetPivot()
+	rotation := tr.GetRotation()
 
-	updated_GeoM.Translate(-pivot.X(), -pivot.Y())
-	updated_GeoM.Rotate(rotation)
-	updated_GeoM.Translate(pivot.X(), pivot.Y())
+	updated.Translate(-pivot.X(), -pivot.Y())
+	updated.Rotate(rotation)
+	updated.Translate(pivot.X(), pivot.Y())
+	updated.Translate(position.X(), position.Y())
+	updated.Concat(parentGeoM)
 
-	updated_GeoM.Translate(position.X(), position.Y())
-	updated_GeoM.Concat(parent_geoM)
-
-	return updated_GeoM
+	return updated
 }

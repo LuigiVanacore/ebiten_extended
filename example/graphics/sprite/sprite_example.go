@@ -1,44 +1,42 @@
 package main
 
 import (
-	"fmt" 
+	"fmt"
 	"log"
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/example/resources"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
 	screenWidth  = 640
 	screenHeight = 480
-	AircraftID   = "Aircraft_1"
+	aircraftID   = "aircraft"
 )
 
 type Game struct {
-	sprite   *ebiten_extended.SpriteNode
+	sprite   *ebiten_extended.Sprite
 	rotation float64
 	engine   *ebiten_extended.Engine
 }
 
 func NewGame() *Game {
 	engine := ebiten_extended.NewEngine()
-	engine.Resources().AddImage(AircraftID, resources.Aircraft)
+	if err := engine.Resources().AddImage(aircraftID, resources.Aircraft); err != nil {
+		log.Fatal(err)
+	}
 
-	sprite := ebiten_extended.NewSprite("Aircraft_1", engine.Resources().GetImage(AircraftID), true)
-	sprite.SetPosition(0, 0)
+	sprite := ebiten_extended.NewSprite("Aircraft_1", engine.Resources().GetImage(aircraftID), 0, true)
+	sprite.SetPosition(screenWidth/2, screenHeight/2)
 
-	sprite2 := ebiten_extended.NewSprite("Aircraft_2", engine.Resources().GetImage(AircraftID), true)
+	sprite2 := ebiten_extended.NewSprite("Aircraft_2", engine.Resources().GetImage(aircraftID), 0, true)
 	sprite2.SetPosition(50, 50)
 
-	sprite.AddChild(sprite2)
+	sprite.AddChildren(sprite2)
 
-	gameLayer := ebiten_extended.NewLayer(2, 2, "GameLayer")
-	gameLayer.AddNode(sprite)
-
-	engine.World().AddLayer(gameLayer)
+	engine.World().AddNodeToLayer(sprite, 0)
 	engine.SetIsDebug(true)
 	return &Game{sprite: sprite, engine: engine}
 }

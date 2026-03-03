@@ -21,7 +21,11 @@ type Collider struct {
 }
 
 // NewCollider returns a new collider with the given shape and mask. Add it to a CollisionManager with AddCollider.
+// Panics if shape is nil.
 func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
+	if shape == nil {
+		panic("collision: NewCollider shape must not be nil")
+	}
 	c := &Collider{
 		collisionShape:   shape,
 		mask:             mask,
@@ -56,17 +60,7 @@ func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) 
 	// Optional: draw collision shape outline for debugging
 }
 
-func (c *Collider) CanCollideWith(collider *Collider) bool {
-	return c.mask.IsCollidable(collider.GetCollisionMask())
-}
-
-func (c *Collider) IsColliding(collider *Collider) bool {
-	if c.collisionShape == nil || collider.collisionShape == nil {
-		return false
-	}
-	leftWorldTransf := c.GetWorldTransform()
-	rightWorldTransf := collider.GetWorldTransform()
-	c.collisionShape.UpdateTransform(leftWorldTransf)
-	collider.collisionShape.UpdateTransform(rightWorldTransf)
-	return c.collisionShape.IsColliding(collider.collisionShape)
+// CanCollideWith returns true if this collider's mask allows collision with the other participant.
+func (c *Collider) CanCollideWith(other CollisionParticipant) bool {
+	return c.mask.IsCollidable(other.GetCollisionMask())
 }

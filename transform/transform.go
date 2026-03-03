@@ -2,17 +2,20 @@ package transform
 
 import (
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Transform holds 2D position, pivot, rotation (radians), and an optional GeoM for scale/skew.
+// Transform holds 2D position, pivot, rotation (radians), scale, and an optional GeoM for scale/skew.
 type Transform struct {
 	position math2D.Vector2D
 	pivot    math2D.Vector2D
 	rotation float64
+	scale    math2D.Vector2D
 	geoM     ebiten.GeoM
 }
 
 // NewTransform returns a transform with the given position, pivot, and rotation (radians).
+// The initial scale is left at the zero vector; callers can set it explicitly if needed.
 func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation float64) Transform {
 	return Transform{position: position, pivot: pivot, rotation: rotation}
 }
@@ -35,12 +38,17 @@ func (t *Transform) SetRotation(rotation float64) {
 }
 
 func (t *Transform) SetPivot(x, y float64) {
-	t.pivot.SetPosition(x, y)
+	t.pivot.SetPosition(math2D.NewVector2D(x, y))
 }
 
 // SetScale sets the scaling factors.
 func (t *Transform) SetScale(x, y float64) {
 	t.scale = math2D.NewVector2D(x, y)
+}
+
+// Scale is an alias for SetScale and exists to match Node2D's usage.
+func (t *Transform) Scale(x, y float64) {
+	t.SetScale(x, y)
 }
 
 // GetScale returns the current scaling factors.

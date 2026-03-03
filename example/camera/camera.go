@@ -250,6 +250,6 @@ func main() {
 	game := &Game{}
 
 	if err := ebiten.RunGame(game); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

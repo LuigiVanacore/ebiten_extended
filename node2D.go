@@ -18,6 +18,13 @@ func NewNode2D(name string) *Node2D {
 	return &Node2D{Node: *NewNode(name), isDirty: true}
 }
 
+// AddChildren overrides Node.AddChildren to pass the Node2D itself as parent (not the embedded Node),
+// so GetParent() returns a transform.Transformable when the parent is a Node2D.
+func (n *Node2D) AddChildren(child SceneNode) {
+	child.AttachParent(n)
+	n.children = append(n.children, child)
+}
+
 // GetTransform retrieves the local spatial transform of this node.
 func (s *Node2D) GetTransform() transform.Transform {
 	return s.localTransform
@@ -31,7 +38,7 @@ func (s *Node2D) SetTransform(transform transform.Transform) {
 
 // SetPosition modifies the local X and Y position of the node and marks it as dirty.
 func (s *Node2D) SetPosition(x, y float64) {
-	s.localTransform.SetPosition(x, y)
+	s.localTransform.SetPosition(math2D.NewVector2D(x, y))
 	s.MarkDirty()
 }
 
@@ -80,7 +87,7 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 		world = parentTransformable.GetWorldTransform()
 	}
 
-	// Apply self local transform to the parent's world matrix
+	// Apply self local transform: combined = parent_world + local
 	world.Concat(b.localTransform)
 
 	// Cache

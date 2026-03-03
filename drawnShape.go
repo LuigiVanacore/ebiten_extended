@@ -34,22 +34,22 @@ func NewDrawnCircle(name string, position math2D.Vector2D, radius float32, color
 		radius: radius,
 		color: color,
 		isAntialiasActive: isAntialiasActive,
-		layer: layer,
+		layer:    layer,
 	}
-	circle.SetPosition(position)
+	circle.SetPosition(position.X(), position.Y())
 	return circle
 }
 
 func NewDrawnRectangle(name string, position math2D.Vector2D, size math2D.Vector2D, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
 	rect := &DrawnShape{
-		Node2D: *NewNode2D(name),
+		Node2D:   *NewNode2D(name),
 		shapeType: RECT,
-		size: size,
-		color: color,
+		size:              size,
+		color:             color,
 		isAntialiasActive: isAntialiasActive,
-		layer: layer,
+		layer:            layer,
 	}
-	rect.SetPosition(position)
+	rect.SetPosition(position.X(), position.Y())
 	return rect
 }
 

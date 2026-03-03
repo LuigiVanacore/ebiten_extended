@@ -7,13 +7,13 @@
 //
 //   - [Engine]: Entry point that owns the [World], [ResourceManager], input, and clock.
 //     Implement ebiten.Game by delegating Update/Draw/Layout to the engine.
-//   - [World]: Holds the scene tree, [Layer]s, and [Camera]. Update runs the game tick;
+//   - [World]: Holds the scene tree, [Layers], and [Camera]. Update runs the game tick;
 //     Draw renders the scene through the camera.
 //   - [SceneNode]: Interface for nodes in the scene graph ([Node], [Node2D]).
 //   - [Node2D]: 2D node with local transform (position, rotation, scale) and cached
 //     world transform. Base for [SpriteNode], [Camera], and custom drawables.
-//   - [Layer]: Groups of nodes with a priority (draw order). Use [World.AddLayer] and
-//     [MinLayerID] (≥2) for layer IDs.
+//   - [Layers]: Stack-based draw system. Use [World.AddNodeToLayer] with a layer index
+//     (lower = drawn first). [World.AddNodeToDefaultLayer] uses index 0.
 //   - [Drawable] / [Updatable]: Interfaces for nodes that are drawn or updated each frame.
 //
 // # Quick start
@@ -21,9 +21,7 @@
 // Create an engine, add a layer and a node, then run the game:
 //
 //	engine := ebiten_extended.NewEngine()
-//	layer := ebiten_extended.NewLayer(2, 0, "main")
-//	layer.AddNode(myNode)
-//	engine.World().AddLayer(layer)
+//	engine.World().AddNodeToLayer(myNode, 0)
 //	// In your game's Update: engine.Update()
 //	// In your game's Draw: engine.Draw(screen)
 //

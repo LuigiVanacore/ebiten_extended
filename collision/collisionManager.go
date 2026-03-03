@@ -3,36 +3,42 @@ package collision
 import "math"
 
 type collisionPair struct {
-	c1 *Collider
-	c2 *Collider
+	a CollisionParticipant
+	b CollisionParticipant
 }
 
-// CollisionManager holds colliders and runs broad-phase (spatial hash) and narrow-phase
-// detection each frame. Set CellSize (e.g. 100) for the grid cell size in pixels.
+// CollisionManager holds collision participants and runs broad-phase (AABB-based spatial hash) and narrow-phase
+// detection each frame. Use AddCollider for Colliders, AddParticipant for Area2D/RigidBody2D.
 // Call CheckCollision every frame (e.g. in World.SetPostUpdate).
 type CollisionManager struct {
-	colliders []*Collider
+	participants []CollisionParticipant
 
 	// CellSize is the spatial hash grid cell size in pixels (e.g. 100).
 	CellSize int
 
-	// Tracks collisions that happened in the previous frame to deduce Enter/Stay/Exit
-	// The uint64 key is an immutable hash of: min(id1, id2)<<32 | max(id1, id2).
 	previousCollisions map[uint64]collisionPair
 }
 
 // NewCollisionManager returns a new collision manager with default CellSize 100.
 func NewCollisionManager() *CollisionManager {
 	return &CollisionManager{
-		colliders:          make([]*Collider, 0),
-		CellSize:           100, // Hardcoded default, can be exposed later
+		participants:       make([]CollisionParticipant, 0),
+		CellSize:           100,
 		previousCollisions: make(map[uint64]collisionPair),
 	}
 }
 
-// AddCollider registers a collider so it is included in CheckCollision.
-func (c *CollisionManager) AddCollider(collider *Collider) {
-	c.colliders = append(c.colliders, collider)
+// AddCollider registers a collider. Kept for backward compatibility.
+func (m *CollisionManager) AddCollider(collider *Collider) {
+	m.AddParticipant(collider)
+}
+
+// AddParticipant registers a collision participant (Collider, Area2D, or RigidBody2D).
+func (m *CollisionManager) AddParticipant(p CollisionParticipant) {
+	if p == nil {
+		return
+	}
+	m.participants = append(m.participants, p)
 }
 
 func combineIDs(id1, id2 uint64) uint64 {
@@ -42,99 +48,169 @@ func combineIDs(id1, id2 uint64) uint64 {
 	return (id2 << 32) | id1
 }
 
-// CheckCollision evaluates intersections using a Spatial Hash Grid Broadphase
-// and calculates lifecycle events (Enter, Stay, Exit) based on the frame memory.
-func (c *CollisionManager) CheckCollision() {
-	// 1. BROADPHASE: Populate Spatial Hash Grid
-	grid := make(map[uint64][]*Collider)
+func isOverlapping(a, b CollisionParticipant) bool {
+	sa, sb := a.GetShape(), b.GetShape()
+	if sa == nil || sb == nil {
+		return false
+	}
+	sa.UpdateTransform(a.GetWorldTransform())
+	sb.UpdateTransform(b.GetWorldTransform())
+	return ShapeCollides(sa, sb)
+}
 
-	for _, coll := range c.colliders {
-		pos := coll.GetWorldPosition()
-		// Calculate the core cell using simple truncation
-		cellX := int(math.Floor(pos.X() / float64(c.CellSize)))
-		cellY := int(math.Floor(pos.Y() / float64(c.CellSize)))
+// CheckCollision evaluates intersections and emits lifecycle events.
+func (m *CollisionManager) CheckCollision() {
+	grid := make(map[uint64][]CollisionParticipant)
+	cellSize := float64(m.CellSize)
 
-		// To be safe with boundaries, we insert the collider in a 3x3 neighbor grid
-		// (A strict AABB cell insertion would be better, but this fits dynamic shapes).
-		for dx := -1; dx <= 1; dx++ {
-			for dy := -1; dy <= 1; dy++ {
-				// We map X and Y into a single uint64 key
-				x := uint64(uint32(cellX + dx))
-				y := uint64(uint32(cellY + dy))
-				cellKey := (x << 32) | y
-				grid[cellKey] = append(grid[cellKey], coll)
+	for _, p := range m.participants {
+		shape := p.GetShape()
+		if shape == nil {
+			continue
+		}
+		shape.UpdateTransform(p.GetWorldTransform())
+		minX, minY, maxX, maxY := ShapeAABB(shape)
+		cellMinX := int(math.Floor(minX / cellSize))
+		cellMaxX := int(math.Floor(maxX / cellSize))
+		cellMinY := int(math.Floor(minY / cellSize))
+		cellMaxY := int(math.Floor(maxY / cellSize))
+		for cx := cellMinX; cx <= cellMaxX; cx++ {
+			for cy := cellMinY; cy <= cellMaxY; cy++ {
+				key := (uint64(uint32(cx)) << 32) | uint64(uint32(cy))
+				grid[key] = append(grid[key], p)
 			}
 		}
 	}
 
-	// 2. NARROWPHASE && EVENT DISPATCHING
 	currentCollisions := make(map[uint64]collisionPair)
-	// We use a set string to deduplicate pairs checked multiple times in overlapping cells
 	checkedPairs := make(map[uint64]bool)
 
-	for _, cellColliders := range grid {
-		for i := 0; i < len(cellColliders); i++ {
-			for j := i + 1; j < len(cellColliders); j++ {
-				col1 := cellColliders[i]
-				col2 := cellColliders[j]
+	for _, cellParticipants := range grid {
+		for i := 0; i < len(cellParticipants); i++ {
+			for j := i + 1; j < len(cellParticipants); j++ {
+				a := cellParticipants[i]
+				b := cellParticipants[j]
 
-				if col1 == col2 {
+				if a == b {
 					continue
 				}
 
-				pairID := combineIDs(col1.GetID(), col2.GetID())
-
-				// Skip if already processed in another neighboring cell
+				pairID := combineIDs(a.GetID(), b.GetID())
 				if checkedPairs[pairID] {
 					continue
 				}
 				checkedPairs[pairID] = true
 
-				if col1.CanCollideWith(col2) && col1.IsColliding(col2) {
-					currentCollisions[pairID] = collisionPair{col1, col2}
+				if !a.CanCollideWith(b) || !b.CanCollideWith(a) {
+					continue
+				}
+				if !isOverlapping(a, b) {
+					continue
+				}
 
-					// Emit Lifecycle Events
-					_, wasColliding := c.previousCollisions[pairID]
-					if !wasColliding {
-						// Enter
-						if !col1.OnCollisionEnter.IsEmpty() {
-							col1.OnCollisionEnter.Emit(col2)
-						}
-						if !col2.OnCollisionEnter.IsEmpty() {
-							col2.OnCollisionEnter.Emit(col1)
-						}
-					} else {
-						// Stay
-						if !col1.OnCollisionStay.IsEmpty() {
-							col1.OnCollisionStay.Emit(col2)
-						}
-						if !col2.OnCollisionStay.IsEmpty() {
-							col2.OnCollisionStay.Emit(col1)
-						}
-					}
+				currentCollisions[pairID] = collisionPair{a: a, b: b}
+				m.emitCollisionEvents(a, b, pairID)
+			}
+		}
+	}
+
+	for pairID, pair := range m.previousCollisions {
+		if _, still := currentCollisions[pairID]; !still {
+			m.emitExitEvents(pair.a, pair.b)
+		}
+	}
+
+	m.previousCollisions = currentCollisions
+
+	for _, p := range m.participants {
+		if coll, ok := p.(*Collider); ok {
+			coll.SetWorldCoordinateUpdated(false)
+		}
+	}
+}
+
+func (m *CollisionManager) emitCollisionEvents(a, b CollisionParticipant, pairID uint64) {
+	wasColliding := false
+	if prev, ok := m.previousCollisions[pairID]; ok {
+		wasColliding = (prev.a == a && prev.b == b) || (prev.a == b && prev.b == a)
+	}
+
+	// Collider vs Collider
+	if colA, okA := a.(*Collider); okA {
+		if colB, okB := b.(*Collider); okB {
+			if !wasColliding {
+				if !colA.OnCollisionEnter.IsEmpty() {
+					colA.OnCollisionEnter.Emit(colB)
+				}
+				if !colB.OnCollisionEnter.IsEmpty() {
+					colB.OnCollisionEnter.Emit(colA)
+				}
+			} else {
+				if !colA.OnCollisionStay.IsEmpty() {
+					colA.OnCollisionStay.Emit(colB)
+				}
+				if !colB.OnCollisionStay.IsEmpty() {
+					colB.OnCollisionStay.Emit(colA)
 				}
 			}
+			return
 		}
 	}
 
-	// 3. EXIT EVENT RESOLUTION
-	// If a pair existed yesterday but doesn't exist today, emit Exit!
-	for pairID, pair := range c.previousCollisions {
-		if _, stillColliding := currentCollisions[pairID]; !stillColliding {
-			if !pair.c1.OnCollisionExit.IsEmpty() {
-				pair.c1.OnCollisionExit.Emit(pair.c2)
-			}
-			if !pair.c2.OnCollisionExit.IsEmpty() {
-				pair.c2.OnCollisionExit.Emit(pair.c1)
-			}
+	// Area2D vs Body (Collider or RigidBody2D)
+	if area, okA := a.(*Area2D); okA {
+		if body, okB := b.(Body); okB {
+			m.emitArea2DEvents(area, body, wasColliding)
+			return
+		}
+	}
+	if area, okB := b.(*Area2D); okB {
+		if body, okA := a.(Body); okA {
+			m.emitArea2DEvents(area, body, wasColliding)
 		}
 	}
 
-	// Flip frame buffers
-	c.previousCollisions = currentCollisions
+	// RigidBody2D vs RigidBody2D: no events (handled by PhysicsWorld)
+}
 
-	// Reset physics flag
-	for _, coll := range c.colliders {
-		coll.SetWorldCoordinateUpdated(false)
+func (m *CollisionManager) emitArea2DEvents(area *Area2D, body Body, wasColliding bool) {
+	ev := Area2DBodyEvent{Body: body}
+	if !wasColliding {
+		if !area.OnBodyEntered.IsEmpty() {
+			area.OnBodyEntered.Emit(ev)
+		}
+	} else {
+		if !area.OnBodyStay.IsEmpty() {
+			area.OnBodyStay.Emit(ev)
+		}
+	}
+}
+
+func (m *CollisionManager) emitExitEvents(a, b CollisionParticipant) {
+	if colA, okA := a.(*Collider); okA {
+		if colB, okB := b.(*Collider); okB {
+			if !colA.OnCollisionExit.IsEmpty() {
+				colA.OnCollisionExit.Emit(colB)
+			}
+			if !colB.OnCollisionExit.IsEmpty() {
+				colB.OnCollisionExit.Emit(colA)
+			}
+			return
+		}
+	}
+	if area, okA := a.(*Area2D); okA {
+		if body, okB := b.(Body); okB {
+			if !area.OnBodyExited.IsEmpty() {
+				area.OnBodyExited.Emit(Area2DBodyEvent{Body: body})
+			}
+			return
+		}
+	}
+	if area, okB := b.(*Area2D); okB {
+		if body, okA := a.(Body); okA {
+			if !area.OnBodyExited.IsEmpty() {
+				area.OnBodyExited.Emit(Area2DBodyEvent{Body: body})
+			}
+		}
 	}
 }
