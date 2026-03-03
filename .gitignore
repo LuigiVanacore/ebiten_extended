@@ -23,7 +23,7 @@ go.work.sum
 # IDE
 .idea/
 .vscode/
-.cursor/
+.cursorrules
 *.swp
 *.swo
 *~
