@@ -10,11 +10,11 @@ import (
 type ActionBinding []RawInputButton
 
 type InputManager struct {
-	actions    map[string]ActionBinding
-	actionMap  *ActionMap
-	stateBuf   *StateBuffer
+	actions      map[string]ActionBinding
+	actionMap    *ActionMap
+	stateBuf     *StateBuffer
 	mouseEnabled bool
-	cursorPos  math2D.Vector2D
+	cursorPos    math2D.Vector2D
 }
 
 func NewInputManager() *InputManager {
@@ -120,7 +120,8 @@ func (i *InputManager) IsMouseEnabled() bool {
 	return i.mouseEnabled
 }
 
-// GetCursorPos returns the World mapped Vector2D of the Hardware mouse.
+// GetCursorPos returns the absolute screen coordinates (OS Window) of the Hardware mouse.
+// To get the world-mapped coordinates, use Camera.GetCursorCoords(inputMgr) instead.
 func (i *InputManager) GetCursorPos() math2D.Vector2D {
 	return i.cursorPos
 }

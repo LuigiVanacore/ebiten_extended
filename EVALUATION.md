@@ -68,9 +68,9 @@
 - Doc indica "World mapped" ma restituisce coordinate schermo  
 - Azione: Mappare con la camera o chiarire la doc
 
-**FSM vs stateMachine**  
+**FSM vs stateMachine** ✅ 
 - Due pacchetti state machine  
-- Azione: Scegliere un’API principale
+- Azione: Scegliere un’API principale e riscrivere in Go Generics
 
 ### 4.3 Priorità bassa
 
@@ -109,7 +109,7 @@
 3. Input: cursor in world coords o doc aggiornata  
 4. ~~Drawable.GetLayer~~ ✅  
 5. ~~Deprecare Layers~~ ✅  
-6. Unificare FSM e stateMachine
+6. ~~Unificare FSM e stateMachine~~ ✅
 
 ### Fase 3 — Estensioni (3–5 giorni)
 

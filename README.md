@@ -15,7 +15,7 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 - **Resources**: [ResourceManager] for images and fonts (embed or load from bytes)
 - **Audio**: [AudioManager] for sounds (WAV, OGG, MP3) and playback
 - **Input**: Cursor position, key/button state via [input] package; gamepad/joystick support (buttons, sticks, standard layout)
-- **State machine**: [stateMachine] for AI or game states
+- **State machine**: [fsm] for AI or game states
 - **Tile map**: [tilemap] data structures for grid-based maps
 
 ## Installation
@@ -67,7 +67,7 @@ func main() {
 ## Documentation
 
 - **API (godoc)**: [pkg.go.dev/github.com/LuigiVanacore/ebiten_extended](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
-- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [stateMachine](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/stateMachine), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap)
+- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap)
 
 ## Layers
 

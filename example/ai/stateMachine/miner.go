@@ -1,6 +1,8 @@
 package example_statemachine
 
-
+import (
+	"github.com/LuigiVanacore/ebiten_extended/fsm"
+)
 
 type locationType uint
 
@@ -15,25 +17,32 @@ const (
 	//the amount of gold a miner must have before he feels comfortable
 	ComfortLevel = 5
 	//the amount of nuggets a miner can carry
-	MaxNuggets         = 3;
-//above this value a miner is thirsty
-ThirstLevel        = 5;
-//above this value a miner is sleepy
-TirednessThreshold = 5;
+	MaxNuggets = 3
+	//above this value a miner is thirsty
+	ThirstLevel = 5
+	//above this value a miner is sleepy
+	TirednessThreshold = 5
 )
 
 type Miner struct {
-	location locationType
-	goldCarried uint
+	location       locationType
+	goldCarried    uint
 	moneyInTheBank uint
-	thirst uint
-	fatigue uint
+	thirst         uint
+	fatigue        uint
+	stateMachine   *fsm.StateMachine[*Miner]
 }
 
-
 func NewMiner() *Miner {
-	miner := &Miner{ goldCarried: 0, moneyInTheBank: 0, thirst: 0, location: HOUSE}
+	miner := &Miner{goldCarried: 0, moneyInTheBank: 0, thirst: 0, location: HOUSE}
+	miner.stateMachine = fsm.NewStateMachine(miner)
+	miner.stateMachine.SetCurrentState(&GoHomeAndSleepTilRestedState{}) // Initial State
 	return miner
+}
+
+// GetStateMachine restituisce la Macchina a Stati del Miner
+func (miner *Miner) GetStateMachine() *fsm.StateMachine[*Miner] {
+	return miner.stateMachine
 }
 
 func (miner *Miner) GetLocation() locationType {
@@ -83,7 +92,7 @@ func (miner *Miner) GetMoneyInTheBank() uint {
 	return miner.moneyInTheBank
 }
 
-func (miner *Miner) SetMoneyInTheBank(wealth uint)  {
+func (miner *Miner) SetMoneyInTheBank(wealth uint) {
 	miner.moneyInTheBank = wealth
 }
 
@@ -99,7 +108,9 @@ func (miner *Miner) BuyAndDrinkAWhiskey() {
 	miner.moneyInTheBank -= 2
 }
 
-
 func (miner *Miner) Update() {
 	miner.thirst += 1
+	if miner.stateMachine != nil {
+		miner.stateMachine.Update()
+	}
 }

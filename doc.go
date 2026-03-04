@@ -44,7 +44,7 @@
 //   - [transform]: Local transform (position, pivot, rotation, scale).
 //   - [collision]: Colliders, shapes, masks, and collision detection.
 //   - [input]: Input manager and cursor position (enable with SetMouseEnabled).
-//   - [stateMachine]: Simple state machine for AI or game states.
+//   - [fsm]: Generics powered state machine for AI or game states.
 //   - [tilemap]: Tile map data structures.
 //   - [event]: Event bus (if enabled).
 package ebiten_extended
