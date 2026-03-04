@@ -72,11 +72,11 @@ func TestTween_Reset(t *testing.T) {
 }
 
 func TestTween_Update(t *testing.T) {
-	tw := NewTween("test", 20, 80, 1.0, Linear)
-	tw.Set(0.5)
+	tw := NewTween("test", 20, 80, 10.0, Linear)
+	tw.Set(5.0)
 	current, finished := tw.Update()
-	if current != 50 || finished {
-		t.Errorf("Update after Set(0.5): got (%v, %v), want (50, false)", current, finished)
+	if current != 56 || finished {
+		t.Errorf("Update after Set(5): got (%v, %v), want (56, false)", current, finished)
 	}
 }
 

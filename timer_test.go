@@ -73,3 +73,15 @@ func TestRestart(t *testing.T) {
 		t.Errorf("expected elapsed time after restart to be close to 0, got %v", timer.GetElapsedTime())
 	}
 }
+
+func TestTimerUpdateLooping(t *testing.T) {
+	timer := NewTimer(20*time.Millisecond, true).Start()
+	time.Sleep(30 * time.Millisecond)
+
+	if !timer.Update() {
+		t.Fatal("expected Update to report ended timer")
+	}
+	if timer.GetElapsedTime() > 10*time.Millisecond {
+		t.Fatalf("expected looping timer to restart elapsed time, got %v", timer.GetElapsedTime())
+	}
+}

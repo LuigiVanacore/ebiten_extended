@@ -25,31 +25,31 @@ func NewLayers() *Layers {
 }
 
 // AddNodeToLayerF adds a draw callback to the layer at the given index.
-// Returns ErrInvalidLayerIndex if layedIndex is negative.
-func (l *Layers) AddNodeToLayerF(layedIndex int, node Drawable, f func()) error {
-	if layedIndex < 0 {
+// Returns ErrInvalidLayerIndex if layerIndex is negative.
+func (l *Layers) AddNodeToLayerF(layerIndex int, f func()) error {
+	if layerIndex < 0 {
 		return ErrInvalidLayerIndex
 	}
-	for layedIndex >= len(l.layers) {
+	for layerIndex >= len(l.layers) {
 		l.layers = append(l.layers, utils.Stack[func()]{})
 	}
-	l.layers[layedIndex].Push(f)
+	l.layers[layerIndex].Push(f)
 	return nil
 }
 
 // AddNodeToLayer adds a node's draw callback to the layer at the given index.
-// Returns ErrInvalidLayerIndex if layedIndex is negative.
-func (l *Layers) AddNodeToLayer(layedIndex int, node Drawable, target *ebiten.Image, op ebiten.DrawImageOptions) error {
-	if layedIndex < 0 {
+// Returns ErrInvalidLayerIndex if layerIndex is negative.
+func (l *Layers) AddNodeToLayer(layerIndex int, node Drawable, target *ebiten.Image, op ebiten.DrawImageOptions) error {
+	if layerIndex < 0 {
 		return ErrInvalidLayerIndex
 	}
-	for layedIndex >= len(l.layers) {
+	for layerIndex >= len(l.layers) {
 		l.layers = append(l.layers, utils.Stack[func()]{})
 	}
 	f := func() {
 		node.Draw(target, &op)
 	}
-	l.layers[layedIndex].Push(f)
+	l.layers[layerIndex].Push(f)
 	return nil
 }
 

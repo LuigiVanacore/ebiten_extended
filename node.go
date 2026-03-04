@@ -70,7 +70,9 @@ func (s *Node) GetChildren() []SceneNode {
 
 // Delete cleanly removes this operational node entirely from its active parent.
 func (s *Node) Delete() {
-	s.parent.DetachChild(s)
+	if s.parent != nil {
+		s.parent.DetachChild(s)
+	}
 }
 
 // MarkDirty triggers a recursive flag through this node and its children notifying them of updates required.

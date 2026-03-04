@@ -42,19 +42,38 @@ func NewGame() *Game {
 	physicsWorld.Gravity = math2D.NewVector2D(0, 400)
 
 	collisionMgr := collision.NewCollisionManager()
+	mustRigidBody := func(shape collision.CollisionShape, mask collision.CollisionMask) *physics.RigidBody2D {
+		rb, err := physics.NewRigidBody2D(shape, mask)
+		if err != nil {
+			panic(err)
+		}
+		return rb
+	}
+	mustArea := func(shape collision.CollisionShape, mask collision.CollisionMask) *collision.Area2D {
+		area, err := collision.NewArea2D(shape, mask)
+		if err != nil {
+			panic(err)
+		}
+		return area
+	}
+	mustAddBody := func(body *physics.RigidBody2D) {
+		if err := physicsWorld.AddRigidBody(body); err != nil {
+			panic(err)
+		}
+	}
 
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
 	// Player (RigidBody with circle shape)
 	playerShape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 20))
-	player := physics.NewRigidBody2D(playerShape, mask)
+	player := mustRigidBody(playerShape, mask)
 	player.SetPosition(100, 50)
 	player.UsesGravity = true
 	player.AddChildren(ebiten_extended.NewDrawnCircle("player", math2D.ZeroVector2D(), 20, playerColor, true, 0))
 
 	// Obstacle (RigidBody, static - zero velocity)
 	obstacleShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(80, 80)))
-	obstacle := physics.NewRigidBody2D(obstacleShape, mask)
+	obstacle := mustRigidBody(obstacleShape, mask)
 	obstacle.SetPosition(320, 390)
 	obstacle.UsesGravity = false
 	obstacle.Static = true
@@ -63,7 +82,7 @@ func NewGame() *Game {
 	// Floor (static - collider same size as drawing, perfectly overlapped)
 	floorSize := math2D.NewVector2D(float64(floorWidth), float64(floorHeight))
 	floorShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), floorSize))
-	floor := physics.NewRigidBody2D(floorShape, mask)
+	floor := mustRigidBody(floorShape, mask)
 	floor.SetPosition(float64(floorWidth)/2, float64(screenHeight)-float64(floorHeight)/2)
 	floor.UsesGravity = false
 	floor.Static = true
@@ -71,7 +90,7 @@ func NewGame() *Game {
 
 	// Area2D (sensor/trigger)
 	areaShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(150, 50)))
-	area := collision.NewArea2D(areaShape, mask)
+	area := mustArea(areaShape, mask)
 	area.SetPosition(450, 380)
 	area.AddChildren(ebiten_extended.NewDrawnRectangle("area", math2D.ZeroVector2D(), math2D.NewVector2D(150, 50), areaColor, true, 0))
 
@@ -84,9 +103,9 @@ func NewGame() *Game {
 	engine.World().AddNodeToLayer(floor, 0)
 	engine.World().AddNodeToLayer(area, 0)
 
-	physicsWorld.AddRigidBody(player)
-	physicsWorld.AddRigidBody(obstacle)
-	physicsWorld.AddRigidBody(floor)
+	mustAddBody(player)
+	mustAddBody(obstacle)
+	mustAddBody(floor)
 
 	collisionMgr.AddParticipant(player)
 	collisionMgr.AddParticipant(obstacle)

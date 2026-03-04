@@ -56,6 +56,33 @@ func TestCameraApplyRelativeTranslation(t *testing.T) {
 	}
 }
 
+func TestCameraApplyRelativeTranslation_WithOffsets(t *testing.T) {
+	cam := NewCamera(320, 240)
+	cam.SetPosition(50, 25)
+
+	op := &ebiten.DrawImageOptions{}
+	cam.ApplyRelativeTranslation(op, 100, 80)
+
+	ex, ey := op.GeoM.Element(0, 2), op.GeoM.Element(1, 2)
+	if !floatEqual(ex, 50, 0.01) || !floatEqual(ey, 55, 0.01) {
+		t.Errorf("ApplyRelativeTranslation with offsets: expected (50, 55), got (%.2f, %.2f)", ex, ey)
+	}
+}
+
+func TestCameraFollow(t *testing.T) {
+	cam := NewCamera(320, 240)
+	target := NewNode2D("target")
+	target.SetPosition(30, 40)
+
+	cam.SetFollow(target)
+	cam.Update()
+
+	pos := cam.GetPosition()
+	if !floatEqual(pos.X(), 30, 0.01) || !floatEqual(pos.Y(), 40, 0.01) {
+		t.Errorf("camera follow expected (30,40), got (%.2f,%.2f)", pos.X(), pos.Y())
+	}
+}
+
 func TestCameraZoomAffectsCoords(t *testing.T) {
 	cam := NewCamera(320, 240)
 	cam.SetPosition(0, 0)

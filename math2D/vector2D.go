@@ -59,7 +59,7 @@ func OneVector2D() Vector2D {
 
 // Magnitude returns the length of the vector (same as Length).
 func (v Vector2D) Magnitude() float64 {
-	return math.Sqrt(v.x*v.x + v.y*v.y)
+	return v.Length()
 }
 
 func (v *Vector2D) SetPosition(vector Vector2D) {
@@ -143,10 +143,19 @@ func (v Vector2D) RotateVector270() Vector2D {
 }
 
 func (v Vector2D) EncloseAngle(v2 Vector2D) float64 {
-	var uA = OneVector2D()
-	var uB = OneVector2D()
-	var dp = DotProduct(uA, uB)
-	return DegreesToRadian(math.Acos(dp))
+	uA := v.Normalize()
+	uB := v2.Normalize()
+	if uA.IsZero() || uB.IsZero() {
+		return 0
+	}
+	dp := DotProduct(uA, uB)
+	if dp > 1 {
+		dp = 1
+	}
+	if dp < -1 {
+		dp = -1
+	}
+	return math.Acos(dp)
 }
 
 func (v Vector2D) ProjectVector(v2 Vector2D) Vector2D {

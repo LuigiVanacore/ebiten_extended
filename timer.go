@@ -60,3 +60,18 @@ func (t *Timer) GetElapsedTime() time.Duration {
 	return time.Since(t.startTime)
 }
 
+// Update checks timer state and applies loop restart when enabled.
+// Returns true when the timer has reached its duration in this update call.
+func (t *Timer) Update() bool {
+	if t.startTime.IsZero() {
+		return false
+	}
+	if !t.IsEnded() {
+		return false
+	}
+	if t.looped {
+		t.Restart()
+	}
+	return true
+}
+

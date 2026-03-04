@@ -63,6 +63,7 @@ func (world *World) SetPostUpdate(f func()) {
 // Update progresses the game state by one tick.
 // It recursively updates all nodes in the scene graph and runs the postUpdate callback if set.
 func (world *World) Update() {
+	world.camera.Update()
 	world.updateNode(world.rootScene)
 	if world.postUpdate != nil {
 		world.postUpdate()
@@ -123,11 +124,11 @@ func (world *World) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 		world.queueNodeToLayers(world.layerRoots[i], baseGeoM, i)
 	}
 	world.drawLayers.DrawLayers()
-	world.camera.Draw(target)
+	world.camera.DrawWithOptions(target, op)
 }
 
 // updateTransform calculates the updated geometric matrix (GeoM) for an entity
-// based on its transform (position, rotation, pivot) and its parent's transform matrix.
+// based on its transform (position, rotation, scale, pivot) and its parent's transform matrix.
 // parentGeoM is not mutated so siblings are positioned correctly.
 func updateTransform(entity transform.Transformable, parentGeoM ebiten.GeoM) ebiten.GeoM {
 	updated := ebiten.GeoM{}
@@ -135,8 +136,10 @@ func updateTransform(entity transform.Transformable, parentGeoM ebiten.GeoM) ebi
 	position := tr.GetPosition()
 	pivot := tr.GetPivot()
 	rotation := tr.GetRotation()
+	scale := tr.GetScale()
 
 	updated.Translate(-pivot.X(), -pivot.Y())
+	updated.Scale(scale.X(), scale.Y())
 	updated.Rotate(rotation)
 	updated.Translate(pivot.X(), pivot.Y())
 	updated.Translate(position.X(), position.Y())

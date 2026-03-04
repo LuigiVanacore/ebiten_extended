@@ -43,5 +43,5 @@ func (tween *Tween) Reset() {
 }
  
 func (tween *Tween) Update() (current float32, isFinished bool) {
-	return tween.Set(tween.time)
+	return tween.Set(tween.time + 1)
 }

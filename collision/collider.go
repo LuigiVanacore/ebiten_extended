@@ -1,6 +1,8 @@
 package collision
 
 import (
+	"errors"
+
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/event"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,11 +22,11 @@ type Collider struct {
 	OnCollisionExit  *event.Event[*Collider]
 }
 
-// NewCollider returns a new collider with the given shape and mask. Add it to a CollisionManager with AddCollider.
-// Panics if shape is nil.
-func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
+// NewCollider returns a new collider with the given shape and mask.
+// Add it to a CollisionManager with AddCollider.
+func NewCollider(shape CollisionShape, mask CollisionMask) (*Collider, error) {
 	if shape == nil {
-		panic("collision: NewCollider shape must not be nil")
+		return nil, errors.New("collision: NewCollider shape must not be nil")
 	}
 	c := &Collider{
 		collisionShape:   shape,
@@ -33,7 +35,7 @@ func NewCollider(shape CollisionShape, mask CollisionMask) *Collider {
 		OnCollisionStay:  &event.Event[*Collider]{},
 		OnCollisionExit:  &event.Event[*Collider]{},
 	}
-	return c
+	return c, nil
 }
 
 func (c *Collider) IsWorldCoordinateUpdated() bool {

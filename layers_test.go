@@ -10,9 +10,8 @@ import (
 
 func TestLayersAddNodeToLayerF_InvalidIndex(t *testing.T) {
 	layers := NewLayers()
-	rect := NewDrawnRectangle("r", math2D.ZeroVector2D(), math2D.ZeroVector2D(), color.White, false, 0)
 
-	err := layers.AddNodeToLayerF(-1, rect, func() {})
+	err := layers.AddNodeToLayerF(-1, func() {})
 	if err != ErrInvalidLayerIndex {
 		t.Errorf("expected ErrInvalidLayerIndex, got %v", err)
 	}
@@ -32,9 +31,8 @@ func TestLayersAddNodeToLayer_InvalidIndex(t *testing.T) {
 
 func TestLayersAddNodeToLayerF_ValidIndex(t *testing.T) {
 	layers := NewLayers()
-	rect := NewDrawnRectangle("r", math2D.ZeroVector2D(), math2D.ZeroVector2D(), color.White, false, 0)
 
-	err := layers.AddNodeToLayerF(0, rect, func() {})
+	err := layers.AddNodeToLayerF(0, func() {})
 	if err != nil {
 		t.Errorf("expected nil error for valid index, got %v", err)
 	}

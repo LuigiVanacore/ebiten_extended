@@ -7,6 +7,14 @@ type OrientedRectangle struct {
 	rotation     float64
 }
 
+func NewOrientedRectangle(center, halfExtended Vector2D, rotation float64) OrientedRectangle {
+	return OrientedRectangle{
+		center:       center,
+		halfExtended: halfExtended,
+		rotation:     rotation,
+	}
+}
+
 func (orientedrectangle *OrientedRectangle) GetCenter() Vector2D {
 	return orientedrectangle.center
 }

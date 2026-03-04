@@ -45,6 +45,10 @@ func (sm *StateMachine) GetCurrentState() Stateable {
 	return sm.states[sm.currentStateID]
 }
 
+func (sm *StateMachine) GetCurrentStateID() StateID {
+	return sm.currentStateID
+}
+
 func (sm *StateMachine) Update() {
 
 	if sm.IsEmpty() {
@@ -89,14 +93,12 @@ func (sm *StateMachine) GetStates() map[StateID]Stateable {
 
 // Reset resets the state machine to its initial state.
 func (sm *StateMachine) Reset() {
-	if curr, ok := sm.states[sm.currentStateID]; ok {
-		curr.Exit()
-	}
-	sm.currentStateID = 0
 	for _, state := range sm.states {
 		state.Exit()
 	}
+	sm.currentStateID = 0
 	sm.states = make(map[StateID]Stateable)
+	sm.transitions = make(map[StateID][]Transition)
 }
 
 // Clear clears all states in the state machine.
@@ -106,6 +108,7 @@ func (sm *StateMachine) Clear() {
 	}
 	sm.currentStateID = 0
 	sm.states = make(map[StateID]Stateable)
+	sm.transitions = make(map[StateID][]Transition)
 }
 
 // IsEmpty checks if the state machine has no states.

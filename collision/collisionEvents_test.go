@@ -13,12 +13,18 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	// NewCollisionRect was not exposed, creating direct struct
 	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1 := NewCollider(shape1, mask1)
+	c1, err := NewCollider(shape1, mask1)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c1.SetPosition(0, 0)
 
 	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c2 := NewCollider(shape2, mask2)
+	c2, err := NewCollider(shape2, mask2)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c2.SetPosition(0, 0)
 
 	manager.AddCollider(c1)
@@ -75,8 +81,14 @@ func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
 	manager := NewCollisionManager()
 	shape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1 := NewCollider(shape, mask)
-	c2 := NewCollider(shape, mask)
+	c1, err := NewCollider(shape, mask)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
+	c2, err := NewCollider(shape, mask)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c1.SetPosition(0, 0)
 	c2.SetPosition(0, 0)
 
@@ -98,12 +110,18 @@ func TestSpatialGridSeparation(t *testing.T) {
 
 	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1 := NewCollider(shape1, mask1)
+	c1, err := NewCollider(shape1, mask1)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c1.SetPosition(0, 0) // Cell x=0, y=0
 
 	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c2 := NewCollider(shape2, mask2)
+	c2, err := NewCollider(shape2, mask2)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c2.SetPosition(2000, 2000) // Cell x=20, y=20 (Grid won't match)
 
 	manager.AddCollider(c1)

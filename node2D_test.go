@@ -19,7 +19,7 @@ func TestNewNode2D(t *testing.T) {
 
 func TestSetAndGetTransform(t *testing.T) {
 	node := NewNode2D("TestNode")
-	newTransform := transform.Transform{}
+	newTransform := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
 	node.SetTransform(newTransform)
 
 	if node.GetTransform() != newTransform {
@@ -32,7 +32,7 @@ func TestGetWorldTransform(t *testing.T) {
 	child := NewNode2D("Child")
 	root.AddChildren(child)
 
-	rootTransform := transform.Transform{}
+	rootTransform := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
 	root.SetTransform(rootTransform)
 
 	worldTransform := child.GetWorldTransform()

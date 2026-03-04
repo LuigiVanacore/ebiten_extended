@@ -1,6 +1,8 @@
 package physics
 
 import (
+	"errors"
+
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/collision"
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
@@ -23,10 +25,10 @@ type RigidBody2D struct {
 	mask         collision.CollisionMask
 }
 
-// NewRigidBody2D creates a RigidBody2D. Panics if shape is nil.
-func NewRigidBody2D(shape collision.CollisionShape, mask collision.CollisionMask) *RigidBody2D {
+// NewRigidBody2D creates a RigidBody2D.
+func NewRigidBody2D(shape collision.CollisionShape, mask collision.CollisionMask) (*RigidBody2D, error) {
 	if shape == nil {
-		panic("physics: NewRigidBody2D shape must not be nil")
+		return nil, errors.New("physics: NewRigidBody2D shape must not be nil")
 	}
 	rb := &RigidBody2D{
 		Node2D:      *ebiten_extended.NewNode2D("rigidbody"),
@@ -37,7 +39,7 @@ func NewRigidBody2D(shape collision.CollisionShape, mask collision.CollisionMask
 		shape:       shape,
 		mask:        mask,
 	}
-	return rb
+	return rb, nil
 }
 
 func (r *RigidBody2D) GetVelocity() math2D.Vector2D {

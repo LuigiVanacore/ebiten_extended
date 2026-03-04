@@ -17,7 +17,10 @@ func TestCollisionManager_SingleParticipant(t *testing.T) {
 	manager := NewCollisionManager()
 	shape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c := NewCollider(shape, mask)
+	c, err := NewCollider(shape, mask)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	manager.AddCollider(c)
 	manager.CheckCollision()
 	// Single participant - no pairs, no panic
@@ -30,9 +33,18 @@ func TestCollisionManager_CanCollideWithFilter(t *testing.T) {
 	mask3 := NewCollisionMask(utils.ByteSet(3), utils.ByteSet(3)) // layer 3 only with 3
 
 	shape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
-	c1 := NewCollider(shape, mask1)
-	c2 := NewCollider(shape, mask2)
-	c3 := NewCollider(shape, mask3)
+	c1, err := NewCollider(shape, mask1)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
+	c2, err := NewCollider(shape, mask2)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
+	c3, err := NewCollider(shape, mask3)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	c1.SetPosition(0, 0)
 	c2.SetPosition(5, 5)  // overlaps c1 (masks compatible)
 	c3.SetPosition(10, 10) // overlaps c1,c2 but mask3 doesn't collide with 1 or 2
@@ -65,11 +77,17 @@ func TestCollisionManager_CanCollideWithFilter(t *testing.T) {
 func TestCollisionManager_Area2DOnBodyStay(t *testing.T) {
 	manager := NewCollisionManager()
 	areaShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100)))
-	area := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	area, err := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	if err != nil {
+		t.Fatalf("NewArea2D failed: %v", err)
+	}
 	area.SetPosition(100, 100)
 
 	collShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
-	coll := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	coll, err := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	coll.SetPosition(120, 120)
 
 	manager.AddParticipant(coll)
@@ -95,11 +113,17 @@ func TestCollisionManager_AABBBroadPhaseLargeBody(t *testing.T) {
 	manager.CellSize = 100
 
 	floorShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(640, 40)))
-	floor := NewArea2D(floorShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	floor, err := NewArea2D(floorShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	if err != nil {
+		t.Fatalf("NewArea2D failed: %v", err)
+	}
 	floor.SetPosition(320, 460)
 
 	ballShape := NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 20))
-	ball := NewCollider(ballShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	ball, err := NewCollider(ballShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
 	ball.SetPosition(20, 450) // left edge of floor
 
 	manager.AddParticipant(floor)

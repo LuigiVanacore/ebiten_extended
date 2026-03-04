@@ -8,16 +8,27 @@ import (
 	"github.com/LuigiVanacore/ebiten_extended/utils"
 )
 
+func mustRigidBody(t *testing.T, shape collision.CollisionShape, mask collision.CollisionMask) *RigidBody2D {
+	t.Helper()
+	body, err := NewRigidBody2D(shape, mask)
+	if err != nil {
+		t.Fatalf("NewRigidBody2D failed: %v", err)
+	}
+	return body
+}
+
 func TestRigidBody2D_VelocityIntegration(t *testing.T) {
 	world := NewPhysicsWorld()
 	shape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10))
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	body := NewRigidBody2D(shape, mask)
+	body := mustRigidBody(t, shape, mask)
 	body.SetPosition(0, 0)
 	body.SetVelocity(math2D.NewVector2D(100, 50))
 	body.UsesGravity = false
 
-	world.AddRigidBody(body)
+	if err := world.AddRigidBody(body); err != nil {
+		t.Fatalf("AddRigidBody failed: %v", err)
+	}
 	world.Step(0.016) // ~1/60 sec
 
 	pos := body.GetPosition()
@@ -33,12 +44,14 @@ func TestRigidBody2D_Gravity(t *testing.T) {
 	world := NewPhysicsWorld()
 	shape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10))
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	body := NewRigidBody2D(shape, mask)
+	body := mustRigidBody(t, shape, mask)
 	body.SetPosition(100, 100)
 	body.UsesGravity = true
 	body.GravityScale = 1
 
-	world.AddRigidBody(body)
+	if err := world.AddRigidBody(body); err != nil {
+		t.Fatalf("AddRigidBody failed: %v", err)
+	}
 	world.Step(0.016)
 
 	v := body.GetVelocity()
@@ -48,7 +61,7 @@ func TestRigidBody2D_Gravity(t *testing.T) {
 }
 
 func TestRigidBody2D_ApplyImpulse(t *testing.T) {
-	body := NewRigidBody2D(
+	body := mustRigidBody(t,
 		collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)),
 		collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)),
 	)

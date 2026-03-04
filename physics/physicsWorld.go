@@ -1,6 +1,7 @@
 package physics
 
 import (
+	"errors"
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/collision"
@@ -23,12 +24,13 @@ func NewPhysicsWorld() *PhysicsWorld {
 	}
 }
 
-// AddRigidBody adds a body to the simulation. Panics if body or its shape is nil.
-func (w *PhysicsWorld) AddRigidBody(body *RigidBody2D) {
+// AddRigidBody adds a body to the simulation.
+func (w *PhysicsWorld) AddRigidBody(body *RigidBody2D) error {
 	if body == nil || body.GetShape() == nil {
-		panic("physics: AddRigidBody body and shape must not be nil")
+		return errors.New("physics: AddRigidBody body and shape must not be nil")
 	}
 	w.rigidBodies = append(w.rigidBodies, body)
+	return nil
 }
 
 // RemoveRigidBody removes a body from the simulation.

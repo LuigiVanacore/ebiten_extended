@@ -15,7 +15,11 @@ type Node2D struct {
 
 // NewNode2D creates and initializes a new Node2D with a given name, marking it as initially dirty.
 func NewNode2D(name string) *Node2D {
-	return &Node2D{Node: *NewNode(name), isDirty: true}
+	n := &Node2D{Node: *NewNode(name), isDirty: true}
+	// Initialize local and world transforms properly so scale starts at (1, 1).
+	n.localTransform = transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	n.worldTransform = transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	return n
 }
 
 // AddChildren overrides Node.AddChildren to pass the Node2D itself as parent (not the embedded Node),
@@ -64,6 +68,11 @@ func (s *Node2D) SetScale(x, y float64) {
 	s.MarkDirty()
 }
 
+// GetScale returns the local scale factors of this node.
+func (s *Node2D) GetScale() math2D.Vector2D {
+	return s.localTransform.GetScale()
+}
+
 // MarkDirty flags this node and its children to recalculate their world transforms on the next query.
 func (s *Node2D) MarkDirty() {
 	if s.isDirty {
@@ -81,7 +90,7 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 	}
 
 	// Compute new world transform from parent if possible
-	world := transform.Transform{}
+	world := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
 	parent := b.GetParent()
 	if parentTransformable, ok := parent.(transform.Transformable); ok {
 		world = parentTransformable.GetWorldTransform()
@@ -103,3 +112,14 @@ func (b *Node2D) GetWorldPosition() math2D.Vector2D {
 	return worldTransform.GetPosition()
 }
 
+// GetWorldRotation returns the absolute world rotation in radians.
+func (b *Node2D) GetWorldRotation() float64 {
+	worldTransform := b.GetWorldTransform()
+	return (&worldTransform).GetRotation()
+}
+
+// GetWorldScale returns the absolute world scale factors.
+func (b *Node2D) GetWorldScale() math2D.Vector2D {
+	worldTransform := b.GetWorldTransform()
+	return (&worldTransform).GetScale()
+}

@@ -15,9 +15,9 @@ type Transform struct {
 }
 
 // NewTransform returns a transform with the given position, pivot, and rotation (radians).
-// The initial scale is left at the zero vector; callers can set it explicitly if needed.
+// The initial scale is initialized to (1,1).
 func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation float64) Transform {
-	return Transform{position: position, pivot: pivot, rotation: rotation}
+	return Transform{position: position, pivot: pivot, rotation: rotation, scale: math2D.NewVector2D(1, 1)}
 }
 
 func (t *Transform) GetPosition() math2D.Vector2D {
@@ -79,14 +79,16 @@ func (t *Transform) Translate(x, y float64) {
 
 func (t *Transform) UpdateGeoM(geom ebiten.GeoM) ebiten.GeoM {
 	geom.Translate(-t.pivot.X(), -t.pivot.Y())
+	geom.Scale(t.scale.X(), t.scale.Y())
 	geom.Rotate(t.rotation)
 	geom.Translate(t.position.X(), t.position.Y())
 	return geom
 }
 
-// Concat applies other's position and rotation after t (result = t * other).
-// Scale/geoM from other are not applied.
+// Concat applies other's scale, rotation and position after t (result = t * other).
+// geoM from other is not applied.
 func (t *Transform) Concat(other Transform) {
-	t.Translate(other.GetPosition().X(), other.GetPosition().Y())
+	t.scale.SetPosition(math2D.NewVector2D(t.scale.X()*other.GetScale().X(), t.scale.Y()*other.GetScale().Y()))
 	t.Rotate(other.GetRotation())
+	t.Translate(other.GetPosition().X(), other.GetPosition().Y())
 }

@@ -33,12 +33,37 @@ func (m *CollisionManager) AddCollider(collider *Collider) {
 	m.AddParticipant(collider)
 }
 
+// RemoveCollider unregisters a collider. Kept for backward compatibility.
+func (m *CollisionManager) RemoveCollider(collider *Collider) {
+	m.RemoveParticipant(collider)
+}
+
 // AddParticipant registers a collision participant (Collider, Area2D, or RigidBody2D).
 func (m *CollisionManager) AddParticipant(p CollisionParticipant) {
 	if p == nil {
 		return
 	}
 	m.participants = append(m.participants, p)
+}
+
+// RemoveParticipant unregisters a collision participant.
+func (m *CollisionManager) RemoveParticipant(p CollisionParticipant) {
+	if p == nil {
+		return
+	}
+	for i, current := range m.participants {
+		if current == p {
+			m.participants[i] = m.participants[len(m.participants)-1]
+			m.participants = m.participants[:len(m.participants)-1]
+			break
+		}
+	}
+	// Drop stale collision pairs that contain removed participant.
+	for pairID, pair := range m.previousCollisions {
+		if pair.a == p || pair.b == p {
+			delete(m.previousCollisions, pairID)
+		}
+	}
 }
 
 func combineIDs(id1, id2 uint64) uint64 {

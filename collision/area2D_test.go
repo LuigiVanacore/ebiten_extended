@@ -7,14 +7,32 @@ import (
 	"github.com/LuigiVanacore/ebiten_extended/utils"
 )
 
+func mustNewArea2D(t *testing.T, shape CollisionShape, mask CollisionMask) *Area2D {
+	t.Helper()
+	area, err := NewArea2D(shape, mask)
+	if err != nil {
+		t.Fatalf("NewArea2D failed: %v", err)
+	}
+	return area
+}
+
+func mustNewCollider(t *testing.T, shape CollisionShape, mask CollisionMask) *Collider {
+	t.Helper()
+	c, err := NewCollider(shape, mask)
+	if err != nil {
+		t.Fatalf("NewCollider failed: %v", err)
+	}
+	return c
+}
+
 func TestArea2D_OnBodyEntered(t *testing.T) {
 	manager := NewCollisionManager()
 	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
-	area := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(100, 100)
 
 	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))}
-	coll := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(120, 120)
 
 	manager.AddCollider(coll)
@@ -35,11 +53,11 @@ func TestArea2D_OnBodyEntered(t *testing.T) {
 func TestArea2D_OnBodyExited(t *testing.T) {
 	manager := NewCollisionManager()
 	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
-	area := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(100, 100)
 
 	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))}
-	coll := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(120, 120)
 
 	manager.AddCollider(coll)
@@ -62,11 +80,11 @@ func TestArea2D_OnBodyExited(t *testing.T) {
 func TestArea2D_NoOverlapNoEvent(t *testing.T) {
 	manager := NewCollisionManager()
 	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(50, 50))}
-	area := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(0, 0)
 
 	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
-	coll := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(500, 500)
 
 	manager.AddCollider(coll)

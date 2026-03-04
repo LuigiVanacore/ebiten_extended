@@ -215,3 +215,13 @@ func (i *InputManager) IsGamepadButtonJustPressed(id ebiten.GamepadID, button eb
 func (i *InputManager) IsStandardGamepadButtonPressed(id ebiten.GamepadID, button ebiten.StandardGamepadButton) bool {
 	return ebiten.IsStandardGamepadButtonPressed(id, button)
 }
+
+// IsStandardGamepadButtonJustPressed reports whether the standard button was pressed this frame.
+func (i *InputManager) IsStandardGamepadButtonJustPressed(id ebiten.GamepadID, button ebiten.StandardGamepadButton) bool {
+	return inpututil.IsStandardGamepadButtonJustPressed(id, button)
+}
+
+// IsStandardGamepadButtonJustReleased reports whether the standard button was released this frame.
+func (i *InputManager) IsStandardGamepadButtonJustReleased(id ebiten.GamepadID, button ebiten.StandardGamepadButton) bool {
+	return inpututil.IsStandardGamepadButtonJustReleased(id, button)
+}

@@ -54,6 +54,11 @@ func (e *Engine) Audio() *AudioManager {
 	return e.audioManager
 }
 
+// Clock returns the engine clock.
+func (e *Engine) Clock() *Clock {
+	return e.clock
+}
+
 // IsDebug returns whether debug mode is currently enabled.
 func (e *Engine) IsDebug() bool {
 	return e.debug.Enabled()
@@ -74,9 +79,7 @@ func (e *Engine) Update() error {
 // Draw renders the game world onto the target screen image.
 // Ensure ebitengine signature compatibility.
 func (e *Engine) Draw(target *ebiten.Image) {
-	// The world might need an ops to start with
-	op := &ebiten.DrawImageOptions{}
-	e.world.Draw(target, op)
+	e.world.Draw(target, nil)
 }
 
 // Layout accepts a screen size and returns the logical screen size.

@@ -52,11 +52,15 @@ func (stateMachine *StateMachine) Update() {
 func (stateMachine *StateMachine) ChangeState(state State) {
 	stateMachine.previousState = stateMachine.currentState
 
-	stateMachine.currentState.Exit(stateMachine.owner)
+	if stateMachine.currentState != nil {
+		stateMachine.currentState.Exit(stateMachine.owner)
+	}
 
 	stateMachine.currentState = state
 
-	stateMachine.currentState.Enter(stateMachine.owner)
+	if stateMachine.currentState != nil {
+		stateMachine.currentState.Enter(stateMachine.owner)
+	}
 }
 
 

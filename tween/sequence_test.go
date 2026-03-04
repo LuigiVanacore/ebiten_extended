@@ -91,15 +91,24 @@ func TestSequence_Reset(t *testing.T) {
 }
 
 func TestSequence_Update(t *testing.T) {
-	tw := NewTween("t", 0, 100, 1.0, Linear)
+	tw := NewTween("t", 0, 100, 2.0, Linear)
 	seq := NewSequence("seq", tw)
-	// First Update: tween at time 0
+	// First Update advances one frame.
 	value, tweenComplete, seqComplete := seq.Update()
-	if value != 0 {
-		t.Errorf("Update at start: value = %v, want 0", value)
+	if value != 50 {
+		t.Errorf("Update at start: value = %v, want 50", value)
 	}
 	if tweenComplete || seqComplete {
 		t.Errorf("Update at start: tweenComplete=%v seqComplete=%v", tweenComplete, seqComplete)
+	}
+}
+
+func TestSequence_Remove_OutOfBoundsNoPanic(t *testing.T) {
+	seq := NewSequence("seq", NewTween("a", 0, 1, 1.0, Linear))
+	seq.Remove(-1)
+	seq.Remove(5)
+	if len(seq.Tweens) != 1 {
+		t.Fatalf("out-of-bounds remove should not modify sequence, got %d tweens", len(seq.Tweens))
 	}
 }
 

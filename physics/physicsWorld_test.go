@@ -8,21 +8,37 @@ import (
 	"github.com/LuigiVanacore/ebiten_extended/utils"
 )
 
+func mustNewRigidBody2D(t *testing.T, shape collision.CollisionShape, mask collision.CollisionMask) *RigidBody2D {
+	t.Helper()
+	body, err := NewRigidBody2D(shape, mask)
+	if err != nil {
+		t.Fatalf("NewRigidBody2D failed: %v", err)
+	}
+	return body
+}
+
+func mustAddRigidBody(t *testing.T, world *PhysicsWorld, body *RigidBody2D) {
+	t.Helper()
+	if err := world.AddRigidBody(body); err != nil {
+		t.Fatalf("AddRigidBody failed: %v", err)
+	}
+}
+
 func TestPhysicsWorld_StepNoOverlap(t *testing.T) {
 	world := NewPhysicsWorld()
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
-	b1 := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	b1 := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	b1.SetPosition(0, 0)
 	b1.SetVelocity(math2D.NewVector2D(50, 0))
 	b1.UsesGravity = false
 
-	b2 := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	b2 := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	b2.SetPosition(100, 0)
 	b2.UsesGravity = false
 
-	world.AddRigidBody(b1)
-	world.AddRigidBody(b2)
+	mustAddRigidBody(t, world, b1)
+	mustAddRigidBody(t, world, b2)
 	world.Step(0.016)
 
 	// Both should move; no overlap so no push-out
@@ -35,16 +51,16 @@ func TestPhysicsWorld_StepPushOut(t *testing.T) {
 	world := NewPhysicsWorld()
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
-	b1 := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	b1 := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	b1.SetPosition(0, 0)
 	b1.UsesGravity = false
 
-	b2 := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	b2 := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	b2.SetPosition(5, 0) // overlapping (sum radii 20, distance 5)
 	b2.UsesGravity = false
 
-	world.AddRigidBody(b1)
-	world.AddRigidBody(b2)
+	mustAddRigidBody(t, world, b1)
+	mustAddRigidBody(t, world, b2)
 	world.Step(0.016)
 
 	// After resolution they should not overlap (sum radii = 20)
@@ -61,9 +77,9 @@ func TestPhysicsWorld_StepPushOut(t *testing.T) {
 func TestPhysicsWorld_AddRemoveRigidBody(t *testing.T) {
 	world := NewPhysicsWorld()
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	body := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	body := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 
-	world.AddRigidBody(body)
+	mustAddRigidBody(t, world, body)
 	world.Step(0.016)
 
 	world.RemoveRigidBody(body)
@@ -75,18 +91,18 @@ func TestPhysicsWorld_StaticBodyNotMoved(t *testing.T) {
 	world := NewPhysicsWorld()
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
-	dynamic := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	dynamic := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	dynamic.SetPosition(0, 0)
 	dynamic.SetVelocity(math2D.NewVector2D(100, 0))
 	dynamic.UsesGravity = false
 
-	static := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(50, 50))), mask)
+	static := mustNewRigidBody2D(t, collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(50, 50))), mask)
 	static.SetPosition(30, 0)
 	static.UsesGravity = false
 	static.Static = true
 
-	world.AddRigidBody(dynamic)
-	world.AddRigidBody(static)
+	mustAddRigidBody(t, world, dynamic)
+	mustAddRigidBody(t, world, static)
 
 	initialStaticPos := static.GetPosition()
 	world.Step(0.016)
@@ -101,11 +117,11 @@ func TestPhysicsWorld_Gravity(t *testing.T) {
 	world.Gravity = math2D.NewVector2D(0, 400)
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
-	body := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	body := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	body.SetPosition(100, 100)
 	body.UsesGravity = true
 
-	world.AddRigidBody(body)
+	mustAddRigidBody(t, world, body)
 	world.Step(1.0 / 60.0) // one frame
 
 	// v_y should increase (gravity * dt)
@@ -120,18 +136,18 @@ func TestPhysicsWorld_VelocityZeroedOnCollision(t *testing.T) {
 	world.Gravity = math2D.NewVector2D(0, 400)
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
-	ball := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	ball := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	ball.SetPosition(50, 50)
 	ball.SetVelocity(math2D.NewVector2D(0, 100))
 	ball.UsesGravity = true
 
-	floor := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
+	floor := mustNewRigidBody2D(t, collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
 	floor.SetPosition(50, 100)
 	floor.UsesGravity = false
 	floor.Static = true
 
-	world.AddRigidBody(ball)
-	world.AddRigidBody(floor)
+	mustAddRigidBody(t, world, ball)
+	mustAddRigidBody(t, world, floor)
 
 	for i := 0; i < 60; i++ {
 		world.Step(1.0 / 60.0)
@@ -151,19 +167,19 @@ func TestPhysicsWorld_RestitutionBounce(t *testing.T) {
 	// Floor center (50,120), size 200x20 → top Y=110. Ball radius 10.
 	// Ball center must be above floor top so CircleRectangleCollideResult gets correct normal.
 	// Start at 100 (bottom=110 touch), one step moves into floor.
-	ball := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	ball := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	ball.SetPosition(50, 100)
 	ball.SetVelocity(math2D.NewVector2D(0, 100))
 	ball.Restitution = 0.8
 	ball.UsesGravity = false
 
-	floor := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
+	floor := mustNewRigidBody2D(t, collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
 	floor.SetPosition(50, 120)
 	floor.UsesGravity = false
 	floor.Static = true
 
-	world.AddRigidBody(ball)
-	world.AddRigidBody(floor)
+	mustAddRigidBody(t, world, ball)
+	mustAddRigidBody(t, world, floor)
 
 	// Step until overlap (ball vy=100, moves 1.6/frame)
 	for i := 0; i < 10; i++ {
@@ -186,20 +202,20 @@ func TestPhysicsWorld_FrictionReducesSliding(t *testing.T) {
 
 	// Floor center (50,120), size 200x20 → top Y=110. Box 20x20 → half=10.
 	// Place box on floor (overlapping) so friction applies.
-	box := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))), mask)
+	box := mustNewRigidBody2D(t, collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))), mask)
 	box.SetPosition(50, 105) // center; bottom=115, overlaps floor top=110
 	box.SetVelocity(math2D.NewVector2D(100, 0))
 	box.Friction = 1.0
 	box.UsesGravity = false
 
-	floor := NewRigidBody2D(collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
+	floor := mustNewRigidBody2D(t, collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(200, 20))), mask)
 	floor.SetPosition(50, 120)
 	floor.UsesGravity = false
 	floor.Static = true
 	floor.Friction = 1.0
 
-	world.AddRigidBody(box)
-	world.AddRigidBody(floor)
+	mustAddRigidBody(t, world, box)
+	mustAddRigidBody(t, world, floor)
 
 	for i := 0; i < 20; i++ {
 		world.Step(0.016)
@@ -213,7 +229,7 @@ func TestPhysicsWorld_FrictionReducesSliding(t *testing.T) {
 
 func TestRigidBody2D_DefaultFrictionRestitution(t *testing.T) {
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	body := NewRigidBody2D(collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
+	body := mustNewRigidBody2D(t, collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), mask)
 	if body.Friction != 0.5 {
 		t.Errorf("Default Friction = %v, want 0.5", body.Friction)
 	}

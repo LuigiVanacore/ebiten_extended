@@ -1,6 +1,8 @@
 package collision
 
 import (
+	"errors"
+
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/event"
 )
@@ -17,10 +19,10 @@ type Area2D struct {
 	OnBodyExited  *event.Event[Area2DBodyEvent]
 }
 
-// NewArea2D creates an Area2D with the given shape and mask. Panics if shape is nil.
-func NewArea2D(shape CollisionShape, mask CollisionMask) *Area2D {
+// NewArea2D creates an Area2D with the given shape and mask.
+func NewArea2D(shape CollisionShape, mask CollisionMask) (*Area2D, error) {
 	if shape == nil {
-		panic("collision: NewArea2D shape must not be nil")
+		return nil, errors.New("collision: NewArea2D shape must not be nil")
 	}
 	return &Area2D{
 		shape:         shape,
@@ -28,7 +30,7 @@ func NewArea2D(shape CollisionShape, mask CollisionMask) *Area2D {
 		OnBodyEntered: &event.Event[Area2DBodyEvent]{},
 		OnBodyStay:    &event.Event[Area2DBodyEvent]{},
 		OnBodyExited:  &event.Event[Area2DBodyEvent]{},
-	}
+	}, nil
 }
 
 func (a *Area2D) GetShape() CollisionShape {

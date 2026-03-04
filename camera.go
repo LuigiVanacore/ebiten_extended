@@ -15,9 +15,9 @@ type Camera struct {
 	Node2D
 	width     uint
 	height    uint
-	zoom 	float64
+	zoom      float64
 	surface   *ebiten.Image
-	node_to_follow transform.Transformable
+	nodeToFollow transform.Transformable
 }
 
 
@@ -84,7 +84,7 @@ func (c *Camera) Fill(color color.Color) {
 // ApplyRelativeTranslation applies camera-relative translation to op in place.
 // World (0,0) maps to the top-left of the camera surface; camera position acts as view offset.
 func (c *Camera) ApplyRelativeTranslation(op *ebiten.DrawImageOptions, x, y float64) {
-	op.GeoM.Translate(-c.GetPosition().X(), -c.GetPosition().Y())
+	op.GeoM.Translate(x-c.GetPosition().X(), y-c.GetPosition().Y())
 }
 
 // GetRelativeTranslation applies camera-relative translation to op in place and returns op.
@@ -114,13 +114,26 @@ func (c *Camera) GetRelativeSkew(ops *ebiten.DrawImageOptions, skewX, skewY floa
 }
 
 // DrawImage handles drawing a given image directly onto the camera's surface using provided options.
-func (c * Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
+func (c *Camera) DrawImage(image *ebiten.Image, ops *ebiten.DrawImageOptions) {
 	c.surface.DrawImage(image, ops)
 }
 
 // Draw transfers the camera's rendered scene surface onto the final screen, applying overall rotation and zoom.
 func (c *Camera) Draw(screen *ebiten.Image) {
+	c.DrawWithOptions(screen, &ebiten.DrawImageOptions{})
+}
+
+// DrawWithOptions transfers the camera surface onto screen using base options, then camera transform.
+func (c *Camera) DrawWithOptions(screen *ebiten.Image, baseOp *ebiten.DrawImageOptions) {
 	op := &ebiten.DrawImageOptions{}
+	if baseOp != nil {
+		op.GeoM = baseOp.GeoM
+		op.ColorScale = baseOp.ColorScale
+		op.CompositeMode = baseOp.CompositeMode
+		op.Filter = baseOp.Filter
+		op.DisableMipmaps = baseOp.DisableMipmaps
+		op.Blend = baseOp.Blend
+	}
 	size := c.surface.Bounds().Size()
 	cx := float64(size.X) / 2.0
 	cy := float64(size.Y) / 2.0
@@ -130,9 +143,22 @@ func (c *Camera) Draw(screen *ebiten.Image) {
 	op.GeoM.Rotate(float64(c.GetRotation()))
 	op.GeoM.Translate(cx*c.zoom, cy*c.zoom)
 
-	
-
 	screen.DrawImage(c.surface, op)
+}
+
+// SetFollow sets a target transformable to follow. Pass nil to disable following.
+func (c *Camera) SetFollow(node transform.Transformable) {
+	c.nodeToFollow = node
+}
+
+// Update syncs camera position with the followed node (if any).
+func (c *Camera) Update() {
+	if c.nodeToFollow == nil {
+		return
+	}
+	worldTransform := c.nodeToFollow.GetWorldTransform()
+	pos := (&worldTransform).GetPosition()
+	c.SetPosition(pos.X(), pos.Y())
 }
 
 // GetScreenCoords converts world coordinates (x, y) into camera surface coordinates (top-left origin).

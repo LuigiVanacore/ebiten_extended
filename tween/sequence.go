@@ -24,7 +24,13 @@ func (seq *Sequence) Add(tweens ...*Tween) {
 
 // Remove removes a Tween of the specified index from the Sequence.
 func (seq *Sequence) Remove(index int) {
+	if index < 0 || index >= len(seq.Tweens) {
+		return
+	}
 	seq.Tweens = append(seq.Tweens[:index], seq.Tweens[index+1:]...)
+	if seq.index > len(seq.Tweens) {
+		seq.index = len(seq.Tweens)
+	}
 }
 
 // Update updates the currently active Tween in the Sequence; once that Tween is done, the Sequence moves onto the next one.
@@ -63,7 +69,7 @@ func (seq *Sequence) Index() int {
 // SetIndex sets the current index of the Sequence, influencing which Tween is active at any given time.
 func (seq *Sequence) SetIndex(index int) {
 	// Because it's possible to call SetIndex() when the Sequence is at the end.
-	if seq.index < len(seq.Tweens)-1 {
+	if seq.index >= 0 && seq.index < len(seq.Tweens) {
 		seq.Tweens[seq.index].Reset()
 	}
 	seq.index = index

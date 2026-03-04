@@ -2,6 +2,10 @@ package ebiten_extended
 
 // SceneNode defines the interface for an element within the game's hierarchical scene graph.
 type SceneNode interface {
+	// GetID retrieves the unique node identifier.
+	GetID() uint64
+	// GetName retrieves the node name.
+	GetName() string
 	// AddChildren attaches a child node to this node.
 	AddChildren(child SceneNode)
 	// GetChildren retrieves all child nodes assigned to this node.
