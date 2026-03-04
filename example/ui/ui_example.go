@@ -61,10 +61,23 @@ func NewGame() *Game {
 	button.SetPosition(50, 200) // Relative to panel parent
 	button.SetText("Click Me!", gameFont, color.White)
 
+	// 4. Create a ProgressBar
+	progressBar := ui.NewProgressBarNode("progress", 200, 20)
+	progressBar.SetPosition(50, 260)
+	panel.AddChildren(progressBar)
+
 	// Bind callbacks to the button
 	button.OnClick = func() {
 		clickCount++
 		counterLabel.SetMessage(fmt.Sprintf("Clicks: %d", clickCount))
+
+		// Fill progress bar (loops around)
+		prog := progressBar.GetProgress()
+		prog += 0.1
+		if prog > 1 {
+			prog = 0
+		}
+		progressBar.SetProgress(prog)
 	}
 	button.OnMouseEnter = func() {
 		titleLabel.SetMessage("Hovering!")
@@ -75,15 +88,22 @@ func NewGame() *Game {
 
 	panel.AddChildren(button)
 
-	// 4. Create another Button just to show multiple elements
-	exitButton := ui.NewButtonNode("exit_button", 200, 50, im)
-	exitButton.SetPosition(50, 300)
-	exitButton.IdleColor = color.RGBA{150, 40, 40, 255}
-	exitButton.HoverColor = color.RGBA{200, 80, 80, 255}
-	exitButton.PressedColor = color.RGBA{100, 20, 20, 255}
-	exitButton.SetText("Hover Red", gameFont, color.White)
+	// 5. Create a Checkbox
+	checkbox := ui.NewCheckboxNode("theme_checkbox", 30, im)
+	checkbox.SetPosition(50, 300)
+	panel.AddChildren(checkbox)
 
-	panel.AddChildren(exitButton)
+	chkLabel := ebiten_extended.NewTextNode("chk_lbl", "Toggle Red Progress", gameFont, color.White)
+	chkLabel.SetPosition(90, 300)
+	panel.AddChildren(chkLabel)
+
+	checkbox.OnToggle = func(checked bool) {
+		if checked {
+			progressBar.SetFillColor(color.RGBA{200, 0, 0, 255})
+		} else {
+			progressBar.SetFillColor(color.RGBA{0, 200, 0, 255})
+		}
+	}
 
 	// Attach the root panel to the world
 	engine.World().AddNodeToDefaultLayer(panel)

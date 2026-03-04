@@ -13,7 +13,7 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 - **Collision**: [collision] package with shapes (circle, rect), masks, and callbacks; optional broad-phase for performance
 - **Time**: [Clock] and [Timer] for elapsed time and delayed/looping actions
 - **Resources/Save**: [ResourceManager] for images/fonts; [save] for atomic JSON/Binary (Gob) data persistence.
-- **UI**: Fast interaction-ready graphical user interface components including `PanelNode` and `ButtonNode`.
+- **UI**: Fast interaction-ready graphical user interface components including `PanelNode`, `ButtonNode` (with image states), `ProgressBarNode`, and `CheckboxNode`.
 - **Audio**: [AudioManager] for sounds (WAV, OGG, MP3) and playback
 - **Input**: Cursor position, key/button state via [input] package; gamepad/joystick support (buttons, sticks, standard layout)
 - **State machine**: [fsm] for AI or game states

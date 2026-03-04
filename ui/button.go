@@ -33,6 +33,11 @@ type ButtonNode struct {
 	HoverColor   color.Color
 	PressedColor color.Color
 
+	// Optional image styling for different states
+	IdleImage    *ebiten.Image
+	HoverImage   *ebiten.Image
+	PressedImage *ebiten.Image
+
 	// Callbacks
 	OnClick        func()
 	OnMouseEnter   func()
@@ -122,14 +127,17 @@ func (b *ButtonNode) Update() {
 	}
 }
 
-// updateVisuals changes the background color responding to the current state.
+// updateVisuals changes the background color or image responding to the current state.
 func (b *ButtonNode) updateVisuals() {
 	switch b.state {
 	case ButtonStateIdle:
 		b.SetBackgroundColor(b.IdleColor)
+		b.SetBackgroundImage(b.IdleImage)
 	case ButtonStateHover:
 		b.SetBackgroundColor(b.HoverColor)
+		b.SetBackgroundImage(b.HoverImage)
 	case ButtonStatePressed:
 		b.SetBackgroundColor(b.PressedColor)
+		b.SetBackgroundImage(b.PressedImage)
 	}
 }

@@ -10,12 +10,13 @@ import (
 )
 
 // PanelNode represents a generic UI container that occupies a specific screen area (Width x Height).
-// It can optionally draw a background color.
+// It can optionally draw a background color and/or a background image.
 type PanelNode struct {
 	ebiten_extended.Node2D
 	width           float64
 	height          float64
 	backgroundColor color.Color
+	backgroundImage *ebiten.Image
 	layer           int
 }
 
@@ -44,6 +45,16 @@ func (p *PanelNode) SetBackgroundColor(c color.Color) {
 	p.backgroundColor = c
 }
 
+// SetBackgroundImage sets an image to be drawn stretched over the panel area. Set to nil to remove.
+func (p *PanelNode) SetBackgroundImage(img *ebiten.Image) {
+	p.backgroundImage = img
+}
+
+// GetBackgroundImage returns the current background image, or nil.
+func (p *PanelNode) GetBackgroundImage() *ebiten.Image {
+	return p.backgroundImage
+}
+
 // GetLayer returns the render layer of this panel.
 func (p *PanelNode) GetLayer() int {
 	return p.layer
@@ -54,12 +65,12 @@ func (p *PanelNode) SetLayer(layer int) {
 	p.layer = layer
 }
 
-// Draw renders the panel using vector geometry if a background color is provided.
+// Draw renders the panel using vector geometry if a background color is provided, and/or the background image.
 func (p *PanelNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	if p.backgroundColor != nil {
-		worldPos := p.GetWorldPosition()
-		scale := p.GetWorldScale()
+	worldPos := p.GetWorldPosition()
+	scale := p.GetWorldScale()
 
+	if p.backgroundColor != nil {
 		// Fill a rectangle based on the calculated world coordinates and size (width/height are scaled)
 		vector.DrawFilledRect(
 			target,
@@ -70,6 +81,26 @@ func (p *PanelNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 			p.backgroundColor,
 			true,
 		)
+	}
+
+	if p.backgroundImage != nil {
+		bounds := p.backgroundImage.Bounds()
+		imgW, imgH := float64(bounds.Dx()), float64(bounds.Dy())
+		if imgW > 0 && imgH > 0 {
+			drawOp := &ebiten.DrawImageOptions{}
+			// Scale the image to fit the panel dimension
+			scaleX := (p.width * scale.X()) / imgW
+			scaleY := (p.height * scale.Y()) / imgH
+			drawOp.GeoM.Scale(scaleX, scaleY)
+			drawOp.GeoM.Translate(worldPos.X(), worldPos.Y())
+
+			// If a parent op is provided with color scaling, we could apply it, but UI panels usually draw absolute.
+			if op != nil {
+				drawOp.ColorScale = op.ColorScale
+			}
+
+			target.DrawImage(p.backgroundImage, drawOp)
+		}
 	}
 
 	// Because it's a Node2D, its children will be automatically drawn by the World graph
