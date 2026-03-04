@@ -2,8 +2,6 @@ package ebiten_extended
 
 import (
 	"testing"
-
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 func TestResourceManagerRemoveImage(t *testing.T) {
@@ -37,28 +35,29 @@ func TestResourceManagerClearImages(t *testing.T) {
 
 func TestResourceManagerClearFonts(t *testing.T) {
 	rm := NewResourceManager()
-	rm.fonts = []text.Face{nil, nil}
+	rm.fonts["f1"] = nil
+	rm.fonts["f2"] = nil
 
 	removed := rm.ClearFonts()
 	if removed != 2 {
 		t.Fatalf("expected 2 removed fonts, got %d", removed)
 	}
-	if got := rm.GetFont(0); got != nil {
-		t.Fatal("expected no font at index 0 after clear")
+	if got := rm.GetFont("f1"); got != nil {
+		t.Fatal("expected no font at key f1 after clear")
 	}
 }
 
 func TestResourceManagerClear(t *testing.T) {
 	rm := NewResourceManager()
 	rm.images["hero"] = nil
-	rm.fonts = []text.Face{nil}
+	rm.fonts["hero_font"] = nil
 
 	rm.Clear()
 
 	if len(rm.GetImages()) != 0 {
 		t.Fatalf("expected no images after clear, got %d", len(rm.GetImages()))
 	}
-	if got := rm.GetFont(0); got != nil {
+	if got := rm.GetFont("hero_font"); got != nil {
 		t.Fatal("expected no fonts after clear")
 	}
 }
