@@ -92,11 +92,6 @@ func (world *World) queueNodeToLayers(node SceneNode, parentGeoM ebiten.GeoM, la
 	op := ebiten.DrawImageOptions{}
 	if entity, ok := node.(transform.Transformable); ok {
 		op.GeoM = updateTransform(entity, parentGeoM)
-		if drawable, ok := node.(Drawable); ok {
-			childOp := op
-			world.camera.ApplyRelativeTranslation(&childOp, 0, 0)
-			_ = world.drawLayers.AddNodeToLayer(layerIndex, drawable, world.camera.GetSurface(), childOp)
-		}
 	}
 	children := node.GetChildren()
 	// Sort descending: we push to a stack (LIFO), so higher GetLayer first => drawn last (on top)
@@ -112,6 +107,13 @@ func (world *World) queueNodeToLayers(node SceneNode, parentGeoM ebiten.GeoM, la
 	})
 	for _, child := range children {
 		world.queueNodeToLayers(child, op.GeoM, layerIndex)
+	}
+	if _, ok := node.(transform.Transformable); ok {
+		if drawable, ok := node.(Drawable); ok {
+			childOp := op
+			world.camera.ApplyRelativeTranslation(&childOp, 0, 0)
+			_ = world.drawLayers.AddNodeToLayer(layerIndex, drawable, world.camera.GetSurface(), childOp)
+		}
 	}
 }
 
