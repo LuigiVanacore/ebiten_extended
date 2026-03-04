@@ -116,7 +116,7 @@
 1. **Thread-Safety nel ResourceManager**: Riscritto il dictionary di immagini e font (`map[string]T`) con protezioni asincrone `sync.RWMutex`. (Fatto) ✅ 
 2. Scale in `updateTransform`  (Fatto precedentemente) ✅ 
 3. **Save/Load**: Integrazione standard implementata per i salvataggi JSON o binari sicuri (Atomic). (Fatto) ✅ 
-4. Sistema UI: Aggiungere pulsanti, layout container (usando `Update()` per hover/click e Node2D per i child).  
+4. **Sistema UI**: Aggiunti `PanelNode` e `ButtonNode` interattivo, sfruttanti polling automatico `Updatable`. (Fatto) ✅  
 5. Tween collegato al game loop  
 6. Tilemap rendering  
 7. Collision: evitare mutazione in-place

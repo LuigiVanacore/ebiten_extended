@@ -13,6 +13,7 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 - **Collision**: [collision] package with shapes (circle, rect), masks, and callbacks; optional broad-phase for performance
 - **Time**: [Clock] and [Timer] for elapsed time and delayed/looping actions
 - **Resources/Save**: [ResourceManager] for images/fonts; [save] for atomic JSON/Binary (Gob) data persistence.
+- **UI**: Fast interaction-ready graphical user interface components including `PanelNode` and `ButtonNode`.
 - **Audio**: [AudioManager] for sounds (WAV, OGG, MP3) and playback
 - **Input**: Cursor position, key/button state via [input] package; gamepad/joystick support (buttons, sticks, standard layout)
 - **State machine**: [fsm] for AI or game states
@@ -67,7 +68,7 @@ func main() {
 ## Documentation
 
 - **API (godoc)**: [pkg.go.dev/github.com/LuigiVanacore/ebiten_extended](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
-- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap)
+- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap), [ui](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/ui)
 
 ## Layers
 
