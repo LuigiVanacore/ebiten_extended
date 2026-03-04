@@ -29,10 +29,10 @@ func TestCirclesCollideResult(t *testing.T) {
 			wantOver: false,
 		},
 		{
-			name:      "tangent",
-			a:         math2D.NewCircle(math2D.NewVector2D(0, 0), 10),
-			b:         math2D.NewCircle(math2D.NewVector2D(20, 0), 10),
-			wantOver:  false,
+			name:     "tangent",
+			a:        math2D.NewCircle(math2D.NewVector2D(0, 0), 10),
+			b:        math2D.NewCircle(math2D.NewVector2D(20, 0), 10),
+			wantOver: false,
 		},
 	}
 	for _, tt := range tests {
@@ -114,10 +114,10 @@ func TestRectanglesCollideResult(t *testing.T) {
 func TestShapeCollisionResult(t *testing.T) {
 	c1 := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
 	c2 := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
-	c1.UpdateTransform(transformAt(0, 0))
-	c2.UpdateTransform(transformAt(12, 0))
+	t1 := transformAt(0, 0)
+	t2 := transformAt(12, 0)
 
-	res, ok := ShapeCollisionResult(c1, c2)
+	res, ok := ShapeCollisionResult(c1, t1, c2, t2)
 	if !ok {
 		t.Fatal("ShapeCollisionResult should succeed for circle-circle")
 	}
@@ -132,10 +132,10 @@ func TestShapeCollisionResult(t *testing.T) {
 func TestShapeCollisionResult_CircleRect(t *testing.T) {
 	c := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
 	r := NewCollisionRect(math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(30, 30)))
-	c.UpdateTransform(transformAt(15, 15))
-	r.UpdateTransform(transformAt(15, 15))
+	tC := transformAt(15, 15)
+	tR := transformAt(15, 15)
 
-	res, ok := ShapeCollisionResult(c, r)
+	res, ok := ShapeCollisionResult(c, tC, r, tR)
 	if !ok {
 		t.Fatal("ShapeCollisionResult should succeed for circle-rect")
 	}
@@ -150,10 +150,10 @@ func TestShapeCollisionResult_CircleRect(t *testing.T) {
 func TestShapeCollisionResult_RectRect(t *testing.T) {
 	r1 := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
 	r2 := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
-	r1.UpdateTransform(transformAt(0, 0))
-	r2.UpdateTransform(transformAt(5, 5))
+	t1 := transformAt(0, 0)
+	t2 := transformAt(5, 5)
 
-	res, ok := ShapeCollisionResult(r1, r2)
+	res, ok := ShapeCollisionResult(r1, t1, r2, t2)
 	if !ok {
 		t.Fatal("ShapeCollisionResult should succeed for rect-rect")
 	}

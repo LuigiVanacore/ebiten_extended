@@ -78,9 +78,7 @@ func isOverlapping(a, b CollisionParticipant) bool {
 	if sa == nil || sb == nil {
 		return false
 	}
-	sa.UpdateTransform(a.GetWorldTransform())
-	sb.UpdateTransform(b.GetWorldTransform())
-	return ShapeCollides(sa, sb)
+	return ShapeCollides(sa, a.GetWorldTransform(), sb, b.GetWorldTransform())
 }
 
 // CheckCollision evaluates intersections and emits lifecycle events.
@@ -93,8 +91,7 @@ func (m *CollisionManager) CheckCollision() {
 		if shape == nil {
 			continue
 		}
-		shape.UpdateTransform(p.GetWorldTransform())
-		minX, minY, maxX, maxY := ShapeAABB(shape)
+		minX, minY, maxX, maxY := ShapeAABB(shape, p.GetWorldTransform())
 		cellMinX := int(math.Floor(minX / cellSize))
 		cellMaxX := int(math.Floor(maxX / cellSize))
 		cellMinY := int(math.Floor(minY / cellSize))

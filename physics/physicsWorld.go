@@ -81,10 +81,8 @@ func (w *PhysicsWorld) Step(dt float64) {
 					checked[pairID] = true
 
 					sa, sb := a.GetShape(), b.GetShape()
-					sa.UpdateTransform(a.GetWorldTransform())
-					sb.UpdateTransform(b.GetWorldTransform())
 
-					res, ok := collision.ShapeCollisionResult(sa, sb)
+					res, ok := collision.ShapeCollisionResult(sa, a.GetWorldTransform(), sb, b.GetWorldTransform())
 					if !ok || !res.Overlapping {
 						continue
 					}
@@ -101,8 +99,7 @@ func (w *PhysicsWorld) broadPhase() map[uint64][]*RigidBody2D {
 	cellSize := float64(w.CellSize)
 	for _, body := range w.rigidBodies {
 		sa := body.GetShape()
-		sa.UpdateTransform(body.GetWorldTransform())
-		minX, minY, maxX, maxY := collision.ShapeAABB(sa)
+		minX, minY, maxX, maxY := collision.ShapeAABB(sa, body.GetWorldTransform())
 		cellMinX := int(math.Floor(minX / cellSize))
 		cellMaxX := int(math.Floor(maxX / cellSize))
 		cellMinY := int(math.Floor(minY / cellSize))

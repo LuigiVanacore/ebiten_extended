@@ -1,8 +1,12 @@
 package collision
 
+import (
+	"github.com/LuigiVanacore/ebiten_extended/transform"
+)
+
 // ShapeCollisionResult returns the MTV for two shapes, or (zero result, false) if unsupported.
-// Shapes must have UpdateTransform called with world transform before calling this.
-func ShapeCollisionResult(a, b CollisionShape) (CollisionResult, bool) {
+// Shapes are evaluated virtually using their provided world transforms.
+func ShapeCollisionResult(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) (CollisionResult, bool) {
 	ta, okA := a.(typedShape)
 	tb, okB := b.(typedShape)
 	if !okA || !okB {
@@ -12,29 +16,46 @@ func ShapeCollisionResult(a, b CollisionShape) (CollisionResult, bool) {
 	if handler == nil {
 		return CollisionResult{}, false
 	}
-	return handler(a, b), true
+	return handler(a, tA, b, tB), true
 }
 
-var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, CollisionShape) CollisionResult{
+var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.Transform, CollisionShape, transform.Transform) CollisionResult{
 	kindCircle: {
-		kindCircle: func(a, b CollisionShape) CollisionResult {
-			return CirclesCollideResult(a.(*CollisionCircle).circle, b.(*CollisionCircle).circle)
+		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
+			ca := a.(*CollisionCircle).circle
+			cb := b.(*CollisionCircle).circle
+			ca.SetCenter(tA.GetPosition())
+			cb.SetCenter(tB.GetPosition())
+			return CirclesCollideResult(ca, cb)
 		},
-		kindRect: func(a, b CollisionShape) CollisionResult {
-			return CircleRectangleCollideResult(a.(*CollisionCircle).circle, b.(*CollisionRect).rectangle)
+		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
+			ca := a.(*CollisionCircle).circle
+			rb := b.(*CollisionRect).rectangle
+			ca.SetCenter(tA.GetPosition())
+			rb.SetCenter(tB.GetPosition())
+			return CircleRectangleCollideResult(ca, rb)
 		},
 	},
 	kindRect: {
-		kindCircle: func(a, b CollisionShape) CollisionResult {
+		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
+			ra := a.(*CollisionRect).rectangle
+			cb := b.(*CollisionCircle).circle
+			ra.SetCenter(tA.GetPosition())
+			cb.SetCenter(tB.GetPosition())
+
 			// Circle vs Rect: swap so circle is first, invert normal for consistency
-			res := CircleRectangleCollideResult(b.(*CollisionCircle).circle, a.(*CollisionRect).rectangle)
+			res := CircleRectangleCollideResult(cb, ra)
 			if res.Overlapping {
 				res.Normal = res.Normal.Negate()
 			}
 			return res
 		},
-		kindRect: func(a, b CollisionShape) CollisionResult {
-			return RectanglesCollideResult(a.(*CollisionRect).rectangle, b.(*CollisionRect).rectangle)
+		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
+			ra := a.(*CollisionRect).rectangle
+			rb := b.(*CollisionRect).rectangle
+			ra.SetCenter(tA.GetPosition())
+			rb.SetCenter(tB.GetPosition())
+			return RectanglesCollideResult(ra, rb)
 		},
 	},
 }

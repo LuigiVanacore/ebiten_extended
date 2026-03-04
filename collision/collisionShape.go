@@ -5,9 +5,8 @@ import (
 )
 
 // CollisionShape is implemented by CollisionCircle, CollisionRect, etc.
-// UpdateTransform sets the shape in world space; IsColliding tests overlap with another shape.
+// IsColliding tests overlap with another shape, given their respective world transforms,
+// without mutating the underlying geometric data.
 type CollisionShape interface {
-	IsColliding(other CollisionShape) bool
-	UpdateTransform(transform transform.Transform)
+	IsColliding(tSelf transform.Transform, other CollisionShape, tOther transform.Transform) bool
 }
- 

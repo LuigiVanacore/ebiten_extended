@@ -18,12 +18,6 @@ func (c *CollisionRect) shapeKind() shapeKind {
 	return kindRect
 }
 
-func (c *CollisionRect) UpdateTransform(t transform.Transform) {
-	// Use center to match DrawnRectangle convention (position = center of shape)
-	c.rectangle.SetCenter(t.GetPosition())
+func (c *CollisionRect) IsColliding(tSelf transform.Transform, other CollisionShape, tOther transform.Transform) bool {
+	return ShapeCollides(c, tSelf, other, tOther)
 }
-
-func (c *CollisionRect) IsColliding(other CollisionShape) bool {
-	return ShapeCollides(c, other)
-}
-

@@ -17,12 +17,6 @@ func (c *CollisionCircle) shapeKind() shapeKind {
 	return kindCircle
 }
 
-func (c *CollisionCircle) UpdateTransform(t transform.Transform) {
-	c.circle.SetCenter(t.GetPosition())
+func (c *CollisionCircle) IsColliding(tSelf transform.Transform, other CollisionShape, tOther transform.Transform) bool {
+	return ShapeCollides(c, tSelf, other, tOther)
 }
-
-func (c *CollisionCircle) IsColliding(other CollisionShape) bool {
-	return ShapeCollides(c, other)
-}
-
-

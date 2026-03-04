@@ -1,25 +1,21 @@
 package collision
- 
+
 import (
 	math2D "github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ebiten_extended/transform"
 )
 
 func Overlapping(minA, maxA, minB, maxB float64) bool {
 	return minB <= maxA && minA <= maxB
 }
 
+func OnOneSide(axis math2D.Line, segment math2D.Segment) bool {
+	d1 := math2D.SubtractVectors(axis.GetBase(), segment.GetStartPoint())
+	d2 := math2D.SubtractVectors(axis.GetBase(), segment.GetEndPoint())
 
- 
-
-
-func OnOneSide(axis math2D.Line, segment math2D.Segment) bool{
-	d1 := math2D.SubtractVectors( axis.GetBase(), segment.GetStartPoint())
-	d2 :=  math2D.SubtractVectors( axis.GetBase(), segment.GetEndPoint())
-	
 	n := axis.GetDirection().RotateVector90()
-	return math2D.DotProduct(n, d1) * math2D.DotProduct(n, d2) > 0
+	return math2D.DotProduct(n, d1)*math2D.DotProduct(n, d2) > 0
 }
-
 
 func ClampOnRange(x, min, max float64) float64 {
 	if x < min {
@@ -31,38 +27,42 @@ func ClampOnRange(x, min, max float64) float64 {
 	return x
 }
 
- 
-
 func ClampOnRectangle(p math2D.Vector2D, r math2D.Rectangle) math2D.Vector2D {
-	return math2D.NewVector2D( ClampOnRange(p.X(), r.GetPosition().X(), r.GetPosition().X() + r.GetSize().X()),
-								ClampOnRange(p.Y(), r.GetPosition().Y(),r.GetPosition().Y() + r.GetSize().Y()))
+	return math2D.NewVector2D(ClampOnRange(p.X(), r.GetPosition().X(), r.GetPosition().X()+r.GetSize().X()),
+		ClampOnRange(p.Y(), r.GetPosition().Y(), r.GetPosition().Y()+r.GetSize().Y()))
 }
 
 // ShapeAABB returns the axis-aligned bounding box (minX, minY, maxX, maxY) of the shape in world space.
-// UpdateTransform must be called on the shape before calling this.
-func ShapeAABB(shape CollisionShape) (minX, minY, maxX, maxY float64) {
+// It applies the given transform locally to extract the visual bounds without mutating the shape itself.
+func ShapeAABB(shape CollisionShape, t transform.Transform) (minX, minY, maxX, maxY float64) {
 	switch s := shape.(type) {
 	case *CollisionCircle:
 		center := s.circle.GetCenterPosition()
+		center.SetX(t.GetPosition().X())
+		center.SetY(t.GetPosition().Y())
 		r := s.circle.GetRadius()
 		return center.X() - r, center.Y() - r, center.X() + r, center.Y() + r
 	case *CollisionRect:
+		// Pos acts as center in CollisionRect context
 		pos := s.rectangle.GetPosition()
+		pos.SetX(t.GetPosition().X())
+		pos.SetY(t.GetPosition().Y())
 		size := s.rectangle.GetSize()
-		return pos.X(), pos.Y(), pos.X() + size.X(), pos.Y() + size.Y()
+		// Convert center to top-left to compute AABB properly
+		topLeftX := pos.X() - size.X()/2
+		topLeftY := pos.Y() - size.Y()/2
+		return topLeftX, topLeftY, topLeftX + size.X(), topLeftY + size.Y()
 	default:
 		return 0, 0, 0, 0
 	}
 }
-
- 
 
 func RectangleCorner(r math2D.Rectangle, nr int) math2D.Vector2D {
 	corner := r.GetPosition()
 	i := nr % 4
 	if i == 0 {
 		corner.SetX(corner.X() + r.GetSize().X())
-	} else 	if i == 1 {
+	} else if i == 1 {
 		corner = math2D.AddVectors(corner, r.GetSize())
 	} else if i == 2 {
 		corner.SetY(corner.Y() + r.GetSize().Y())
@@ -70,13 +70,12 @@ func RectangleCorner(r math2D.Rectangle, nr int) math2D.Vector2D {
 	return corner
 }
 
- 
-func OrientedRectangleCorner(r math2D.OrientedRectangle, nr int ) math2D.Vector2D {
+func OrientedRectangleCorner(r math2D.OrientedRectangle, nr int) math2D.Vector2D {
 	c := r.GetHalfExtended()
 	i := nr % 4
 	if i == 0 {
 		c.SetX(-c.X())
-	} else if i== 2 {
+	} else if i == 2 {
 		c.SetY(-c.Y())
 	} else {
 		c = c.Negate()
@@ -85,14 +84,12 @@ func OrientedRectangleCorner(r math2D.OrientedRectangle, nr int ) math2D.Vector2
 	return math2D.AddVectors(c, r.GetCenter())
 }
 
- 
-
-func OrientedRectangleEdge( r math2D.OrientedRectangle, nr int) math2D.Segment {
+func OrientedRectangleEdge(r math2D.OrientedRectangle, nr int) math2D.Segment {
 
 	a := r.GetHalfExtended()
 	b := r.GetHalfExtended()
 
-	i := nr % 4 
+	i := nr % 4
 	if i == 0 {
 		a.SetX(-a.X())
 	} else if i == 1 {
@@ -113,10 +110,8 @@ func OrientedRectangleEdge( r math2D.OrientedRectangle, nr int) math2D.Segment {
 
 	return math2D.NewSegment(a, b)
 }
- 
 
- 
-func SeparatingAxisForOrientedRectangle( axis math2D.Segment, r math2D.OrientedRectangle) bool {
+func SeparatingAxisForOrientedRectangle(axis math2D.Segment, r math2D.OrientedRectangle) bool {
 
 	rEdge0 := OrientedRectangleEdge(r, 0)
 	rEdge2 := OrientedRectangleEdge(r, 2)
@@ -133,8 +128,7 @@ func SeparatingAxisForOrientedRectangle( axis math2D.Segment, r math2D.OrientedR
 	return !math2D.OverlappingRanges(axisRange, rProjection)
 }
 
-
-func SeparatingAxisForRectangle( axis math2D.Segment, r math2D.Rectangle) bool {
+func SeparatingAxisForRectangle(axis math2D.Segment, r math2D.Rectangle) bool {
 
 	n := math2D.SubtractVectors(axis.GetStartPoint(), axis.GetEndPoint())
 
@@ -151,4 +145,3 @@ func SeparatingAxisForRectangle( axis math2D.Segment, r math2D.Rectangle) bool {
 
 	return !math2D.OverlappingRanges(axisRange, rProjection)
 }
-
