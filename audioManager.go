@@ -2,6 +2,7 @@ package ebiten_extended
 
 import (
 	"bytes"
+	"errors"
 	"io"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
@@ -58,6 +59,12 @@ func (a *AudioManager) Context() *audio.Context {
 // AddSound decodes audio data and caches it for playback.
 // Supports WAV, OGG (Vorbis), and MP3. Sample rate is resampled to match the context if needed.
 func (a *AudioManager) AddSound(id string, data []byte, format AudioFormat) error {
+	if id == "" {
+		return errors.New("sound id cannot be empty")
+	}
+	if len(data) == 0 {
+		return errors.New("audio data cannot be empty")
+	}
 	stream, err := a.decodeToStream(bytes.NewReader(data), format)
 	if err != nil {
 		return err
@@ -93,7 +100,7 @@ func (a *AudioManager) decodeToStream(r io.Reader, format AudioFormat) (stream, 
 	case AudioFormatMP3:
 		return mp3.DecodeF32(r)
 	default:
-		return nil, nil
+		return nil, errors.New("unsupported audio format")
 	}
 }
 
@@ -134,6 +141,24 @@ func (a *AudioManager) MasterVolume() float64 {
 func (a *AudioManager) HasSound(id string) bool {
 	_, ok := a.sounds[id]
 	return ok
+}
+
+// RemoveSound removes a cached sound by ID.
+// Returns true if the sound existed and was removed.
+func (a *AudioManager) RemoveSound(id string) bool {
+	if _, ok := a.sounds[id]; !ok {
+		return false
+	}
+	delete(a.sounds, id)
+	return true
+}
+
+// ClearSounds removes all cached sounds.
+// Returns the number of sounds removed.
+func (a *AudioManager) ClearSounds() int {
+	n := len(a.sounds)
+	a.sounds = make(map[string][]byte)
+	return n
 }
 
 // CreateStreamPlayer creates an AudioStreamPlayer node for the given sound ID.
