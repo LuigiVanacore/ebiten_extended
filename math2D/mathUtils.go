@@ -3,14 +3,11 @@ package math2D
 import "math"
 
 // FLOAT_PI is the constant π for angle conversions.
-const FLOAT_PI float64 = 3.14159265358979323846
+const FLOAT_PI float64 = math.Pi
 
 // Min returns the smaller of x and y.
 func Min(x, y float64) float64 {
-	if x == 0 || x == y {
-		return x
-	}
-	if x < y {
+	if x <= y {
 		return x
 	}
 	return y
@@ -18,10 +15,7 @@ func Min(x, y float64) float64 {
 
 // Max returns the larger of x and y.
 func Max(x, y float64) float64 {
-	if x == 0 || x == y {
-		return y
-	}
-	if x > y {
+	if x >= y {
 		return x
 	}
 	return y

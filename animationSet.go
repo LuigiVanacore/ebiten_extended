@@ -19,14 +19,14 @@ type AnimationSet struct {
 	isLooped bool
 }
 
-// NewAnimationSet establishes a playback sequence containing slice references, a duration constraint, and loop flag.
-func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCount uint, duration float64, isLooped bool) *AnimationSet {
-	timePerFrame :=  1 / duration
-	if ( duration == 0) {
-		timePerFrame = 0
+// NewAnimationSet creates a playback sequence from a sprite sheet slice.
+// fps is the playback speed in frames per second; pass 0 to pause animation.
+func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCount uint, fps float64, isLooped bool) *AnimationSet {
+	var timePerFrame float64
+	if fps > 0 {
+		timePerFrame = 1 / fps
 	}
-	animationSet:=  &AnimationSet{ spriteSheet:  spriteSheet, pivot: pivot, frameCount: frameCount, timePerFrame: timePerFrame, isLooped: isLooped}
-	return animationSet
+	return &AnimationSet{spriteSheet: spriteSheet, pivot: pivot, frameCount: frameCount, timePerFrame: timePerFrame, isLooped: isLooped}
 }
 
 func (a *AnimationSet) GetTexture() *ebiten.Image {

@@ -65,7 +65,11 @@ func (p *PanelNode) SetLayer(layer int) {
 	p.layer = layer
 }
 
-// Draw renders the panel using vector geometry if a background color is provided, and/or the background image.
+// Draw renders the panel background at its world-space position.
+// UI panels intentionally draw in world/screen space and do not inherit the camera transform
+// from the op GeoM. This is the expected behaviour for HUD/overlay elements that should remain
+// fixed on screen regardless of camera movement. If you need a panel that moves with the world,
+// extract the translation from op.GeoM and apply it manually.
 func (p *PanelNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	worldPos := p.GetWorldPosition()
 	scale := p.GetWorldScale()

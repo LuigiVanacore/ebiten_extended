@@ -66,7 +66,9 @@ func (m *CollisionManager) RemoveParticipant(p CollisionParticipant) {
 	}
 }
 
-func combineIDs(id1, id2 uint64) uint64 {
+// CombineIDs produces a single deterministic uint64 key from two node IDs,
+// independent of argument order. Used for collision pair deduplication.
+func CombineIDs(id1, id2 uint64) uint64 {
 	if id1 < id2 {
 		return (id1 << 32) | id2
 	}
@@ -117,7 +119,7 @@ func (m *CollisionManager) CheckCollision() {
 					continue
 				}
 
-				pairID := combineIDs(a.GetID(), b.GetID())
+				pairID := CombineIDs(a.GetID(), b.GetID())
 				if checkedPairs[pairID] {
 					continue
 				}

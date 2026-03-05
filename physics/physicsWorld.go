@@ -10,17 +10,19 @@ import (
 
 // PhysicsWorld manages RigidBody2D and runs integration + collision resolution each frame.
 type PhysicsWorld struct {
-	rigidBodies []*RigidBody2D
-	Gravity     math2D.Vector2D
-	CellSize    int
+	rigidBodies  []*RigidBody2D
+	Gravity      math2D.Vector2D
+	CellSize     int
+	checkedPairs map[uint64]bool // reused each Step to avoid per-frame allocation
 }
 
 // NewPhysicsWorld creates a PhysicsWorld with default CellSize 100.
 func NewPhysicsWorld() *PhysicsWorld {
 	return &PhysicsWorld{
-		rigidBodies: make([]*RigidBody2D, 0),
-		Gravity:     math2D.NewVector2D(0, 980),
-		CellSize:    100,
+		rigidBodies:  make([]*RigidBody2D, 0),
+		Gravity:      math2D.NewVector2D(0, 980),
+		CellSize:     100,
+		checkedPairs: make(map[uint64]bool),
 	}
 }
 
@@ -65,7 +67,7 @@ func (w *PhysicsWorld) Step(dt float64) {
 	// 2. Resolve overlaps (iterate 3 times for stability)
 	for iter := 0; iter < 3; iter++ {
 		grid := w.broadPhase()
-		checked := make(map[uint64]bool)
+		clear(w.checkedPairs)
 
 		for _, candidates := range grid {
 			for i := 0; i < len(candidates); i++ {
@@ -74,11 +76,11 @@ func (w *PhysicsWorld) Step(dt float64) {
 					if a == b {
 						continue
 					}
-					pairID := combineIDs(a.GetID(), b.GetID())
-					if checked[pairID] {
+					pairID := collision.CombineIDs(a.GetID(), b.GetID())
+					if w.checkedPairs[pairID] {
 						continue
 					}
-					checked[pairID] = true
+					w.checkedPairs[pairID] = true
 
 					sa, sb := a.GetShape(), b.GetShape()
 
@@ -138,14 +140,12 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	b.SetPosition(posB.X()+pushB.X(), posB.Y()+pushB.Y())
 
 	// Velocity response: restitution (bounce) on normal, friction on tangent.
-	// Restitution: use non-static body when one is static, else min of both.
+	// Restitution: use the dynamic body's value when one is static, else min of both.
 	// Friction: average of both.
 	restitution := b.Restitution
-	if a.Static {
-		restitution = b.Restitution
-	} else if b.Static {
+	if b.Static {
 		restitution = a.Restitution
-	} else if a.Restitution < restitution {
+	} else if !a.Static && a.Restitution < restitution {
 		restitution = a.Restitution
 	}
 	friction := (a.Friction + b.Friction) / 2
@@ -187,9 +187,3 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	}
 }
 
-func combineIDs(id1, id2 uint64) uint64 {
-	if id1 < id2 {
-		return (id1 << 32) | id2
-	}
-	return (id2 << 32) | id1
-}

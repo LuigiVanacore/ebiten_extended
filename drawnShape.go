@@ -12,11 +12,12 @@ type ShapeType int
 
 const (
 	RECT ShapeType = iota
-	CiRCLE
+	CIRCLE
 	LINE
 )
 
-const CIRCLE ShapeType = CiRCLE
+// CiRCLE is a deprecated alias for CIRCLE kept for backward compatibility.
+const CiRCLE = CIRCLE
 
 type DrawnShape struct {
 	Node2D
@@ -34,7 +35,7 @@ type DrawnShape struct {
 func NewDrawnCircle(name string, position math2D.Vector2D, radius float32, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
 	circle := &DrawnShape{
 		Node2D:            *NewNode2D(name),
-		shapeType:         CiRCLE,
+		shapeType:         CIRCLE,
 		radius:            radius,
 		color:             color,
 		isAntialiasActive: isAntialiasActive,
@@ -81,7 +82,7 @@ func (d *DrawnShape) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	x := float32(op.GeoM.Element(0, 2))
 	y := float32(op.GeoM.Element(1, 2))
 	switch d.shapeType {
-	case CiRCLE:
+	case CIRCLE:
 		vector.DrawFilledCircle(target, x, y, d.radius, d.color, d.isAntialiasActive)
 	case RECT:
 		vector.DrawFilledRect(

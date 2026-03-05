@@ -15,6 +15,7 @@ type StateBuffer struct {
 	keyStates     map[ebiten.Key]InputState
 	mouseStates   map[ebiten.MouseButton]InputState
 	gamepadStates map[GamePadButton]InputState
+	gamepadIDs    []ebiten.GamepadID // reused each frame to avoid per-frame allocation
 }
 
 // NewStateBuffer creates a new StateBuffer.
@@ -23,6 +24,7 @@ func NewStateBuffer() *StateBuffer {
 		keyStates:     make(map[ebiten.Key]InputState),
 		mouseStates:   make(map[ebiten.MouseButton]InputState),
 		gamepadStates: make(map[GamePadButton]InputState),
+		gamepadIDs:    make([]ebiten.GamepadID, 0, 4),
 	}
 }
 
@@ -55,8 +57,8 @@ func (s *StateBuffer) Update() {
 		}
 	}
 
-	ids := ebiten.AppendGamepadIDs(nil)
-	for _, id := range ids {
+	s.gamepadIDs = ebiten.AppendGamepadIDs(s.gamepadIDs[:0])
+	for _, id := range s.gamepadIDs {
 		for btn := ebiten.GamepadButton(0); btn <= ebiten.GamepadButtonMax; btn++ {
 			gp := NewGamePadButton(id, btn)
 			s.gamepadStates[gp] = InputState{

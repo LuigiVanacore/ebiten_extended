@@ -14,7 +14,9 @@ func DrawNode(node Drawable, target *ebiten.Image, op *ebiten.DrawImageOptions) 
 	node.Draw(target, op)
 }
 
-// Layers is a stack-based draw system. Layer indices define draw order (lower = drawn first).
+// Layers is a stack-based draw system. Layer indices define draw order (lower index = drawn first,
+// higher index = drawn on top). Within a single layer, nodes are drawn in LIFO order: the last node
+// pushed to a layer is drawn first, and the first node pushed is drawn last (painter's algorithm).
 type Layers struct {
 	layers []utils.Stack[func()]
 }
