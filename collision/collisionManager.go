@@ -17,14 +17,21 @@ type CollisionManager struct {
 	CellSize int
 
 	previousCollisions map[uint64]collisionPair
+	// internal maps reused across CheckCollision calls to avoid per-frame allocations.
+	grid             map[uint64][]CollisionParticipant
+	currentCollisions map[uint64]collisionPair
+	checkedPairs     map[uint64]bool
 }
 
 // NewCollisionManager returns a new collision manager with default CellSize 100.
 func NewCollisionManager() *CollisionManager {
 	return &CollisionManager{
-		participants:       make([]CollisionParticipant, 0),
-		CellSize:           100,
+		participants:      make([]CollisionParticipant, 0),
+		CellSize:          100,
 		previousCollisions: make(map[uint64]collisionPair),
+		grid:              make(map[uint64][]CollisionParticipant),
+		currentCollisions: make(map[uint64]collisionPair),
+		checkedPairs:      make(map[uint64]bool),
 	}
 }
 
@@ -85,7 +92,7 @@ func isOverlapping(a, b CollisionParticipant) bool {
 
 // CheckCollision evaluates intersections and emits lifecycle events.
 func (m *CollisionManager) CheckCollision() {
-	grid := make(map[uint64][]CollisionParticipant)
+	clear(m.grid)
 	cellSize := float64(m.CellSize)
 
 	for _, p := range m.participants {
@@ -101,15 +108,15 @@ func (m *CollisionManager) CheckCollision() {
 		for cx := cellMinX; cx <= cellMaxX; cx++ {
 			for cy := cellMinY; cy <= cellMaxY; cy++ {
 				key := (uint64(uint32(cx)) << 32) | uint64(uint32(cy))
-				grid[key] = append(grid[key], p)
+				m.grid[key] = append(m.grid[key], p)
 			}
 		}
 	}
 
-	currentCollisions := make(map[uint64]collisionPair)
-	checkedPairs := make(map[uint64]bool)
+	clear(m.currentCollisions)
+	clear(m.checkedPairs)
 
-	for _, cellParticipants := range grid {
+	for _, cellParticipants := range m.grid {
 		for i := 0; i < len(cellParticipants); i++ {
 			for j := i + 1; j < len(cellParticipants); j++ {
 				a := cellParticipants[i]
@@ -120,10 +127,10 @@ func (m *CollisionManager) CheckCollision() {
 				}
 
 				pairID := CombineIDs(a.GetID(), b.GetID())
-				if checkedPairs[pairID] {
+				if m.checkedPairs[pairID] {
 					continue
 				}
-				checkedPairs[pairID] = true
+				m.checkedPairs[pairID] = true
 
 				if !a.CanCollideWith(b) || !b.CanCollideWith(a) {
 					continue
@@ -132,19 +139,20 @@ func (m *CollisionManager) CheckCollision() {
 					continue
 				}
 
-				currentCollisions[pairID] = collisionPair{a: a, b: b}
+				m.currentCollisions[pairID] = collisionPair{a: a, b: b}
 				m.emitCollisionEvents(a, b, pairID)
 			}
 		}
 	}
 
 	for pairID, pair := range m.previousCollisions {
-		if _, still := currentCollisions[pairID]; !still {
+		if _, still := m.currentCollisions[pairID]; !still {
 			m.emitExitEvents(pair.a, pair.b)
 		}
 	}
 
-	m.previousCollisions = currentCollisions
+	m.previousCollisions, m.currentCollisions = m.currentCollisions, m.previousCollisions
+	clear(m.currentCollisions)
 
 	for _, p := range m.participants {
 		if coll, ok := p.(*Collider); ok {

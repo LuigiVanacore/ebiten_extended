@@ -42,8 +42,8 @@ func NewGame() *Game {
 	physicsWorld.Gravity = math2D.NewVector2D(0, 400)
 
 	collisionMgr := collision.NewCollisionManager()
-	mustRigidBody := func(shape collision.CollisionShape, mask collision.CollisionMask) *physics.RigidBody2D {
-		rb, err := physics.NewRigidBody2D(shape, mask)
+	mustRigidBody := func(name string, shape collision.CollisionShape, mask collision.CollisionMask) *physics.RigidBody2D {
+		rb, err := physics.NewRigidBody2D(name, shape, mask)
 		if err != nil {
 			panic(err)
 		}
@@ -66,14 +66,13 @@ func NewGame() *Game {
 
 	// Player (RigidBody with circle shape)
 	playerShape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 20))
-	player := mustRigidBody(playerShape, mask)
+	player := mustRigidBody("player", playerShape, mask)
 	player.SetPosition(100, 50)
-	player.UsesGravity = true
 	player.AddChildren(ebiten_extended.NewDrawnCircle("player", math2D.ZeroVector2D(), 20, playerColor, true, 0))
 
 	// Obstacle (RigidBody, static - zero velocity)
 	obstacleShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(80, 80)))
-	obstacle := mustRigidBody(obstacleShape, mask)
+	obstacle := mustRigidBody("obstacle", obstacleShape, mask)
 	obstacle.SetPosition(320, 390)
 	obstacle.UsesGravity = false
 	obstacle.Static = true
@@ -82,7 +81,7 @@ func NewGame() *Game {
 	// Floor (static - collider same size as drawing, perfectly overlapped)
 	floorSize := math2D.NewVector2D(float64(floorWidth), float64(floorHeight))
 	floorShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), floorSize))
-	floor := mustRigidBody(floorShape, mask)
+	floor := mustRigidBody("floor", floorShape, mask)
 	floor.SetPosition(float64(floorWidth)/2, float64(screenHeight)-float64(floorHeight)/2)
 	floor.UsesGravity = false
 	floor.Static = true

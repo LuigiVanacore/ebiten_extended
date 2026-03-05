@@ -10,7 +10,7 @@ import (
 
 func mustNewRigidBody2D(t *testing.T, shape collision.CollisionShape, mask collision.CollisionMask) *RigidBody2D {
 	t.Helper()
-	body, err := NewRigidBody2D(shape, mask)
+	body, err := NewRigidBody2D("body", shape, mask)
 	if err != nil {
 		t.Fatalf("NewRigidBody2D failed: %v", err)
 	}

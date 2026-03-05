@@ -13,11 +13,14 @@ import (
 // It inherits from Node2D and renders everything within its view onto a surface.
 type Camera struct {
 	Node2D
-	width     uint
-	height    uint
-	zoom      float64
-	surface   *ebiten.Image
-	nodeToFollow transform.Transformable
+	width           uint
+	height          uint
+	zoom            float64
+	surface         *ebiten.Image
+	nodeToFollow    transform.Transformable
+	// FollowSmoothing controls how quickly the camera interpolates toward the followed node.
+	// 0 (default) = instant snap. Values in (0, 1] apply lerp each frame (e.g. 0.1 = smooth, 1.0 = snap).
+	FollowSmoothing float64
 }
 
 
@@ -152,13 +155,28 @@ func (c *Camera) SetFollow(node transform.Transformable) {
 }
 
 // Update syncs camera position with the followed node (if any).
+// If FollowSmoothing is 0, the camera snaps instantly. Otherwise it lerps by FollowSmoothing
+// toward the target each frame (clamped to [0, 1]).
 func (c *Camera) Update() {
 	if c.nodeToFollow == nil {
 		return
 	}
 	worldTransform := c.nodeToFollow.GetWorldTransform()
-	pos := (&worldTransform).GetPosition()
-	c.SetPosition(pos.X(), pos.Y())
+	target := (&worldTransform).GetPosition()
+
+	if c.FollowSmoothing <= 0 {
+		c.SetPosition(target.X(), target.Y())
+		return
+	}
+
+	t := c.FollowSmoothing
+	if t > 1 {
+		t = 1
+	}
+	current := c.GetPosition()
+	x := current.X() + (target.X()-current.X())*t
+	y := current.Y() + (target.Y()-current.Y())*t
+	c.SetPosition(x, y)
 }
 
 // GetScreenCoords converts world coordinates (x, y) into camera surface coordinates (top-left origin).

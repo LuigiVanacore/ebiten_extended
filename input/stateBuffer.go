@@ -69,6 +69,12 @@ func (s *StateBuffer) Update() {
 	}
 }
 
+// ConnectedGamepadIDs returns the slice of connected gamepad IDs populated during the last Update.
+// The slice is reused across frames; do not store a reference to it.
+func (s *StateBuffer) ConnectedGamepadIDs() []ebiten.GamepadID {
+	return s.gamepadIDs
+}
+
 // IsActionActive returns whether the action is currently active according to its mode.
 func (s *StateBuffer) IsActionActive(action Action) bool {
 	switch action.GetActionType() {

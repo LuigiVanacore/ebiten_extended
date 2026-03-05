@@ -90,16 +90,16 @@ func TestSequence_Reset(t *testing.T) {
 	}
 }
 
-func TestSequence_Update(t *testing.T) {
+func TestSequence_Step(t *testing.T) {
 	tw := NewTween("t", 0, 100, 2.0, Linear)
 	seq := NewSequence("seq", tw)
-	// First Update advances one frame.
-	value, tweenComplete, seqComplete := seq.Update()
+	// First Step advances one frame.
+	value, tweenComplete, seqComplete := seq.Step()
 	if value != 50 {
-		t.Errorf("Update at start: value = %v, want 50", value)
+		t.Errorf("Step at start: value = %v, want 50", value)
 	}
 	if tweenComplete || seqComplete {
-		t.Errorf("Update at start: tweenComplete=%v seqComplete=%v", tweenComplete, seqComplete)
+		t.Errorf("Step at start: tweenComplete=%v seqComplete=%v", tweenComplete, seqComplete)
 	}
 }
 
@@ -118,7 +118,7 @@ func TestSequence_Update_AdvancesWhenTweenComplete(t *testing.T) {
 	seq := NewSequence("seq", tw1, tw2)
 	// Advance tween1 to completion
 	tw1.Set(0.001)
-	value, tweenComplete, seqComplete := seq.Update()
+	value, tweenComplete, seqComplete := seq.Step()
 	if value != 10 {
 		t.Errorf("Update when t1 done: value = %v, want 10", value)
 	}
@@ -137,7 +137,7 @@ func TestSequence_Update_SequenceComplete(t *testing.T) {
 	tw := NewTween("t", 0, 10, 0.001, Linear)
 	seq := NewSequence("seq", tw)
 	tw.Set(0.001) // complete the only tween
-	_, _, seqComplete := seq.Update()
+	_, _, seqComplete := seq.Step()
 	if !seqComplete {
 		t.Error("seqComplete should be true when last tween finishes")
 	}
@@ -145,7 +145,7 @@ func TestSequence_Update_SequenceComplete(t *testing.T) {
 
 func TestSequence_Update_EmptySequence(t *testing.T) {
 	seq := NewSequence("empty")
-	_, _, seqComplete := seq.Update()
+	_, _, seqComplete := seq.Step()
 	if !seqComplete {
 		t.Error("Empty sequence Update should return sequenceComplete=true")
 	}

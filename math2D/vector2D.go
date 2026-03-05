@@ -122,11 +122,10 @@ func(v Vector2D)   DivideScalar( s float64) Vector2D {
 	return Vector2D{v.x / s, v.y / s}
 }
 
-func (v Vector2D) RotateVector(degrees float64) Vector2D {
-	var radian = DegreesToRadian(degrees)
-	var sine = math.Sin(radian)
-	var cosine = math.Cos(radian)
-
+// RotateVector rotates the vector by the given angle in radians.
+func (v Vector2D) RotateVector(radians float64) Vector2D {
+	sine := math.Sin(radians)
+	cosine := math.Cos(radians)
 	return Vector2D{v.x*cosine - v.y*sine, v.x*sine + v.y*cosine}
 }
 

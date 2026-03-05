@@ -154,9 +154,10 @@ func (i *InputManager) IsActionActive(id ActionID) bool {
 	return i.stateBuf.IsActionActive(action)
 }
 
-// GamepadIDs returns the IDs of connected gamepads.
+// GamepadIDs returns the IDs of connected gamepads as of the last Update call.
+// The returned slice is reused across frames; do not store a reference to it.
 func (i *InputManager) GamepadIDs() []ebiten.GamepadID {
-	return ebiten.AppendGamepadIDs(nil)
+	return i.stateBuf.ConnectedGamepadIDs()
 }
 
 // StickDeadzone is applied to axis values; inputs below this magnitude are treated as zero.

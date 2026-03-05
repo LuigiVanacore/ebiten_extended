@@ -1,7 +1,7 @@
 package ebiten_extended
 
 import (
-	"sort"
+	"slices"
 
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -70,17 +70,17 @@ func (world *World) Update() {
 	}
 }
 
-// updateNode recursively calls Update on the given node and its children,
-// provided they implement the Updatable interface.
+// updateNode recursively calls Update on the given node and its children (pre-order:
+// parent updates before its children so children can read up-to-date parent state).
 func (world *World) updateNode(node SceneNode) {
 	if node == nil {
 		return
 	}
-	for _, child := range node.GetChildren() {
-		world.updateNode(child)
-	}
 	if entity, ok := node.(Updatable); ok {
 		entity.Update()
+	}
+	for _, child := range node.GetChildren() {
+		world.updateNode(child)
 	}
 }
 
@@ -94,16 +94,17 @@ func (world *World) queueNodeToLayers(node SceneNode, parentGeoM ebiten.GeoM, la
 		op.GeoM = updateTransform(entity, parentGeoM)
 	}
 	children := node.GetChildren()
-	// Sort descending: we push to a stack (LIFO), so higher GetLayer first => drawn last (on top)
-	sort.Slice(children, func(i, j int) bool {
-		li, lj := 0, 0
-		if d, ok := children[i].(Drawable); ok {
-			li = d.GetLayer()
+	// Sort descending: we push to a stack (LIFO), so higher GetLayer first => drawn last (on top).
+	// slices.SortFunc avoids the closure allocation of sort.Slice.
+	slices.SortFunc(children, func(a, b SceneNode) int {
+		la, lb := 0, 0
+		if d, ok := a.(Drawable); ok {
+			la = d.GetLayer()
 		}
-		if d, ok := children[j].(Drawable); ok {
-			lj = d.GetLayer()
+		if d, ok := b.(Drawable); ok {
+			lb = d.GetLayer()
 		}
-		return li > lj
+		return lb - la
 	})
 	for _, child := range children {
 		world.queueNodeToLayers(child, op.GeoM, layerIndex)

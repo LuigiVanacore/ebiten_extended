@@ -39,7 +39,7 @@ func CircleSegmentCollide(c math2D.Circle, s math2D.Segment) bool {
 	lc := math2D.SubtractVectors(c.GetCenterPosition(), s.GetStartPoint())
 	p := lc.ProjectVector(d)
 	nearest := math2D.AddVectors(s.GetStartPoint(), p)
-	return CirclePointCollide(c, nearest) && math2D.DotProduct(p, p) <= math2D.DotProduct(d, d) && 0 <= math2D.DotProduct(p,p)
+	return CirclePointCollide(c, nearest) && math2D.DotProduct(p, p) <= math2D.DotProduct(d, d) && 0 <= math2D.DotProduct(p, d)
 
 }
 

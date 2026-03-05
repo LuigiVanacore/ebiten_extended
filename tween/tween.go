@@ -42,6 +42,13 @@ func (tween *Tween) Reset() {
 	tween.Set(0)
 }
  
-func (tween *Tween) Update() (current float32, isFinished bool) {
+// Step advances the tween by one frame and returns the interpolated value and whether the tween has finished.
+func (tween *Tween) Step() (current float32, isFinished bool) {
 	return tween.Set(tween.time + 1)
+}
+
+// Tick advances the tween by one frame, satisfying the Updatable interface.
+// Use Step() if you need the return values.
+func (tween *Tween) Tick() {
+	tween.Step()
 }

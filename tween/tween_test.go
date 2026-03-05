@@ -71,12 +71,12 @@ func TestTween_Reset(t *testing.T) {
 	}
 }
 
-func TestTween_Update(t *testing.T) {
+func TestTween_Step(t *testing.T) {
 	tw := NewTween("test", 20, 80, 10.0, Linear)
 	tw.Set(5.0)
-	current, finished := tw.Update()
+	current, finished := tw.Step()
 	if current != 56 || finished {
-		t.Errorf("Update after Set(5): got (%v, %v), want (56, false)", current, finished)
+		t.Errorf("Step after Set(5): got (%v, %v), want (56, false)", current, finished)
 	}
 }
 

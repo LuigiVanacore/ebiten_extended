@@ -33,18 +33,15 @@ func (seq *Sequence) Remove(index int) {
 	}
 }
 
-// Update updates the currently active Tween in the Sequence; once that Tween is done, the Sequence moves onto the next one.
-// Update() returns the current Tween's output, whether that Tween is complete, and whether the entire Sequence is complete.
-func (seq *Sequence) Update() (float32, bool, bool) {
-
+// Step advances the currently active Tween by one frame and returns the interpolated value,
+// whether that Tween is complete, and whether the entire Sequence is complete.
+func (seq *Sequence) Step() (float32, bool, bool) {
 	value := float32(0.0)
 	tweenComplete := false
 	sequenceComplete := false
 
 	if seq.index < len(seq.Tweens) {
-
-		value, tweenComplete = seq.Tweens[seq.index].Update()
-
+		value, tweenComplete = seq.Tweens[seq.index].Step()
 		if tweenComplete {
 			seq.Tweens[seq.index].Reset()
 			seq.index++
@@ -52,13 +49,17 @@ func (seq *Sequence) Update() (float32, bool, bool) {
 				sequenceComplete = true
 			}
 		}
-
 	} else {
 		sequenceComplete = true
 	}
 
 	return value, tweenComplete, sequenceComplete
+}
 
+// Tick advances the sequence by one frame, satisfying the Updatable interface.
+// Use Step() if you need the return values.
+func (seq *Sequence) Tick() {
+	seq.Step()
 }
 
 // Index returns the current index of the Sequence. Note that this can exceed the number of Tweens in the Sequence.

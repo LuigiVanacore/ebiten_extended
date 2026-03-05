@@ -54,7 +54,7 @@ func TestSubtractVectors(t *testing.T) {
 
 func TestRotateVector(t *testing.T) {
     v := NewVector2D(1, 0)
-    rotated := v.RotateVector(90)
+    rotated := v.RotateVector(math.Pi / 2)
     if math.Abs(rotated.x) > 1e-9 || math.Abs(rotated.y-1) > 1e-9 {
         t.Errorf("Expected (0, 1), got (%v, %v)", rotated.x, rotated.y)
     }

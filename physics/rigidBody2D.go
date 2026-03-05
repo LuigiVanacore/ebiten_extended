@@ -25,19 +25,21 @@ type RigidBody2D struct {
 	mask         collision.CollisionMask
 }
 
-// NewRigidBody2D creates a RigidBody2D.
-func NewRigidBody2D(shape collision.CollisionShape, mask collision.CollisionMask) (*RigidBody2D, error) {
+// NewRigidBody2D creates a RigidBody2D with the given name, collision shape and mask.
+// Gravity is enabled by default (UsesGravity = true).
+func NewRigidBody2D(name string, shape collision.CollisionShape, mask collision.CollisionMask) (*RigidBody2D, error) {
 	if shape == nil {
 		return nil, errors.New("physics: NewRigidBody2D shape must not be nil")
 	}
 	rb := &RigidBody2D{
-		Node2D:      *ebiten_extended.NewNode2D("rigidbody"),
-		mass:        1,
+		Node2D:       *ebiten_extended.NewNode2D(name),
+		mass:         1,
+		UsesGravity:  true,
 		GravityScale: 1,
-		Friction:    0.5,
-		Restitution: 0,
-		shape:       shape,
-		mask:        mask,
+		Friction:     0.5,
+		Restitution:  0,
+		shape:        shape,
+		mask:         mask,
 	}
 	return rb, nil
 }

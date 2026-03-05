@@ -55,7 +55,8 @@ func OrientedRectangleCircleHull(r math2D.OrientedRectangle) math2D.Circle {
 	return math2D.NewCircle(r.GetCenter(), r.GetHalfExtended().Length())
 }
  
-func CirlcesRectangleHull(circles []math2D.Circle, count int) math2D.Rectangle {
+// CirclesRectangleHull returns the AABB that contains all given circles.
+func CirclesRectangleHull(circles []math2D.Circle, count int) math2D.Rectangle {
 	h := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.ZeroVector2D())
 	if (0 == count || len(circles) == 0 ) {
 		return h
@@ -75,7 +76,7 @@ func CirlcesRectangleHull(circles []math2D.Circle, count int) math2D.Rectangle {
 
 func CirclesCircleHull(circles []math2D.Circle, count int) math2D.Circle {
 	h := math2D.NewCircle(math2D.NewVector2D(0, 0), 0)
-	rh := CirlcesRectangleHull(circles, count)
+	rh := CirclesRectangleHull(circles, count)
 	h.SetCenter(rh.GetCenter())
 
 	for i:=1; i < count; i++ {
