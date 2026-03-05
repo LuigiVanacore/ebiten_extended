@@ -114,12 +114,12 @@ func (b *Node2D) GetWorldPosition() math2D.Vector2D {
 
 // GetWorldRotation returns the absolute world rotation in radians.
 func (b *Node2D) GetWorldRotation() float64 {
-	worldTransform := b.GetWorldTransform()
-	return (&worldTransform).GetRotation()
+	wt := b.GetWorldTransform()
+	return wt.GetRotation()
 }
 
 // GetWorldScale returns the absolute world scale factors.
 func (b *Node2D) GetWorldScale() math2D.Vector2D {
-	worldTransform := b.GetWorldTransform()
-	return (&worldTransform).GetScale()
+	wt := b.GetWorldTransform()
+	return wt.GetScale()
 }

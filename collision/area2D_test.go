@@ -9,7 +9,7 @@ import (
 
 func mustNewArea2D(t *testing.T, shape CollisionShape, mask CollisionMask) *Area2D {
 	t.Helper()
-	area, err := NewArea2D(shape, mask)
+	area, err := NewArea2D("area", shape, mask)
 	if err != nil {
 		t.Fatalf("NewArea2D failed: %v", err)
 	}
@@ -18,7 +18,7 @@ func mustNewArea2D(t *testing.T, shape CollisionShape, mask CollisionMask) *Area
 
 func mustNewCollider(t *testing.T, shape CollisionShape, mask CollisionMask) *Collider {
 	t.Helper()
-	c, err := NewCollider(shape, mask)
+	c, err := NewCollider("collider", shape, mask)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestArea2D_OnBodyEntered(t *testing.T) {
 	manager.AddParticipant(area)
 
 	entered := false
-	area.OnBodyEntered.Connect(nil, func(ev Area2DBodyEvent) {
+	area.BodyEntered().Connect(nil, func(ev Area2DBodyEvent) {
 		entered = true
 	})
 
@@ -64,7 +64,7 @@ func TestArea2D_OnBodyExited(t *testing.T) {
 	manager.AddParticipant(area)
 
 	exited := false
-	area.OnBodyExited.Connect(nil, func(ev Area2DBodyEvent) {
+	area.BodyExited().Connect(nil, func(ev Area2DBodyEvent) {
 		exited = true
 	})
 
@@ -91,7 +91,7 @@ func TestArea2D_NoOverlapNoEvent(t *testing.T) {
 	manager.AddParticipant(area)
 
 	entered := false
-	area.OnBodyEntered.Connect(nil, func(ev Area2DBodyEvent) {
+	area.BodyEntered().Connect(nil, func(ev Area2DBodyEvent) {
 		entered = true
 	})
 

@@ -49,8 +49,8 @@ func NewGame() *Game {
 		}
 		return rb
 	}
-	mustArea := func(shape collision.CollisionShape, mask collision.CollisionMask) *collision.Area2D {
-		area, err := collision.NewArea2D(shape, mask)
+	mustArea := func(name string, shape collision.CollisionShape, mask collision.CollisionMask) *collision.Area2D {
+		area, err := collision.NewArea2D(name, shape, mask)
 		if err != nil {
 			panic(err)
 		}
@@ -89,11 +89,11 @@ func NewGame() *Game {
 
 	// Area2D (sensor/trigger)
 	areaShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(150, 50)))
-	area := mustArea(areaShape, mask)
+	area := mustArea("area", areaShape, mask)
 	area.SetPosition(450, 380)
 	area.AddChildren(ebiten_extended.NewDrawnRectangle("area", math2D.ZeroVector2D(), math2D.NewVector2D(150, 50), areaColor, true, 0))
 
-	area.OnBodyEntered.Connect(nil, func(ev collision.Area2DBodyEvent) {
+	area.BodyEntered().Connect(nil, func(ev collision.Area2DBodyEvent) {
 		// Trigger detected - e.g. collectible, damage zone
 	})
 

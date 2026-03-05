@@ -13,7 +13,7 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	// NewCollisionRect was not exposed, creating direct struct
 	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1, err := NewCollider(shape1, mask1)
+	c1, err := NewCollider("c1", shape1, mask1)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -21,7 +21,7 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 
 	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c2, err := NewCollider(shape2, mask2)
+	c2, err := NewCollider("c2", shape2, mask2)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -34,13 +34,13 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	stayCalled := 0
 	exitCalled := 0
 
-	c1.OnCollisionEnter.Connect(nil, func(arg *Collider) {
+	c1.CollisionEnter().Connect(nil, func(arg *Collider) {
 		enterCalled++
 	})
-	c1.OnCollisionStay.Connect(nil, func(arg *Collider) {
+	c1.CollisionStay().Connect(nil, func(arg *Collider) {
 		stayCalled++
 	})
-	c1.OnCollisionExit.Connect(nil, func(arg *Collider) {
+	c1.CollisionExit().Connect(nil, func(arg *Collider) {
 		exitCalled++
 	})
 
@@ -81,11 +81,11 @@ func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
 	manager := NewCollisionManager()
 	shape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1, err := NewCollider(shape, mask)
+	c1, err := NewCollider("c1", shape, mask)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
-	c2, err := NewCollider(shape, mask)
+	c2, err := NewCollider("c2", shape, mask)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
 	manager.AddCollider(c2)
 
 	enterCount := 0
-	c1.OnCollisionEnter.Connect(nil, func(*Collider) { enterCount++ })
+	c1.CollisionEnter().Connect(nil, func(*Collider) { enterCount++ })
 
 	manager.CheckCollision()
 
@@ -110,7 +110,7 @@ func TestSpatialGridSeparation(t *testing.T) {
 
 	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c1, err := NewCollider(shape1, mask1)
+	c1, err := NewCollider("c1", shape1, mask1)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -118,7 +118,7 @@ func TestSpatialGridSeparation(t *testing.T) {
 
 	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c2, err := NewCollider(shape2, mask2)
+	c2, err := NewCollider("c2", shape2, mask2)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -129,7 +129,7 @@ func TestSpatialGridSeparation(t *testing.T) {
 
 	enterCalled := 0
 
-	c1.OnCollisionEnter.Connect(nil, func(arg *Collider) {
+	c1.CollisionEnter().Connect(nil, func(arg *Collider) {
 		enterCalled++
 	})
 

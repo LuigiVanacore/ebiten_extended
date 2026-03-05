@@ -1,6 +1,8 @@
 package ebiten_extended
 
 import (
+	"errors"
+
 	"github.com/hajimehoshi/ebiten/v2/audio"
 )
 
@@ -17,20 +19,22 @@ type AudioStreamPlayer struct {
 }
 
 // NewAudioStreamPlayer creates an AudioStreamPlayer for the given sound ID.
-// The sound must already be loaded via AudioManager.AddSound. Returns nil if the sound is not found.
+// The sound must already be loaded via AudioManager.AddSound.
+// Returns an error if am is nil or the sound ID is not found.
 // Typically use AudioManager.CreateStreamPlayer instead.
-func NewAudioStreamPlayer(name, soundID string, am *AudioManager) *AudioStreamPlayer {
-	if am == nil || !am.HasSound(soundID) {
-		return nil
+func NewAudioStreamPlayer(name, soundID string, am *AudioManager) (*AudioStreamPlayer, error) {
+	if am == nil {
+		return nil, errors.New("audio: AudioManager must not be nil")
+	}
+	if !am.HasSound(soundID) {
+		return nil, errors.New("audio: sound not found: " + soundID)
 	}
 	return &AudioStreamPlayer{
-		Node:     *NewNode(name),
-		am:       am,
-		soundID:  soundID,
-		volume:   1.0,
-		loop:     false,
-		player:   nil,
-	}
+		Node:    *NewNode(name),
+		am:      am,
+		soundID: soundID,
+		volume:  1.0,
+	}, nil
 }
 
 // Play starts or resumes playback. If already playing, has no effect.

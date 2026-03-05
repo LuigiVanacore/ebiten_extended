@@ -17,7 +17,7 @@ func TestCollisionManager_SingleParticipant(t *testing.T) {
 	manager := NewCollisionManager()
 	shape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	c, err := NewCollider(shape, mask)
+	c, err := NewCollider("c", shape, mask)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -28,20 +28,22 @@ func TestCollisionManager_SingleParticipant(t *testing.T) {
 
 func TestCollisionManager_CanCollideWithFilter(t *testing.T) {
 	manager := NewCollisionManager()
-	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(2)) // layer 1 collides with 2
-	mask2 := NewCollisionMask(utils.ByteSet(2), utils.ByteSet(1)) // layer 2 collides with 1
-	mask3 := NewCollisionMask(utils.ByteSet(3), utils.ByteSet(3)) // layer 3 only with 3
+	// Use distinct power-of-2 bits so masks don't accidentally overlap.
+	// ByteSet is a bit field: bit 0=0b001=1, bit 1=0b010=2, bit 2=0b100=4.
+	mask1 := NewCollisionMask(utils.ByteSet(0b001), utils.ByteSet(0b010)) // layer 1 collides with 2
+	mask2 := NewCollisionMask(utils.ByteSet(0b010), utils.ByteSet(0b001)) // layer 2 collides with 1
+	mask3 := NewCollisionMask(utils.ByteSet(0b100), utils.ByteSet(0b100)) // layer 3 only with 3
 
 	shape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
-	c1, err := NewCollider(shape, mask1)
+	c1, err := NewCollider("c1", shape, mask1)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
-	c2, err := NewCollider(shape, mask2)
+	c2, err := NewCollider("c2", shape, mask2)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
-	c3, err := NewCollider(shape, mask3)
+	c3, err := NewCollider("c3", shape, mask3)
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -55,7 +57,7 @@ func TestCollisionManager_CanCollideWithFilter(t *testing.T) {
 
 	enter12 := 0
 	enter13 := 0
-	c1.OnCollisionEnter.Connect(nil, func(other *Collider) {
+	c1.CollisionEnter().Connect(nil, func(other *Collider) {
 		if other == c2 {
 			enter12++
 		}
@@ -77,14 +79,14 @@ func TestCollisionManager_CanCollideWithFilter(t *testing.T) {
 func TestCollisionManager_Area2DOnBodyStay(t *testing.T) {
 	manager := NewCollisionManager()
 	areaShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100)))
-	area, err := NewArea2D(areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	area, err := NewArea2D("area", areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	if err != nil {
 		t.Fatalf("NewArea2D failed: %v", err)
 	}
 	area.SetPosition(100, 100)
 
 	collShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
-	coll, err := NewCollider(collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	coll, err := NewCollider("coll", collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -94,7 +96,7 @@ func TestCollisionManager_Area2DOnBodyStay(t *testing.T) {
 	manager.AddParticipant(area)
 
 	stayCount := 0
-	area.OnBodyStay.Connect(nil, func(ev Area2DBodyEvent) {
+	area.BodyStay().Connect(nil, func(ev Area2DBodyEvent) {
 		stayCount++
 	})
 
@@ -113,14 +115,14 @@ func TestCollisionManager_AABBBroadPhaseLargeBody(t *testing.T) {
 	manager.CellSize = 100
 
 	floorShape := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(640, 40)))
-	floor, err := NewArea2D(floorShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	floor, err := NewArea2D("floor", floorShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	if err != nil {
 		t.Fatalf("NewArea2D failed: %v", err)
 	}
 	floor.SetPosition(320, 460)
 
 	ballShape := NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 20))
-	ball, err := NewCollider(ballShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
+	ball, err := NewCollider("ball", ballShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	if err != nil {
 		t.Fatalf("NewCollider failed: %v", err)
 	}
@@ -130,7 +132,7 @@ func TestCollisionManager_AABBBroadPhaseLargeBody(t *testing.T) {
 	manager.AddParticipant(ball)
 
 	entered := false
-	floor.OnBodyEntered.Connect(nil, func(ev Area2DBodyEvent) {
+	floor.BodyEntered().Connect(nil, func(ev Area2DBodyEvent) {
 		entered = true
 	})
 

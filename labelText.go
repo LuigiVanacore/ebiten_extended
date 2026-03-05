@@ -10,10 +10,11 @@ import (
 // TextNode represents a visual 2D scene graph node dedicated to drawing scalable geometry-based text phrases.
 type TextNode struct {
 	Node2D
-	message string
-	color   color.Color
-	font    text.Face
-	layer   int
+	message  string
+	color    color.Color
+	font     text.Face
+	layer    int
+	drawOpts text.DrawOptions // reused each frame to avoid per-Draw heap allocation
 }
 
 // NewTextNode instantiates a display entity resolving specific text output using the assigned typography face format.
@@ -68,14 +69,15 @@ func (l *TextNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 		return
 	}
 
-	textOp := &text.DrawOptions{}
+	// Reset to zero value (identity GeoM, default ColorScale) before populating.
+	l.drawOpts = text.DrawOptions{}
 	if op != nil {
-		textOp.GeoM = op.GeoM
+		l.drawOpts.GeoM = op.GeoM
 	} else {
 		worldPos := l.GetWorldPosition()
-		textOp.GeoM.Translate(worldPos.X(), worldPos.Y())
+		l.drawOpts.GeoM.Translate(worldPos.X(), worldPos.Y())
 	}
-	textOp.ColorScale.ScaleWithColor(l.color)
+	l.drawOpts.ColorScale.ScaleWithColor(l.color)
 
-	text.Draw(target, l.message, l.font, textOp)
+	text.Draw(target, l.message, l.font, &l.drawOpts)
 }

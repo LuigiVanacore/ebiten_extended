@@ -85,10 +85,16 @@ func (t *Transform) UpdateGeoM(geom ebiten.GeoM) ebiten.GeoM {
 	return geom
 }
 
-// Concat applies other's scale, rotation and position after t (result = t * other).
+// Concat applies other (child/local) on top of t (parent/world).
+// The child position is first scaled by the parent scale, then rotated by the parent rotation,
+// and finally added to the parent position — matching the standard 2D transform hierarchy.
 // geoM from other is not applied.
 func (t *Transform) Concat(other Transform) {
+	// Scale local position by parent scale, then rotate by parent rotation
+	scaledX := other.GetPosition().X() * t.scale.X()
+	scaledY := other.GetPosition().Y() * t.scale.Y()
+	rotated := math2D.NewVector2D(scaledX, scaledY).RotateVector(t.rotation)
+	t.Translate(rotated.X(), rotated.Y())
 	t.scale.SetPosition(math2D.NewVector2D(t.scale.X()*other.GetScale().X(), t.scale.Y()*other.GetScale().Y()))
 	t.Rotate(other.GetRotation())
-	t.Translate(other.GetPosition().X(), other.GetPosition().Y())
 }

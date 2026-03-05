@@ -105,20 +105,22 @@ func (a *AudioManager) decodeToStream(r io.Reader, format AudioFormat) (stream, 
 }
 
 // PlaySound plays a cached sound once. Creates a new player each call.
-// Volume is scaled by master volume.
-func (a *AudioManager) PlaySound(id string) {
-	a.PlaySoundWithVolume(id, 1.0)
+// Volume is scaled by master volume. Returns an error if the sound ID is not found.
+func (a *AudioManager) PlaySound(id string) error {
+	return a.PlaySoundWithVolume(id, 1.0)
 }
 
 // PlaySoundWithVolume plays a cached sound with volume in [0, 1].
-func (a *AudioManager) PlaySoundWithVolume(id string, volume float64) {
+// Returns an error if the sound ID is not found.
+func (a *AudioManager) PlaySoundWithVolume(id string, volume float64) error {
 	pcm, ok := a.sounds[id]
 	if !ok {
-		return
+		return errors.New("audio: sound not found: " + id)
 	}
 	p := a.ctx.NewPlayerF32FromBytes(pcm)
 	p.SetVolume(volume * a.masterVol)
 	p.Play()
+	return nil
 }
 
 // SetMasterVolume sets the global volume multiplier [0, 1].
@@ -157,14 +159,15 @@ func (a *AudioManager) RemoveSound(id string) bool {
 // Returns the number of sounds removed.
 func (a *AudioManager) ClearSounds() int {
 	n := len(a.sounds)
-	a.sounds = make(map[string][]byte)
+	clear(a.sounds)
 	return n
 }
 
 // CreateStreamPlayer creates an AudioStreamPlayer node for the given sound ID.
-// The sound must already be loaded via AddSound. Returns nil if the sound is not found.
+// The sound must already be loaded via AddSound.
+// Returns an error if soundID is not found or am is nil.
 // Add the node to the World for loop support (Update), or use it standalone for one-shot control.
-func (a *AudioManager) CreateStreamPlayer(name, soundID string) *AudioStreamPlayer {
+func (a *AudioManager) CreateStreamPlayer(name, soundID string) (*AudioStreamPlayer, error) {
 	return NewAudioStreamPlayer(name, soundID, a)
 }
 

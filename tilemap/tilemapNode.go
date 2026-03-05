@@ -148,7 +148,7 @@ func (t *TileMapNode) BuildCollisions(mask collision.CollisionMask) error {
 							shape = collision.NewCollisionRect(rect)
 						}
 
-						col, err := collision.NewCollider(shape, mask)
+						col, err := collision.NewCollider("tile_collider", shape, mask)
 						if err != nil {
 							continue
 						}

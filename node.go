@@ -72,6 +72,7 @@ func (s *Node) GetChildren() []SceneNode {
 func (s *Node) Delete() {
 	if s.parent != nil {
 		s.parent.DetachChild(s)
+		s.parent = nil
 	}
 }
 

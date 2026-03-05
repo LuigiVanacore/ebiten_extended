@@ -47,14 +47,14 @@ func NewGame() *Game {
 	}
 
 	// Crea nodi audio nello stile Godot
-	musicPlayer := am.CreateStreamPlayer("music", "sfx")
+	musicPlayer, _ := am.CreateStreamPlayer("music", "sfx")
 	if musicPlayer != nil {
 		musicPlayer.SetLoop(true)
 		musicPlayer.SetVolume(0.5)
 		engine.World().AddNodeToDefaultLayer(musicPlayer) // necessario per Update (loop)
 	}
 
-	sfxPlayer := am.CreateStreamPlayer("sfx_node", "sfx")
+	sfxPlayer, _ := am.CreateStreamPlayer("sfx_node", "sfx")
 
 	return &Game{
 		engine:      engine,

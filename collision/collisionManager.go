@@ -171,18 +171,18 @@ func (m *CollisionManager) emitCollisionEvents(a, b CollisionParticipant, pairID
 	if colA, okA := a.(*Collider); okA {
 		if colB, okB := b.(*Collider); okB {
 			if !wasColliding {
-				if !colA.OnCollisionEnter.IsEmpty() {
-					colA.OnCollisionEnter.Emit(colB)
+				if !colA.onCollisionEnter.IsEmpty() {
+					colA.onCollisionEnter.Emit(colB)
 				}
-				if !colB.OnCollisionEnter.IsEmpty() {
-					colB.OnCollisionEnter.Emit(colA)
+				if !colB.onCollisionEnter.IsEmpty() {
+					colB.onCollisionEnter.Emit(colA)
 				}
 			} else {
-				if !colA.OnCollisionStay.IsEmpty() {
-					colA.OnCollisionStay.Emit(colB)
+				if !colA.onCollisionStay.IsEmpty() {
+					colA.onCollisionStay.Emit(colB)
 				}
-				if !colB.OnCollisionStay.IsEmpty() {
-					colB.OnCollisionStay.Emit(colA)
+				if !colB.onCollisionStay.IsEmpty() {
+					colB.onCollisionStay.Emit(colA)
 				}
 			}
 			return
@@ -208,12 +208,12 @@ func (m *CollisionManager) emitCollisionEvents(a, b CollisionParticipant, pairID
 func (m *CollisionManager) emitArea2DEvents(area *Area2D, body Body, wasColliding bool) {
 	ev := Area2DBodyEvent{Body: body}
 	if !wasColliding {
-		if !area.OnBodyEntered.IsEmpty() {
-			area.OnBodyEntered.Emit(ev)
+		if !area.onBodyEntered.IsEmpty() {
+			area.onBodyEntered.Emit(ev)
 		}
 	} else {
-		if !area.OnBodyStay.IsEmpty() {
-			area.OnBodyStay.Emit(ev)
+		if !area.onBodyStay.IsEmpty() {
+			area.onBodyStay.Emit(ev)
 		}
 	}
 }
@@ -221,27 +221,27 @@ func (m *CollisionManager) emitArea2DEvents(area *Area2D, body Body, wasCollidin
 func (m *CollisionManager) emitExitEvents(a, b CollisionParticipant) {
 	if colA, okA := a.(*Collider); okA {
 		if colB, okB := b.(*Collider); okB {
-			if !colA.OnCollisionExit.IsEmpty() {
-				colA.OnCollisionExit.Emit(colB)
+			if !colA.onCollisionExit.IsEmpty() {
+				colA.onCollisionExit.Emit(colB)
 			}
-			if !colB.OnCollisionExit.IsEmpty() {
-				colB.OnCollisionExit.Emit(colA)
+			if !colB.onCollisionExit.IsEmpty() {
+				colB.onCollisionExit.Emit(colA)
 			}
 			return
 		}
 	}
 	if area, okA := a.(*Area2D); okA {
 		if body, okB := b.(Body); okB {
-			if !area.OnBodyExited.IsEmpty() {
-				area.OnBodyExited.Emit(Area2DBodyEvent{Body: body})
+			if !area.onBodyExited.IsEmpty() {
+				area.onBodyExited.Emit(Area2DBodyEvent{Body: body})
 			}
 			return
 		}
 	}
 	if area, okB := b.(*Area2D); okB {
 		if body, okA := a.(Body); okA {
-			if !area.OnBodyExited.IsEmpty() {
-				area.OnBodyExited.Emit(Area2DBodyEvent{Body: body})
+			if !area.onBodyExited.IsEmpty() {
+				area.onBodyExited.Emit(Area2DBodyEvent{Body: body})
 			}
 		}
 	}
