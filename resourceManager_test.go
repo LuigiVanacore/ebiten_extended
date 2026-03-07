@@ -47,6 +47,28 @@ func TestResourceManagerClearFonts(t *testing.T) {
 	}
 }
 
+func TestResourceManagerLoadImageFromFileInvalidPath(t *testing.T) {
+	rm := NewResourceManager()
+	err := rm.LoadImageFromFile("test", "nonexistent_image_file_12345.png")
+	if err == nil {
+		t.Error("expected error when loading from nonexistent path")
+	}
+	if rm.GetImage("test") != nil {
+		t.Error("image should not be cached on error")
+	}
+}
+
+func TestResourceManagerLoadFontFromFileInvalidPath(t *testing.T) {
+	rm := NewResourceManager()
+	err := rm.LoadFontFromFile("test", "nonexistent_font_file_12345.otf", 16)
+	if err == nil {
+		t.Error("expected error when loading from nonexistent path")
+	}
+	if rm.GetFont("test") != nil {
+		t.Error("font should not be cached on error")
+	}
+}
+
 func TestResourceManagerClear(t *testing.T) {
 	rm := NewResourceManager()
 	rm.images["hero"] = nil

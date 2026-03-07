@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -18,9 +19,18 @@ type Camera struct {
 	zoom            float64
 	surface         *ebiten.Image
 	nodeToFollow    transform.Transformable
-	// FollowSmoothing controls how quickly the camera interpolates toward the followed node.
-	// 0 (default) = instant snap. Values in (0, 1] apply lerp each frame (e.g. 0.1 = smooth, 1.0 = snap).
 	FollowSmoothing float64
+
+	shakeIntensity  float64
+	shakeDuration   float64
+	shakeRemaining  float64
+	shakeOffsetX    float64
+	shakeOffsetY    float64
+	shakePhase      float64
+
+	// bounds constrain camera position when set (boundsSet true). World rect: minX, minY, maxX, maxY.
+	boundsSet bool
+	boundsMinX, boundsMinY, boundsMaxX, boundsMaxY float64
 }
 
 
@@ -86,8 +96,11 @@ func (c *Camera) Fill(color color.Color) {
 
 // ApplyRelativeTranslation applies camera-relative translation to op in place.
 // World (0,0) maps to the top-left of the camera surface; camera position acts as view offset.
+// Shake offset is applied when Shake is active.
 func (c *Camera) ApplyRelativeTranslation(op *ebiten.DrawImageOptions, x, y float64) {
-	op.GeoM.Translate(x-c.GetPosition().X(), y-c.GetPosition().Y())
+	px := c.GetPosition().X() + c.shakeOffsetX
+	py := c.GetPosition().Y() + c.shakeOffsetY
+	op.GeoM.Translate(x-px, y-py)
 }
 
 // GetRelativeTranslation applies camera-relative translation to op in place and returns op.
@@ -154,29 +167,113 @@ func (c *Camera) SetFollow(node transform.Transformable) {
 	c.nodeToFollow = node
 }
 
-// Update syncs camera position with the followed node (if any).
-// If FollowSmoothing is 0, the camera snaps instantly. Otherwise it lerps by FollowSmoothing
-// toward the target each frame (clamped to [0, 1]).
+// SetBounds constrains the camera position to a world rectangle (minX, minY, maxX, maxY).
+// Pass minX >= maxX to disable bounds.
+func (c *Camera) SetBounds(minX, minY, maxX, maxY float64) {
+	if minX >= maxX || minY >= maxY {
+		c.boundsSet = false
+		return
+	}
+	c.boundsSet = true
+	c.boundsMinX, c.boundsMinY = minX, minY
+	c.boundsMaxX, c.boundsMaxY = maxX, maxY
+}
+
+// GetBounds returns the current bounds and whether they are active.
+func (c *Camera) GetBounds() (minX, minY, maxX, maxY float64, active bool) {
+	return c.boundsMinX, c.boundsMinY, c.boundsMaxX, c.boundsMaxY, c.boundsSet
+}
+
+// GetVisibleWorldRect returns the axis-aligned world rectangle currently visible (for culling).
+func (c *Camera) GetVisibleWorldRect() math2D.Rectangle {
+	px := c.GetPosition().X()
+	py := c.GetPosition().Y()
+	w := float64(c.width) / c.zoom
+	h := float64(c.height) / c.zoom
+	return math2D.NewRectangle(
+		math2D.NewVector2D(px, py),
+		math2D.NewVector2D(w, h),
+	)
+}
+
+// applyBounds clamps the camera position to bounds if set.
+func (c *Camera) applyBounds() {
+	if !c.boundsSet {
+		return
+	}
+	viewW := float64(c.width) / c.zoom
+	viewH := float64(c.height) / c.zoom
+	// Camera position is top-left of view; clamp so view stays within bounds
+	minCamX := c.boundsMinX
+	minCamY := c.boundsMinY
+	maxCamX := c.boundsMaxX - viewW
+	maxCamY := c.boundsMaxY - viewH
+	if maxCamX < minCamX {
+		maxCamX = minCamX
+	}
+	if maxCamY < minCamY {
+		maxCamY = minCamY
+	}
+	px, py := c.GetPosition().X(), c.GetPosition().Y()
+	if px < minCamX {
+		px = minCamX
+	} else if px > maxCamX {
+		px = maxCamX
+	}
+	if py < minCamY {
+		py = minCamY
+	} else if py > maxCamY {
+		py = maxCamY
+	}
+	c.SetPosition(px, py)
+}
+
+// Shake adds a screen shake effect. intensity is the max pixel offset; duration is in seconds.
+// Call repeatedly to extend or intensify the shake.
+func (c *Camera) Shake(intensity, duration float64) {
+	if intensity > c.shakeIntensity || duration > c.shakeRemaining {
+		c.shakeIntensity = intensity
+		c.shakeDuration = duration
+		if c.shakeRemaining < duration {
+			c.shakeRemaining = duration
+		}
+	}
+}
+
+// Update syncs camera position with the followed node (if any) and decays shake.
+// Uses fixed 60 FPS timestep (1/60 s) for shake decay.
 func (c *Camera) Update() {
-	if c.nodeToFollow == nil {
-		return
+	const tick = 1.0 / 60.0
+	if c.shakeRemaining > 0 {
+		c.shakeRemaining -= tick
+		if c.shakeRemaining < 0 {
+			c.shakeRemaining = 0
+			c.shakeOffsetX, c.shakeOffsetY = 0, 0
+		} else {
+			frac := c.shakeRemaining / c.shakeDuration
+			c.shakePhase += tick * 60
+			c.shakeOffsetX = c.shakeIntensity * frac * math.Sin(c.shakePhase*1.7)
+			c.shakeOffsetY = c.shakeIntensity * frac * math.Sin(c.shakePhase*2.3+1)
+		}
 	}
-	worldTransform := c.nodeToFollow.GetWorldTransform()
-	target := (&worldTransform).GetPosition()
+	if c.nodeToFollow != nil {
+		worldTransform := c.nodeToFollow.GetWorldTransform()
+		target := (&worldTransform).GetPosition()
 
-	if c.FollowSmoothing <= 0 {
-		c.SetPosition(target.X(), target.Y())
-		return
+		if c.FollowSmoothing <= 0 {
+			c.SetPosition(target.X(), target.Y())
+		} else {
+			t := c.FollowSmoothing
+			if t > 1 {
+				t = 1
+			}
+			current := c.GetPosition()
+			x := current.X() + (target.X()-current.X())*t
+			y := current.Y() + (target.Y()-current.Y())*t
+			c.SetPosition(x, y)
+		}
 	}
-
-	t := c.FollowSmoothing
-	if t > 1 {
-		t = 1
-	}
-	current := c.GetPosition()
-	x := current.X() + (target.X()-current.X())*t
-	y := current.Y() + (target.Y()-current.Y())*t
-	c.SetPosition(x, y)
+	c.applyBounds()
 }
 
 // GetScreenCoords converts world coordinates (x, y) into camera surface coordinates (top-left origin).
@@ -184,7 +281,9 @@ func (c *Camera) GetScreenCoords(x, y float64) (float64, float64) {
 	co := math.Cos(float64(c.GetRotation()))
 	si := math.Sin(float64(c.GetRotation()))
 
-	x, y = x-c.GetPosition().X(), y-c.GetPosition().Y()
+	px := c.GetPosition().X() + c.shakeOffsetX
+	py := c.GetPosition().Y() + c.shakeOffsetY
+	x, y = x-px, y-py
 	x, y = co*x-si*y, si*x+co*y
 
 	return x * c.zoom, y * c.zoom
@@ -198,7 +297,9 @@ func (c *Camera) GetWorldCoords(x, y float64) (float64, float64) {
 	x, y = x/c.zoom, y/c.zoom
 	x, y = co*x-si*y, si*x+co*y
 
-	return x + c.GetPosition().X(), y + c.GetPosition().Y()
+	px := c.GetPosition().X() + c.shakeOffsetX
+	py := c.GetPosition().Y() + c.shakeOffsetY
+	return x + px, y + py
 }
 
 // GetCursorCoords utilizes the provided InputManager to retrieve mouse cursor pos naturally mapped into world coordinates.

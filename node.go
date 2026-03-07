@@ -68,7 +68,9 @@ func (s *Node) GetChildren() []SceneNode {
 	return s.children
 }
 
-// Delete cleanly removes this operational node entirely from its active parent.
+// Delete removes this node from its parent in the scene graph.
+// If the node is a [collision.Collider], [collision.Area2D], or [physics.RigidBody2D],
+// also remove it from the CollisionManager or PhysicsWorld.
 func (s *Node) Delete() {
 	if s.parent != nil {
 		s.parent.DetachChild(s)

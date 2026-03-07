@@ -90,8 +90,8 @@ func (a *AnimationSet) IsLooped() bool {
 
 
 
+// Update advances the animation by one fixed frame. Implements Updatable.
 func (a *AnimationSet) Update() {
-
 	if a.IsEnded() && !a.isLooped {
 		return
 	}

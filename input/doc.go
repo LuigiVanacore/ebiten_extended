@@ -15,5 +15,11 @@
 // IsGamepadButtonPressed, IsGamepadButtonJustPressed, IsStandardGamepadButtonPressed.
 //
 // Get InputManager from Engine.Input() or create with NewInputManager. Call Update each frame.
-// Enable cursor with SetMouseEnabled(true) and read GetCursorPos.
+// Enable cursor with SetMouseEnabled(true).
+//
+// Mouse coordinates:
+//   - GetCursorPos() returns screen/window coordinates (device pixels, origin top-left).
+//     Use for HUD, UI overlays, or when rendering at 1:1 with the window.
+//   - Camera.GetCursorCoords(inputMgr) returns world coordinates (scaled by camera zoom/rotation).
+//     Use when you need the cursor position in your game world (e.g. click-to-move, OverlapPoint).
 package input

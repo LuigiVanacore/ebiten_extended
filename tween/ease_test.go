@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+func floatEqual(a, b float32) bool {
+	return float32(math.Abs(float64(a-b))) <= 1e-5
+}
+
 func floatEqualLoose(a, b float32) bool {
 	return float32(math.Abs(float64(a-b))) <= 1e-1
 }

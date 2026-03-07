@@ -29,43 +29,52 @@ func NewStateBuffer() *StateBuffer {
 }
 
 // Update polls ebiten and updates all button states.
+// Uses deterministic loops (no map range) to avoid undefined behavior when updating.
 func (s *StateBuffer) Update() {
-	for k, v := range s.keyStates {
-		v.WasPressed = v.IsPressed
-		s.keyStates[k] = v
-	}
-	for k, v := range s.mouseStates {
-		v.WasPressed = v.IsPressed
-		s.mouseStates[k] = v
-	}
-	for k, v := range s.gamepadStates {
-		v.WasPressed = v.IsPressed
-		s.gamepadStates[k] = v
-	}
-
+	// Keyboard: single pass, WasPressed = previous frame's IsPressed
 	for key := ebiten.Key(0); key <= ebiten.KeyMax; key++ {
+		old := s.keyStates[key]
 		s.keyStates[key] = InputState{
 			IsPressed:  ebiten.IsKeyPressed(key),
-			WasPressed: s.keyStates[key].WasPressed,
+			WasPressed: old.IsPressed,
 		}
 	}
 
+	// Mouse: single pass
 	for btn := ebiten.MouseButtonLeft; btn <= ebiten.MouseButtonRight; btn++ {
+		old := s.mouseStates[btn]
 		s.mouseStates[btn] = InputState{
 			IsPressed:  ebiten.IsMouseButtonPressed(btn),
-			WasPressed: s.mouseStates[btn].WasPressed,
+			WasPressed: old.IsPressed,
 		}
 	}
 
+	// Gamepad: update connected, then age disconnected entries (avoid map range during modify)
 	s.gamepadIDs = ebiten.AppendGamepadIDs(s.gamepadIDs[:0])
+	connected := make(map[ebiten.GamepadID]bool, len(s.gamepadIDs))
+	for _, id := range s.gamepadIDs {
+		connected[id] = true
+	}
 	for _, id := range s.gamepadIDs {
 		for btn := ebiten.GamepadButton(0); btn <= ebiten.GamepadButtonMax; btn++ {
 			gp := NewGamePadButton(id, btn)
+			old := s.gamepadStates[gp]
 			s.gamepadStates[gp] = InputState{
 				IsPressed:  ebiten.IsGamepadButtonPressed(id, btn),
-				WasPressed: s.gamepadStates[gp].WasPressed,
+				WasPressed: old.IsPressed,
 			}
 		}
+	}
+	// Age disconnected gamepad entries (WasPressed = last IsPressed)
+	var toAge []GamePadButton
+	for gp := range s.gamepadStates {
+		if !connected[gp.GamepadID] {
+			toAge = append(toAge, gp)
+		}
+	}
+	for _, gp := range toAge {
+		old := s.gamepadStates[gp]
+		s.gamepadStates[gp] = InputState{IsPressed: old.IsPressed, WasPressed: old.IsPressed}
 	}
 }
 

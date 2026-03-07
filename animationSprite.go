@@ -30,6 +30,7 @@ func (a *AnimationSprite) GetLayer() int {
 	return a.layer
 }
 
+// Update advances the animation. Implements Updatable.
 func (a *AnimationSprite) Update() {
 	if a.isPlaying {
 		if a.animationSet != nil {

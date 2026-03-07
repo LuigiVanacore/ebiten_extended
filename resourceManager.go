@@ -3,9 +3,11 @@ package ebiten_extended
 import (
 	"bytes"
 	"image"
+	"os"
 	"sync"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
@@ -24,11 +26,16 @@ func NewResourceManager() *ResourceManager {
 	}
 }
 
-// GetImages retrieves the complete underlying dictionary mapping of cached ebiten images.
+// GetImages returns a copy of the cached ebiten images mapping.
+// Modifying the returned map does not affect the ResourceManager.
 func (r *ResourceManager) GetImages() map[string]*ebiten.Image {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	return r.images
+	out := make(map[string]*ebiten.Image, len(r.images))
+	for k, v := range r.images {
+		out[k] = v
+	}
+	return out
 }
 
 // GetImage fetches a specific loaded ebiten image by its arbitrary string identifier.
@@ -60,11 +67,16 @@ func (r *ResourceManager) ClearImages() int {
 	return n
 }
 
-// GetFonts retrieves the complete underlying dictionary mapping of cached fonts.
+// GetFonts returns a copy of the cached fonts mapping.
+// Modifying the returned map does not affect the ResourceManager.
 func (r *ResourceManager) GetFonts() map[string]text.Face {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	return r.fonts
+	out := make(map[string]text.Face, len(r.fonts))
+	for k, v := range r.fonts {
+		out[k] = v
+	}
+	return out
 }
 
 // GetFont provides access to a loaded text face via its string ID.
@@ -102,6 +114,20 @@ func (r *ResourceManager) Clear() {
 	r.ClearFonts()
 }
 
+// LoadImageFromFile loads an image from the given file path and caches it under textureId.
+// Supports common formats (PNG, JPG, GIF, etc.). Returns an error if the file cannot be read or decoded.
+func (r *ResourceManager) LoadImageFromFile(textureId string, path string) error {
+	img, _, err := ebitenutil.NewImageFromFile(path)
+	if err != nil {
+		return err
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.images[textureId] = img
+	return nil
+}
+
 // AddImage decodes raw image bytes, converts them into an ebiten Image, and binds them to the provided textureId.
 // Returns an error if decoding fails.
 func (r *ResourceManager) AddImage(textureId string, texture []byte) error {
@@ -115,6 +141,16 @@ func (r *ResourceManager) AddImage(textureId string, texture []byte) error {
 	defer r.mu.Unlock()
 	r.images[textureId] = ebitenImage
 	return nil
+}
+
+// LoadFontFromFile loads an OpenType font from the given file path and caches it under fontId.
+// Returns an error if the file cannot be read or decoded.
+func (r *ResourceManager) LoadFontFromFile(fontId string, path string, fontSize float64) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return r.LoadFont(fontId, data, fontSize)
 }
 
 // LoadFont loads an OpenType font from a reader and adds it to the manager.

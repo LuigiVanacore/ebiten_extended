@@ -1,2 +1,2 @@
-// Package example shows how to transition between different scenes.
-package example
+// Package main demonstrates scene switching using World.ClearLayer and AddNodeToLayer.
+package main

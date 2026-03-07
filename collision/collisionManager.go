@@ -1,6 +1,10 @@
 package collision
 
-import "math"
+import (
+	"math"
+
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
+)
 
 type collisionPair struct {
 	a CollisionParticipant
@@ -71,6 +75,106 @@ func (m *CollisionManager) RemoveParticipant(p CollisionParticipant) {
 			delete(m.previousCollisions, pairID)
 		}
 	}
+}
+
+// RaycastResult holds a participant hit by a ray/segment and the distance from the ray origin.
+type RaycastResult struct {
+	Participant CollisionParticipant
+	Distance    float64 // distance from segment start to hit (0 if at start)
+}
+
+// Raycast tests a segment against all participants and returns those hit, sorted by distance from start.
+// Use for line-of-sight, shooting, pathfinding. The segment is in world coordinates.
+func (m *CollisionManager) Raycast(start, end math2D.Vector2D) []RaycastResult {
+	seg := math2D.NewSegment(start, end)
+	dir := math2D.SubtractVectors(end, start)
+	segLen := math.Sqrt(math2D.DotProduct(dir, dir))
+	if segLen < 1e-9 {
+		segLen = 1e-9
+	}
+	dirNorm := dir.Normalize()
+	var results []RaycastResult
+	for _, p := range m.participants {
+		shape := p.GetShape()
+		if shape == nil {
+			continue
+		}
+		if !segmentOverlapsShape(seg, shape, p.GetWorldTransform()) {
+			continue
+		}
+		// Approximate distance: use closest point on segment to shape center
+		center := p.GetWorldPosition()
+		toCenter := math2D.SubtractVectors(center, start)
+		proj := math2D.DotProduct(toCenter, dirNorm)
+		if proj < 0 {
+			proj = 0
+		}
+		if proj > segLen {
+			proj = segLen
+		}
+		closest := math2D.AddVectors(start, dirNorm.MultiplyScalar(proj))
+		dist := math.Sqrt(math2D.DotProduct(
+			math2D.SubtractVectors(closest, start),
+			math2D.SubtractVectors(closest, start),
+		))
+		results = append(results, RaycastResult{Participant: p, Distance: dist})
+	}
+	// Sort by distance
+	for i := 0; i < len(results); i++ {
+		for j := i + 1; j < len(results); j++ {
+			if results[j].Distance < results[i].Distance {
+				results[i], results[j] = results[j], results[i]
+			}
+		}
+	}
+	return results
+}
+
+// OverlapPoint returns all participants whose shape contains the given world-space point.
+func (m *CollisionManager) OverlapPoint(point math2D.Vector2D) []CollisionParticipant {
+	var result []CollisionParticipant
+	for _, p := range m.participants {
+		shape := p.GetShape()
+		if shape == nil {
+			continue
+		}
+		if overlapPointShape(point, shape, p.GetWorldTransform()) {
+			result = append(result, p)
+		}
+	}
+	return result
+}
+
+// OverlapCircle returns all participants whose shape overlaps the given world-space circle.
+func (m *CollisionManager) OverlapCircle(center math2D.Vector2D, radius float64) []CollisionParticipant {
+	query := math2D.NewCircle(center, radius)
+	var result []CollisionParticipant
+	for _, p := range m.participants {
+		shape := p.GetShape()
+		if shape == nil {
+			continue
+		}
+		if overlapCircleShape(query, shape, p.GetWorldTransform()) {
+			result = append(result, p)
+		}
+	}
+	return result
+}
+
+// OverlapRect returns all participants whose shape overlaps the given world-space axis-aligned rectangle.
+// The rectangle is defined by position (top-left) and size.
+func (m *CollisionManager) OverlapRect(rect math2D.Rectangle) []CollisionParticipant {
+	var result []CollisionParticipant
+	for _, p := range m.participants {
+		shape := p.GetShape()
+		if shape == nil {
+			continue
+		}
+		if overlapRectShape(rect, shape, p.GetWorldTransform()) {
+			result = append(result, p)
+		}
+	}
+	return result
 }
 
 // CombineIDs produces a single deterministic uint64 key from two node IDs,

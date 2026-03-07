@@ -1,6 +1,7 @@
 package collision
 
 import (
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/LuigiVanacore/ebiten_extended/transform"
 )
 
@@ -24,27 +25,29 @@ var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.
 		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ca := a.(*CollisionCircle).circle
 			cb := b.(*CollisionCircle).circle
-			ca.SetCenter(tA.GetPosition())
-			cb.SetCenter(tB.GetPosition())
-			return CirclesCollideResult(ca, cb)
+			caCopy := math2D.NewCircle(tA.GetPosition(), ca.GetRadius())
+			cbCopy := math2D.NewCircle(tB.GetPosition(), cb.GetRadius())
+			return CirclesCollideResult(caCopy, cbCopy)
 		},
 		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ca := a.(*CollisionCircle).circle
 			rb := b.(*CollisionRect).rectangle
-			ca.SetCenter(tA.GetPosition())
-			rb.SetCenter(tB.GetPosition())
-			return CircleRectangleCollideResult(ca, rb)
+			caCopy := math2D.NewCircle(tA.GetPosition(), ca.GetRadius())
+			rbCopy := math2D.NewRectangle(rb.GetPosition(), rb.GetSize())
+			rbCopy.SetCenter(tB.GetPosition())
+			return CircleRectangleCollideResult(caCopy, rbCopy)
 		},
 	},
 	kindRect: {
 		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ra := a.(*CollisionRect).rectangle
 			cb := b.(*CollisionCircle).circle
-			ra.SetCenter(tA.GetPosition())
-			cb.SetCenter(tB.GetPosition())
+			raCopy := math2D.NewRectangle(ra.GetPosition(), ra.GetSize())
+			raCopy.SetCenter(tA.GetPosition())
+			cbCopy := math2D.NewCircle(tB.GetPosition(), cb.GetRadius())
 
 			// Circle vs Rect: swap so circle is first, invert normal for consistency
-			res := CircleRectangleCollideResult(cb, ra)
+			res := CircleRectangleCollideResult(cbCopy, raCopy)
 			if res.Overlapping {
 				res.Normal = res.Normal.Negate()
 			}
@@ -53,9 +56,11 @@ var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.
 		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ra := a.(*CollisionRect).rectangle
 			rb := b.(*CollisionRect).rectangle
-			ra.SetCenter(tA.GetPosition())
-			rb.SetCenter(tB.GetPosition())
-			return RectanglesCollideResult(ra, rb)
+			raCopy := math2D.NewRectangle(ra.GetPosition(), ra.GetSize())
+			rbCopy := math2D.NewRectangle(rb.GetPosition(), rb.GetSize())
+			raCopy.SetCenter(tA.GetPosition())
+			rbCopy.SetCenter(tB.GetPosition())
+			return RectanglesCollideResult(raCopy, rbCopy)
 		},
 	},
 }

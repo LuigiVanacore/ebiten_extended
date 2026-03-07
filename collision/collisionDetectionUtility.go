@@ -32,6 +32,98 @@ func ClampOnRectangle(p math2D.Vector2D, r math2D.Rectangle) math2D.Vector2D {
 		ClampOnRange(p.Y(), r.GetPosition().Y(), r.GetPosition().Y()+r.GetSize().Y()))
 }
 
+// segmentOverlapsShape returns true if the world-space segment intersects the shape at the given transform.
+func segmentOverlapsShape(seg math2D.Segment, shape CollisionShape, t transform.Transform) bool {
+	pos := t.GetPosition()
+	switch s := shape.(type) {
+	case *CollisionCircle:
+		c := math2D.NewCircle(pos, s.circle.GetRadius())
+		return CircleSegmentCollide(c, seg)
+	case *CollisionRect:
+		sz := s.rectangle.GetSize()
+		tl := math2D.NewVector2D(pos.X()-sz.X()/2, pos.Y()-sz.Y()/2)
+		r := math2D.NewRectangle(tl, sz)
+		return RectangleSegmentCollide(r, seg)
+	case *CollisionOrientedRect:
+		or := math2D.NewOrientedRectangle(pos, s.rectangle.GetHalfExtended(), t.GetRotation())
+		return OrientedRectangleSegmentCollide(or, seg)
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, pos, t.GetRotation())
+		return PolygonSegmentCollide(verts, seg)
+	default:
+		return false
+	}
+}
+
+// overlapPointShape returns true if the world-space point is inside the shape at the given transform.
+func overlapPointShape(point math2D.Vector2D, shape CollisionShape, t transform.Transform) bool {
+	pos := t.GetPosition()
+	switch s := shape.(type) {
+	case *CollisionCircle:
+		c := math2D.NewCircle(pos, s.circle.GetRadius())
+		return CirclePointCollide(c, point)
+	case *CollisionRect:
+		sz := s.rectangle.GetSize()
+		tl := math2D.NewVector2D(pos.X()-sz.X()/2, pos.Y()-sz.Y()/2)
+		r := math2D.NewRectangle(tl, sz)
+		return PointRectangleCollide(point, r)
+	case *CollisionOrientedRect:
+		or := math2D.NewOrientedRectangle(pos, s.rectangle.GetHalfExtended(), t.GetRotation())
+		return OrientedRectanglePointCollide(or, point)
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, pos, t.GetRotation())
+		return PointInPolygon(point, verts)
+	default:
+		return false
+	}
+}
+
+// overlapCircleShape returns true if the world-space query circle overlaps the shape at the given transform.
+func overlapCircleShape(query math2D.Circle, shape CollisionShape, t transform.Transform) bool {
+	pos := t.GetPosition()
+	switch s := shape.(type) {
+	case *CollisionCircle:
+		c := math2D.NewCircle(pos, s.circle.GetRadius())
+		return CirclesCollide(query, c)
+	case *CollisionRect:
+		sz := s.rectangle.GetSize()
+		tl := math2D.NewVector2D(pos.X()-sz.X()/2, pos.Y()-sz.Y()/2)
+		r := math2D.NewRectangle(tl, sz)
+		return CircleRectangleCollide(query, r)
+	case *CollisionOrientedRect:
+		or := math2D.NewOrientedRectangle(pos, s.rectangle.GetHalfExtended(), t.GetRotation())
+		return CircleOrientedRectangleCollide(query, or)
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, pos, t.GetRotation())
+		return PolygonCircleCollide(verts, query)
+	default:
+		return false
+	}
+}
+
+// overlapRectShape returns true if the world-space query rectangle (AABB) overlaps the shape at the given transform.
+func overlapRectShape(query math2D.Rectangle, shape CollisionShape, t transform.Transform) bool {
+	pos := t.GetPosition()
+	switch s := shape.(type) {
+	case *CollisionCircle:
+		c := math2D.NewCircle(pos, s.circle.GetRadius())
+		return CircleRectangleCollide(c, query)
+	case *CollisionRect:
+		sz := s.rectangle.GetSize()
+		tl := math2D.NewVector2D(pos.X()-sz.X()/2, pos.Y()-sz.Y()/2)
+		r := math2D.NewRectangle(tl, sz)
+		return RectanglesCollide(query, r)
+	case *CollisionOrientedRect:
+		or := math2D.NewOrientedRectangle(pos, s.rectangle.GetHalfExtended(), t.GetRotation())
+		return OrientedRectangleRectangleCollide(or, query)
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, pos, t.GetRotation())
+		return PolygonRectangleCollide(verts, query)
+	default:
+		return false
+	}
+}
+
 // ShapeAABB returns the axis-aligned bounding box (minX, minY, maxX, maxY) of the shape in world space.
 // It applies the given transform locally to extract the visual bounds without mutating the shape itself.
 func ShapeAABB(shape CollisionShape, t transform.Transform) (minX, minY, maxX, maxY float64) {
@@ -52,6 +144,34 @@ func ShapeAABB(shape CollisionShape, t transform.Transform) (minX, minY, maxX, m
 		topLeftX := pos.X() - size.X()/2
 		topLeftY := pos.Y() - size.Y()/2
 		return topLeftX, topLeftY, topLeftX + size.X(), topLeftY + size.Y()
+	case *CollisionOrientedRect:
+		or := math2D.NewOrientedRectangle(t.GetPosition(), s.rectangle.GetHalfExtended(), t.GetRotation())
+		hull := OrientedRectangleRectangleHull(or)
+		pos := hull.GetPosition()
+		sz := hull.GetSize()
+		return pos.X(), pos.Y(), pos.X() + sz.X(), pos.Y() + sz.Y()
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, t.GetPosition(), t.GetRotation())
+		if len(verts) == 0 {
+			return 0, 0, 0, 0
+		}
+		minX, minY := verts[0].X(), verts[0].Y()
+		maxX, maxY := minX, minY
+		for _, v := range verts[1:] {
+			if v.X() < minX {
+				minX = v.X()
+			}
+			if v.X() > maxX {
+				maxX = v.X()
+			}
+			if v.Y() < minY {
+				minY = v.Y()
+			}
+			if v.Y() > maxY {
+				maxY = v.Y()
+			}
+		}
+		return minX, minY, maxX, maxY
 	default:
 		return 0, 0, 0, 0
 	}

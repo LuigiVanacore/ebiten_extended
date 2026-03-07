@@ -6,9 +6,17 @@ import (
 )
 
 // FIXED_DELTA is the fixed time step used for engine updates, set to 60 FPS (1.0 / 60.0).
+// For physics simulation, prefer PhysicsDelta() which matches Ebiten's TPS.
 const (
 	FIXED_DELTA float64 = 1.0 / 60.0
 )
+
+// PhysicsDelta returns the fixed timestep for physics, matching Ebiten's TPS.
+// Use this in physicsWorld.Step(ebiten_extended.PhysicsDelta()) for correct
+// integration with Ebiten's Update frequency (ebiten.SetTPS affects this).
+func PhysicsDelta() float64 {
+	return 1.0 / float64(ebiten.TPS())
+}
 
 // Engine represents the core of the framework, managing the game world, input, resources, audio, clock, and debug systems.
 type Engine struct {
@@ -18,6 +26,10 @@ type Engine struct {
 	audioManager    *AudioManager
 	clock           *Clock
 	debug           *Debug
+
+	// logicalSize is used for Layout when SetLogicalSize was called; (0,0) = passthrough.
+	logicalWidth  int
+	logicalHeight int
 }
 
 // NewEngine creates and initializes a new Engine instance with default systems.
@@ -82,9 +94,24 @@ func (e *Engine) Draw(target *ebiten.Image) {
 	e.world.Draw(target, nil)
 }
 
+// SetLogicalSize sets the fixed logical resolution for scaling.
+// When non-zero, Layout returns (logicalW, logicalH) so the game renders at a fixed resolution
+// while Ebiten scales to the window. Use in your Game.Layout: return e.engine.Layout(outsideWidth, outsideHeight).
+func (e *Engine) SetLogicalSize(logicalWidth, logicalHeight int) {
+	e.logicalWidth = logicalWidth
+	e.logicalHeight = logicalHeight
+}
+
 // Layout accepts a screen size and returns the logical screen size.
-// Can be overridden by the actual game to adjust screen proportions.
+// If SetLogicalSize was called with non-zero values, returns those; otherwise passthrough.
+// Resizes the world camera to match the returned dimensions.
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
-	// default placeholder for Layout, actual game overrides this.
-	return outsideWidth, outsideHeight
+	var w, h int
+	if e.logicalWidth > 0 && e.logicalHeight > 0 {
+		w, h = e.logicalWidth, e.logicalHeight
+	} else {
+		w, h = outsideWidth, outsideHeight
+	}
+	e.world.Camera().Resize(uint(w), uint(h))
+	return w, h
 }

@@ -88,6 +88,10 @@ func NewGame() *Game {
 
 	panel.AddChildren(button)
 
+	tooltip := ui.NewTooltipNode("btn_tooltip", button, "Increments the counter and progress bar", gameFont, im)
+	tooltip.SetPosition(0, 0)
+	panel.AddChildren(tooltip)
+
 	// 5. Create a Checkbox
 	checkbox := ui.NewCheckboxNode("theme_checkbox", 30, im)
 	checkbox.SetPosition(50, 300)
@@ -96,6 +100,25 @@ func NewGame() *Game {
 	chkLabel := ebiten_extended.NewTextNode("chk_lbl", "Toggle Red Progress", gameFont, color.White)
 	chkLabel.SetPosition(90, 300)
 	panel.AddChildren(chkLabel)
+
+	// 6. Text input field
+	textInput := ui.NewTextInputNode("name_input", 200, 30, gameFont, im)
+	textInput.SetPosition(50, 340)
+	textInput.SetPlaceholder("Enter name...")
+	textInput.SetMaxLength(20)
+	textInput.OnSubmit = func(text string) {
+		titleLabel.SetMessage("Hello, " + text + "!")
+	}
+	panel.AddChildren(textInput)
+
+	// 7. Dropdown
+	dropdown := ui.NewDropdownNode("theme_dropdown", 200, 30, gameFont, im)
+	dropdown.SetPosition(50, 380)
+	dropdown.SetItems([]string{"Option A", "Option B", "Option C"})
+	dropdown.OnSelectionChanged = func(idx int, text string) {
+		titleLabel.SetMessage("Selected: " + text)
+	}
+	panel.AddChildren(dropdown)
 
 	checkbox.OnToggle = func(checked bool) {
 		if checked {

@@ -7,11 +7,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-// ProgressBarNode represents a UI bar that fills horizontally reflecting a progress value.
+// ProgressBarOrientation defines the fill direction.
+type ProgressBarOrientation int
+
+const (
+	ProgressBarHorizontal ProgressBarOrientation = iota
+	ProgressBarVertical
+)
+
+// ProgressBarNode represents a UI bar that fills reflecting a progress value (0.0 to 1.0).
 type ProgressBarNode struct {
 	PanelNode
-	progress  float64 // Range: 0.0 to 1.0
-	fillColor color.Color
+	progress    float64 // Range: 0.0 to 1.0
+	fillColor   color.Color
+	orientation ProgressBarOrientation
 }
 
 // NewProgressBarNode creates a new ProgressBarNode with a default background and fill color.
@@ -20,10 +29,16 @@ func NewProgressBarNode(name string, width, height float64) *ProgressBarNode {
 	p.SetBackgroundColor(color.RGBA{30, 30, 30, 255}) // Dark background by default
 
 	return &ProgressBarNode{
-		PanelNode: *p,
-		progress:  0.0,
-		fillColor: color.RGBA{0, 200, 0, 255}, // Green fill by default
+		PanelNode:    *p,
+		progress:     0.0,
+		fillColor:   color.RGBA{0, 200, 0, 255}, // Green fill by default
+		orientation: ProgressBarHorizontal,
 	}
+}
+
+// SetOrientation sets the fill direction (horizontal or vertical).
+func (p *ProgressBarNode) SetOrientation(o ProgressBarOrientation) {
+	p.orientation = o
 }
 
 // SetProgress updates the progression value clamped between 0.0 and 1.0.
@@ -56,26 +71,31 @@ func (p *ProgressBarNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions
 	if p.progress > 0 && p.fillColor != nil {
 		worldPos := p.GetWorldPosition()
 		scale := p.GetWorldScale()
+		scaledW := p.width * scale.X()
+		scaledH := p.height * scale.Y()
 
-		// Calculate fill width based on progress
-		fillWidth := p.width * scale.X() * p.progress
-
-		var fillHeight float32
-		if p.backgroundImage != nil {
-			// Calculate if scaled img height exists
-			fillHeight = float32(p.height * scale.Y())
+		if p.orientation == ProgressBarHorizontal {
+			fillWidth := scaledW * p.progress
+			vector.DrawFilledRect(
+				target,
+				float32(worldPos.X()),
+				float32(worldPos.Y()),
+				float32(fillWidth),
+				float32(scaledH),
+				p.fillColor,
+				true,
+			)
 		} else {
-			fillHeight = float32(p.height * scale.Y())
+			fillHeight := scaledH * p.progress
+			vector.DrawFilledRect(
+				target,
+				float32(worldPos.X()),
+				float32(worldPos.Y()+scaledH-fillHeight),
+				float32(scaledW),
+				float32(fillHeight),
+				p.fillColor,
+				true,
+			)
 		}
-
-		vector.DrawFilledRect(
-			target,
-			float32(worldPos.X()),
-			float32(worldPos.Y()),
-			float32(fillWidth),
-			fillHeight,
-			p.fillColor,
-			true,
-		)
 	}
 }

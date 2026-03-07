@@ -13,11 +13,12 @@ const DefaultLayerIndex = 0
 // World represents the main game world, managing the scene graph, layers, and camera.
 // It handles updating and drawing all nodes within the game.
 type World struct {
-	rootScene  SceneNode
-	layerRoots []SceneNode // layerRoots[i] = root node for layer index i
-	drawLayers *Layers
-	camera     *Camera
-	postUpdate func() // called after updateNode; e.g. set to collision.CollisionManager().CheckCollision to avoid import cycle
+	rootScene      SceneNode
+	layerRoots     []SceneNode // layerRoots[i] = root node for layer index i
+	drawLayers     *Layers
+	camera         *Camera
+	postUpdate     func() // called after updateNode; e.g. set to collision.CollisionManager().CheckCollision to avoid import cycle
+	cullingEnabled bool   // when true, Cullable nodes outside view are skipped
 }
 
 // NewWorld creates and initializes a new World instance.
@@ -55,13 +56,52 @@ func (world *World) AddNodeToDefaultLayer(node SceneNode) {
 	world.AddNodeToLayer(node, DefaultLayerIndex)
 }
 
+// RemoveNode detaches the node from its parent in the scene graph (typically a layer root).
+// Returns true if the node was successfully removed. If the node is a [collision.Collider],
+// [collision.Area2D], or [physics.RigidBody2D], you must also remove it from the
+// CollisionManager or PhysicsWorld respectively.
+func (world *World) RemoveNode(node SceneNode) bool {
+	parent := node.GetParent()
+	if parent == nil {
+		return false
+	}
+	if !parent.DetachChild(node) {
+		return false
+	}
+	node.AttachParent(nil)
+	return true
+}
+
+// ClearLayer removes all direct children from the layer at the given index.
+// Nodes nested under other nodes in that layer are not affected (they remain children of their parent).
+func (world *World) ClearLayer(layerIndex int) {
+	if layerIndex < 0 || layerIndex >= len(world.layerRoots) {
+		return
+	}
+	root := world.layerRoots[layerIndex]
+	for len(root.GetChildren()) > 0 {
+		child := root.GetChildren()[0]
+		root.DetachChild(child)
+		child.AttachParent(nil)
+	}
+}
+
 // SetPostUpdate sets a callback run after each Update (e.g. collision.CollisionManager().CheckCollision).
 func (world *World) SetPostUpdate(f func()) {
 	world.postUpdate = f
 }
 
+// SetCullingEnabled enables or disables frustum culling for Cullable drawables.
+func (world *World) SetCullingEnabled(enabled bool) {
+	world.cullingEnabled = enabled
+}
+
+// CullingEnabled returns whether culling is active.
+func (world *World) CullingEnabled() bool {
+	return world.cullingEnabled
+}
+
 // Update progresses the game state by one tick.
-// It recursively updates all nodes in the scene graph and runs the postUpdate callback if set.
 func (world *World) Update() {
 	world.camera.Update()
 	world.updateNode(world.rootScene)
@@ -111,6 +151,16 @@ func (world *World) queueNodeToLayers(node SceneNode, parentGeoM ebiten.GeoM, la
 	}
 	if _, ok := node.(transform.Transformable); ok {
 		if drawable, ok := node.(Drawable); ok {
+			if world.cullingEnabled {
+				if cullable, ok := drawable.(Cullable); ok {
+					bounds := cullable.GetWorldBounds()
+					visible := world.camera.GetVisibleWorldRect()
+					if !bounds.IntersectsRect(visible) {
+						// Skip drawing
+						return
+					}
+				}
+			}
 			childOp := op
 			world.camera.ApplyRelativeTranslation(&childOp, 0, 0)
 			_ = world.drawLayers.AddNodeToLayer(layerIndex, drawable, world.camera.GetSurface(), childOp)

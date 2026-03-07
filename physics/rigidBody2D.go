@@ -11,6 +11,7 @@ import (
 // RigidBody2D is a physics body with velocity, gravity, and collision shape.
 // It does not overlap with other RigidBody2D (PhysicsWorld resolves collisions).
 // Static bodies (e.g. floor, walls) do not move when colliding.
+// Kinematic bodies are moved by code, not by physics; they push dynamic bodies but are not pushed.
 // Friction (0-1) reduces sliding; Restitution (0-1) controls bounce.
 type RigidBody2D struct {
 	ebiten_extended.Node2D
@@ -19,8 +20,9 @@ type RigidBody2D struct {
 	UsesGravity  bool
 	GravityScale float64
 	Static       bool // if true, body does not move on collision
-	Friction     float64 // 0=no friction, 1=full friction; combined with other body on collision
-	Restitution  float64 // 0=no bounce, 1=full bounce; min of both bodies used
+	Kinematic    bool // if true, position is moved by code only; pushes dynamic bodies but is not pushed
+	Friction     float64
+	Restitution  float64
 	shape        collision.CollisionShape
 	mask         collision.CollisionMask
 }

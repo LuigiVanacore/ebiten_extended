@@ -73,7 +73,7 @@ func (a *AnimationPlayer) DeleteAnimation(animationId string) {
 	delete(a.animationMap, animationId)
 }
 
-// Update advances the internal clock constraint of the actively executing sequence.
+// Update advances the internal clock constraint of the actively executing sequence. Implements Updatable.
 func (a *AnimationPlayer) Update() {
 	if a.isPlaying {
 		animationSet := a.animationMap[a.currentAnimationId]

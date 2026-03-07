@@ -109,6 +109,39 @@ func (o *orderRecorderDrawable) Draw(target *ebiten.Image, op *ebiten.DrawImageO
 	*o.order = append(*o.order, o.id)
 }
 
+func TestWorldRemoveNode(t *testing.T) {
+	world := NewWorld()
+	node := NewNode2D("test")
+	world.AddNodeToDefaultLayer(node)
+
+	if !world.RemoveNode(node) {
+		t.Error("RemoveNode should return true when node has parent")
+	}
+	if node.GetParent() != nil {
+		t.Error("node parent should be nil after remove")
+	}
+	if world.RemoveNode(node) {
+		t.Error("RemoveNode should return false when node has no parent")
+	}
+}
+
+func TestWorldClearLayer(t *testing.T) {
+	world := NewWorld()
+	a := NewNode2D("a")
+	b := NewNode2D("b")
+	world.AddNodeToLayer(a, 0)
+	world.AddNodeToLayer(b, 0)
+
+	world.ClearLayer(0)
+
+	if a.GetParent() != nil || b.GetParent() != nil {
+		t.Error("nodes should have nil parent after ClearLayer")
+	}
+	// Clearing invalid index should not panic
+	world.ClearLayer(-1)
+	world.ClearLayer(100)
+}
+
 func TestDrawableGetLayerSiblingOrder(t *testing.T) {
 	// Siblings with different GetLayer should be drawn in ascending order (lower first).
 	world := NewWorld()

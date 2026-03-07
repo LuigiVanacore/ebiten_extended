@@ -73,6 +73,11 @@ func (s *Node2D) GetScale() math2D.Vector2D {
 	return s.localTransform.GetScale()
 }
 
+// GetPivot returns the local pivot point (used for scale/rotation center).
+func (s *Node2D) GetPivot() math2D.Vector2D {
+	return s.localTransform.GetPivot()
+}
+
 // MarkDirty flags this node and its children to recalculate their world transforms on the next query.
 func (s *Node2D) MarkDirty() {
 	if s.isDirty {

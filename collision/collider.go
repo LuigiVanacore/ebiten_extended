@@ -2,10 +2,13 @@ package collision
 
 import (
 	"errors"
+	"image/color"
 
 	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/event"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // Collider is a Node2D with a collision shape and mask. Subscribe to CollisionEnter(),
@@ -68,8 +71,39 @@ func (c *Collider) GetShape() CollisionShape {
 	return c.collisionShape
 }
 
+// DrawDebug draws the collision shape outline for debugging.
+// Call when Engine.IsDebug() is true; typically from your game's Draw or a debug overlay.
 func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-	// Optional: draw collision shape outline for debugging
+	pos := c.GetWorldPosition()
+	debugColor := color.RGBA{0, 255, 0, 180}
+
+	switch s := c.collisionShape.(type) {
+	case *CollisionCircle:
+		r := s.circle.GetRadius()
+		vector.StrokeCircle(target, float32(pos.X()), float32(pos.Y()), float32(r), 2, debugColor, true)
+	case *CollisionRect:
+		sz := s.rectangle.GetSize()
+		tlX := pos.X() - sz.X()/2
+		tlY := pos.Y() - sz.Y()/2
+		vector.StrokeRect(target, float32(tlX), float32(tlY), float32(sz.X()), float32(sz.Y()), 2, debugColor, true)
+	case *CollisionOrientedRect:
+		or := s.rectangle
+		rot := c.GetRotation()
+		center := pos
+		he := or.GetHalfExtended()
+		// Draw 4 edges of oriented rect
+		for i := 0; i < 4; i++ {
+			c1 := OrientedRectangleCorner(math2D.NewOrientedRectangle(center, he, rot), i)
+			c2 := OrientedRectangleCorner(math2D.NewOrientedRectangle(center, he, rot), (i+1)%4)
+			vector.StrokeLine(target, float32(c1.X()), float32(c1.Y()), float32(c2.X()), float32(c2.Y()), 2, debugColor, true)
+		}
+	case *CollisionPolygon:
+		verts := polygonWorldVertices(s.vertices, pos, c.GetRotation())
+		for i := 0; i < len(verts); i++ {
+			next := (i + 1) % len(verts)
+			vector.StrokeLine(target, float32(verts[i].X()), float32(verts[i].Y()), float32(verts[next].X()), float32(verts[next].Y()), 2, debugColor, true)
+		}
+	}
 }
 
 // CanCollideWith returns true if this collider's mask allows collision with the other participant.

@@ -13,7 +13,8 @@ type PhysicsWorld struct {
 	rigidBodies  []*RigidBody2D
 	Gravity      math2D.Vector2D
 	CellSize     int
-	checkedPairs map[uint64]bool // reused each Step to avoid per-frame allocation
+	checkedPairs map[uint64]bool     // reused each Step to avoid per-frame allocation
+	grid         map[uint64][]*RigidBody2D // reused for broad-phase spatial hash
 }
 
 // NewPhysicsWorld creates a PhysicsWorld with default CellSize 100.
@@ -23,6 +24,7 @@ func NewPhysicsWorld() *PhysicsWorld {
 		Gravity:      math2D.NewVector2D(0, 980),
 		CellSize:     100,
 		checkedPairs: make(map[uint64]bool),
+		grid:         make(map[uint64][]*RigidBody2D),
 	}
 }
 
@@ -48,8 +50,11 @@ func (w *PhysicsWorld) RemoveRigidBody(body *RigidBody2D) {
 
 // Step advances the simulation by dt. Integrates velocity, applies gravity, and resolves overlaps.
 func (w *PhysicsWorld) Step(dt float64) {
-	// 1. Integrate
+	// 1. Integrate (skip kinematic and static)
 	for _, body := range w.rigidBodies {
+		if body.Static || body.Kinematic {
+			continue
+		}
 		if body.UsesGravity {
 			g := math2D.NewVector2D(
 				w.Gravity.X()*body.GravityScale*dt,
@@ -66,10 +71,10 @@ func (w *PhysicsWorld) Step(dt float64) {
 
 	// 2. Resolve overlaps (iterate 3 times for stability)
 	for iter := 0; iter < 3; iter++ {
-		grid := w.broadPhase()
+		w.broadPhase()
 		clear(w.checkedPairs)
 
-		for _, candidates := range grid {
+		for _, candidates := range w.grid {
 			for i := 0; i < len(candidates); i++ {
 				for j := i + 1; j < len(candidates); j++ {
 					a, b := candidates[i], candidates[j]
@@ -96,8 +101,8 @@ func (w *PhysicsWorld) Step(dt float64) {
 	}
 }
 
-func (w *PhysicsWorld) broadPhase() map[uint64][]*RigidBody2D {
-	grid := make(map[uint64][]*RigidBody2D)
+func (w *PhysicsWorld) broadPhase() {
+	clear(w.grid)
 	cellSize := float64(w.CellSize)
 	for _, body := range w.rigidBodies {
 		sa := body.GetShape()
@@ -109,23 +114,24 @@ func (w *PhysicsWorld) broadPhase() map[uint64][]*RigidBody2D {
 		for cx := cellMinX; cx <= cellMaxX; cx++ {
 			for cy := cellMinY; cy <= cellMaxY; cy++ {
 				key := (uint64(uint32(cx)) << 32) | uint64(uint32(cy))
-				grid[key] = append(grid[key], body)
+				w.grid[key] = append(w.grid[key], body)
 			}
 		}
 	}
-	return grid
 }
 
 func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.CollisionResult) {
-	// Static bodies are not pushed; dynamic body gets full separation
-	var pushA, pushB math2D.Vector2D
-	if a.Static && b.Static {
+	// Static and kinematic bodies are not pushed
+	solidA := a.Static || a.Kinematic
+	solidB := b.Static || b.Kinematic
+	if solidA && solidB {
 		return
 	}
-	if a.Static {
+	var pushA, pushB math2D.Vector2D
+	if solidA {
 		pushA = math2D.ZeroVector2D()
 		pushB = res.Normal.Negate().MultiplyScalar(res.Depth)
-	} else if b.Static {
+	} else if solidB {
 		pushA = res.Normal.MultiplyScalar(res.Depth)
 		pushB = math2D.ZeroVector2D()
 	} else {
@@ -154,7 +160,7 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	}
 
 	applyVelocityResponse := func(body *RigidBody2D, v math2D.Vector2D, normalCompIntoSurface float64) {
-		if body.Static {
+		if body.Static || body.Kinematic {
 			return
 		}
 		// Normal: reflect with restitution only when moving into surface.
@@ -176,13 +182,13 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 
 	va := a.GetVelocity()
 	normalCompA := math2D.DotProduct(va, res.Normal)
-	if !a.Static {
+	if !solidA {
 		applyVelocityResponse(a, va, normalCompA)
 	}
 
 	vb := b.GetVelocity()
 	normalCompB := math2D.DotProduct(vb, res.Normal)
-	if !b.Static {
+	if !solidB {
 		applyVelocityResponse(b, vb, normalCompB)
 	}
 }

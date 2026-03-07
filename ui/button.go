@@ -60,19 +60,35 @@ func NewButtonNode(name string, width, height float64, im *input.InputManager) *
 	return btn
 }
 
-// SetText initializes or updates the inside label of the button.
+// SetSize updates the button dimensions and re-centers the label if present.
+func (b *ButtonNode) SetSize(w, h float64) {
+	b.PanelNode.SetSize(w, h)
+	b.centerLabel()
+}
+
+// SetText initializes or updates the inside label of the button, centered horizontally and vertically.
 func (b *ButtonNode) SetText(textStr string, face text.Face, c color.Color) {
 	if b.label == nil {
 		b.label = ebiten_extended.NewTextNode(b.GetName()+"_label", textStr, face, c)
-		// Embed the label visually in the center relative to the button
-		// Assuming origin top-left, we place it with some padding for now
-		b.label.SetPosition(10, b.height/2-10)
 		b.AddChildren(b.label)
 	} else {
 		b.label.SetMessage(textStr)
 		b.label.SetFont(face)
 		b.label.SetColor(c)
 	}
+	// Center the label in the button
+	b.centerLabel()
+}
+
+// centerLabel positions the label in the center of the button.
+func (b *ButtonNode) centerLabel() {
+	if b.label == nil || b.label.GetFont() == nil {
+		return
+	}
+	w, h := text.Measure(b.label.GetMessage(), b.label.GetFont(), 0)
+	padX := (b.width - w) / 2
+	padY := (b.height - h) / 2
+	b.label.SetPosition(padX, padY)
 }
 
 // Update reads input to process hover and click events.

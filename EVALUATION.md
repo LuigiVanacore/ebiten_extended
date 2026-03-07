@@ -1,6 +1,6 @@
 # Valutazione ebiten_extended (aggiornata)
 
-**Data:** Febbraio 2025  
+**Data:** Marzo 2025  
 **Stato build:** ✅ `go build ./...` passa  
 **Stato test:** ✅ `go test ./...` passa (package core + subpackages)
 
@@ -64,9 +64,8 @@
 - Obbligatorio nell’interfaccia ma non usato da `World.DrawNode`  
 - Azione: Usarlo per ordinare i fratelli nello stesso layer, oppure rimuoverlo
 
-**Input.GetCursorPos**  
-- Doc indica "World mapped" ma restituisce coordinate schermo  
-- Azione: Mappare con la camera o chiarire la doc
+**Input.GetCursorPos** ✅  
+- Doc aggiornata: GetCursorPos = coordinate schermo, Camera.GetCursorCoords = coordinate mondo
 
 **FSM vs stateMachine** ✅ 
 - Due pacchetti state machine  
@@ -75,9 +74,9 @@
 ### 4.3 Priorità bassa
 
 - **Scale in updateTransform**: `Transform.GetScale()` non usato nel rendering
-- **Tween**: Nessun aggancio al game loop
-- **Tilemap**: Solo struct dati, niente rendering
-- **Collision**: `IsColliding` muta le shape (UpdateTransform)
+- **Tween**: ✅ TweenNode e Sequence.Update collegati al game loop
+- **Tilemap**: ✅ TileMapNode con rendering, BuildCollisionsFromObjectLayer (rect, ellipse, polygon)
+- **Collision**: ✅ ShapeCollides non muta più le shape (usa copie). Raycast, OverlapPoint aggiunti
 
 ---
 
@@ -117,9 +116,9 @@
 2. Scale in `updateTransform`  (Fatto precedentemente) ✅ 
 3. **Save/Load**: Integrazione standard implementata per i salvataggi JSON o binari sicuri (Atomic). (Fatto) ✅ 
 4. **Sistema UI**: Aggiunti `PanelNode` e `ButtonNode` interattivo, sfruttanti polling automatico `Updatable`. (Fatto) ✅  
-5. Tween collegato al game loop  
-6. Tilemap rendering  
-7. Collision: evitare mutazione in-place
+5. ✅ Tween collegato al game loop (TweenNode, Sequence.StepDelta)  
+6. ✅ Tilemap rendering  
+7. ✅ Collision: evitare mutazione in-place
 
 ---
 

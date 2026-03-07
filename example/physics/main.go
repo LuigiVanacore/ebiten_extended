@@ -112,7 +112,7 @@ func NewGame() *Game {
 	collisionMgr.AddParticipant(area)
 
 	engine.World().SetPostUpdate(func() {
-		physicsWorld.Step(ebiten_extended.FIXED_DELTA)
+		physicsWorld.Step(ebiten_extended.PhysicsDelta())
 		collisionMgr.CheckCollision()
 	})
 

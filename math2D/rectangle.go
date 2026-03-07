@@ -95,3 +95,9 @@ func (r *Rectangle) Inflate(x, y float64) {
 	r.position = Vector2D{x: r.position.X() - x / 2, y: r.position.Y() - y / 2}
 	r.size = Vector2D{x: r.size.X() + x, y: r.size.Y() + y}
 }
+
+// IntersectsRect returns true if this rectangle overlaps other (axis-aligned).
+func (r Rectangle) IntersectsRect(other Rectangle) bool {
+	return r.GetLeft() < other.GetRight() && r.GetRight() > other.GetLeft() &&
+		r.GetTop() < other.GetBottom() && r.GetBottom() > other.GetTop()
+}

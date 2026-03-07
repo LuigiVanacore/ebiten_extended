@@ -47,8 +47,14 @@ func (tween *Tween) Step() (current float32, isFinished bool) {
 	return tween.Set(tween.time + 1)
 }
 
+// StepDelta advances the tween by delta seconds. Use for frame-rate independent animations.
+// Returns the interpolated value and whether the tween has finished.
+func (tween *Tween) StepDelta(delta float64) (current float32, isFinished bool) {
+	return tween.Set(tween.time + float32(delta))
+}
+
 // Tick advances the tween by one frame, satisfying the Updatable interface.
-// Use Step() if you need the return values.
+// Use StepDelta with FIXED_DELTA for fixed 60 TPS tweens.
 func (tween *Tween) Tick() {
 	tween.Step()
 }

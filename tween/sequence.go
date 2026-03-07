@@ -36,12 +36,21 @@ func (seq *Sequence) Remove(index int) {
 // Step advances the currently active Tween by one frame and returns the interpolated value,
 // whether that Tween is complete, and whether the entire Sequence is complete.
 func (seq *Sequence) Step() (float32, bool, bool) {
+	return seq.stepImpl(func(t *Tween) (float32, bool) { return t.Step() })
+}
+
+// StepDelta advances the currently active Tween by delta seconds (frame-rate independent).
+func (seq *Sequence) StepDelta(delta float64) (float32, bool, bool) {
+	return seq.stepImpl(func(t *Tween) (float32, bool) { return t.StepDelta(delta) })
+}
+
+func (seq *Sequence) stepImpl(advance func(*Tween) (float32, bool)) (float32, bool, bool) {
 	value := float32(0.0)
 	tweenComplete := false
 	sequenceComplete := false
 
 	if seq.index < len(seq.Tweens) {
-		value, tweenComplete = seq.Tweens[seq.index].Step()
+		value, tweenComplete = advance(seq.Tweens[seq.index])
 		if tweenComplete {
 			seq.Tweens[seq.index].Reset()
 			seq.index++
@@ -54,6 +63,11 @@ func (seq *Sequence) Step() (float32, bool, bool) {
 	}
 
 	return value, tweenComplete, sequenceComplete
+}
+
+// Update advances the sequence by one fixed frame. Implements Updatable.
+func (seq *Sequence) Update() {
+	seq.StepDelta(ebiten_extended.FIXED_DELTA)
 }
 
 // Tick advances the sequence by one frame, satisfying the Updatable interface.

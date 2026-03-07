@@ -10,14 +10,14 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 - **Layers**: Group nodes by layer ID and draw order (priority)
 - **Camera**: 2D camera with zoom, position, and world/screen coordinate conversion (top-left origin)
 - **Sprites & animation**: [Sprite] for static images, [AnimationPlayer] + [AnimationSet] for sprite-sheet animations
-- **Collision**: [collision] package with shapes (circle, rect), masks, and callbacks; optional broad-phase for performance
+- **Collision**: [collision] package with shapes (circle, rect, oriented rect), masks, and callbacks; optional broad-phase for performance
 - **Time**: [Clock] and [Timer] for elapsed time and delayed/looping actions
-- **Resources/Save**: [ResourceManager] for images/fonts; [save] for atomic JSON/Binary (Gob) data persistence.
-- **UI**: Fast interaction-ready graphical user interface components including `PanelNode`, `ButtonNode` (with image states), `ProgressBarNode`, and `CheckboxNode`.
+- **Resources/Save**: [ResourceManager] for images/fonts (AddImage, LoadImageFromFile, LoadFont, LoadFontFromFile); [save] for atomic JSON/Binary (Gob) data persistence.
+- **UI**: Fast interaction-ready graphical user interface components including `PanelNode`, `ButtonNode` (with image states), `ProgressBarNode` (with `SetOrientation(ProgressBarVertical)`), `SliderNode`, `CheckboxNode`, `TextInputNode` (editable text field), and `ScrollPanelNode` (scrollable content).
 - **Audio**: [AudioManager] for sounds (WAV, OGG, MP3) and playback
 - **Input**: Cursor position, key/button state via [input] package; gamepad/joystick support (buttons, sticks, standard layout)
 - **State machine**: [fsm] for AI or game states
-- **Tile map**: [tilemap] data structures for grid-based maps
+- **Tile map**: [tilemap] data structures for grid-based maps; BuildCollisions (per-tile) and BuildCollisionsFromObjectLayer (rectangles, ellipses, polygons, polylines as bounding boxes)
 
 ## Installation
 
@@ -72,7 +72,7 @@ func main() {
 
 ## Layers
 
-Layer indices define draw order (lower = drawn first). Use `World.AddNodeToLayer(node, layerIndex)` or `World.AddNodeToDefaultLayer(node)` for the default layer (index 0).
+Layer indices define draw order (lower = drawn first). Use `World.AddNodeToLayer(node, layerIndex)` or `World.AddNodeToDefaultLayer(node)` for the default layer (index 0). Remove nodes with `World.RemoveNode(node)` or clear a layer with `World.ClearLayer(layerIndex)`.
 
 ## Collision
 
@@ -80,6 +80,40 @@ Layer indices define draw order (lower = drawn first). Use `World.AddNodeToLayer
 2. Create colliders with [collision.NewCollider](shape, mask) and add them with manager.AddCollider(collider).
 3. Subscribe to [collision.Collider].OnCollisionEnter, OnCollisionStay, or OnCollisionExit (event.Event[*Collider]).
 4. Each frame, call manager.CheckCollision(); or set World.SetPostUpdate to a function that calls it (avoids import cycles).
+
+## Physics and Collision Integration
+
+To use [physics.PhysicsWorld] together with [collision.CollisionManager], wire both into the game loop via `World.SetPostUpdate`:
+
+```go
+engine := ebiten_extended.NewEngine()
+physicsWorld := physics.NewPhysicsWorld()
+collisionMgr := collision.NewCollisionManager()
+
+// Add RigidBody2D / Collider / Area2D to both World and their managers
+engine.World().AddNodeToLayer(player, 0)
+physicsWorld.AddRigidBody(player)
+collisionMgr.AddParticipant(player)
+
+engine.World().SetPostUpdate(func() {
+    physicsWorld.Step(ebiten_extended.PhysicsDelta()) // fixed timestep matching ebiten.TPS()
+    collisionMgr.CheckCollision()                    // emit Enter/Stay/Exit events
+})
+```
+
+The order matters: run `PhysicsWorld.Step` first (updates positions), then `CollisionManager.CheckCollision` (evaluates collisions at the new positions). See [example/physics](example/physics) for a full runnable demo.
+
+## Fixed timestep
+
+The engine uses Ebiten's default 60 TPS. Use `ebiten_extended.FIXED_DELTA` (1/60 s) for timing in your `Update()` logic. [AnimationSet], [AnimationPlayer], [AnimationSprite], [TileMapNode], [TweenNode], and UI components already use it internally. Implement `Updatable` (`Update()`) on your nodes. [TextNode] supports word wrap via `SetMaxWidth`. [SliderNode] supports `SetRange(min, max)` and `SetOrientation(SliderVertical)`. [ProgressBarNode] supports `SetOrientation(ProgressBarVertical)`. Use `Engine.SetLogicalSize(w, h)` for fixed-resolution scaling. Call `Collider.DrawDebug` when `Engine.IsDebug()` for collision outlines. Use `CollisionManager.OverlapPoint(point)` for point-in-shape queries. Use `CollisionManager.Raycast(start, end)` for segment/line casting (returns hits sorted by distance). `CollisionOrientedRect` supports rotated rectangles (slopes, platforms). `RigidBody2D.Kinematic = true` for bodies moved by code that push dynamic bodies but are not pushed. `ScrollPanelNode` for scrollable UI content with mouse wheel.
+
+## Development
+
+To run the linter (requires [golangci-lint](https://golangci-lint.run/) to be installed):
+
+```bash
+golangci-lint run ./...
+```
 
 ## Contributing
 
