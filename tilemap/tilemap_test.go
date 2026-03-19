@@ -3,6 +3,7 @@ package tilemap
 import (
 	"testing"
 
+	"github.com/LuigiVanacore/ebiten_extended"
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/lafriks/go-tiled"
 )
@@ -95,6 +96,7 @@ func TestTileMapNode_BuildWalkableFromLayer(t *testing.T) {
 	solidTile := &tiled.LayerTile{ID: 1, Nil: false}
 
 	tm := &TileMapNode{
+		Node2D: ebiten_extended.NewNode2D("mock_tmx"),
 		MapData: &tiled.Map{
 			Width:      3,
 			Height:     3,
