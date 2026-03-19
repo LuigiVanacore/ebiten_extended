@@ -107,10 +107,6 @@ engine.World().SetPostUpdate(func() {
 
 The order matters: run `PhysicsWorld.Step` first (updates positions), then `CollisionManager.CheckCollision` (evaluates collisions at the new positions). See [example/physics](example/physics) for a full runnable demo.
 
-## Fixed timestep
-
-The engine uses Ebiten's default 60 TPS. Use `ebiten_extended.FIXED_DELTA` (1/60 s) for timing in your `Update()` logic. [AnimationSet], [AnimationPlayer], [AnimationSprite], [TileMapNode], [TweenNode], and UI components already use it internally. Implement `Updatable` (`Update()`) on your nodes. [TextNode] supports word wrap via `SetMaxWidth`. [SliderNode] supports `SetRange(min, max)` and `SetOrientation(SliderVertical)`. [ProgressBarNode] supports `SetOrientation(ProgressBarVertical)`. Use `Engine.SetLogicalSize(w, h)` for fixed-resolution scaling. Call `Collider.DrawDebug` when `Engine.IsDebug()` for collision outlines. Use `CollisionManager.OverlapPoint(point)` for point-in-shape queries. Use `CollisionManager.Raycast(start, end)` for segment/line casting (returns hits sorted by distance). `CollisionOrientedRect` supports rotated rectangles (slopes, platforms). `RigidBody2D.Kinematic = true` for bodies moved by code that push dynamic bodies but are not pushed. `ScrollPanelNode` for scrollable UI content with mouse wheel. Use `AnchorLayout` with `AnchorType` (e.g. `AnchorCenter`, `AnchorStretch`) for responsive UI positioning. Register `Focusable` nodes with `FocusManager` for controller/keyboard navigation. Use `ResourceManager.PreloadBatch` for background asset loading with progress updates.
-
 ## Development
 
 To run the linter (requires [golangci-lint](https://golangci-lint.run/) to be installed):
