@@ -21,11 +21,8 @@ const (
 )
 
 type Game struct {
-	engine   *ebiten_extended.Engine
-	menuRoot *ui.PanelNode
-	gameRoot *ebiten_extended.Node
-
-	currentScene string // "menu" or "game"
+	engine       *ebiten_extended.Engine
+	sceneManager *ebiten_extended.SceneManager
 }
 
 func loadDefaultFont() text.Face {
@@ -39,74 +36,111 @@ func loadDefaultFont() text.Face {
 	}
 }
 
-func buildMenuScene(engine *ebiten_extended.Engine) *ui.PanelNode {
+// MenuScene implements Scene for the menu screen.
+type MenuScene struct {
+	engine *ebiten_extended.Engine
+	panel  *ui.PanelNode
+}
+
+func NewMenuScene(engine *ebiten_extended.Engine) *MenuScene {
+	return &MenuScene{engine: engine}
+}
+
+func (s *MenuScene) Enter(engine *ebiten_extended.Engine) {
+	s.engine = engine
 	font := loadDefaultFont()
-	panel := ui.NewPanelNode("menu_panel", 400, 200)
-	panel.SetBackgroundColor(color.RGBA{40, 40, 60, 255})
-	panel.SetPosition(screenWidth/2-200, screenHeight/2-100)
+	s.panel = ui.NewPanelNode("menu_panel", 400, 200)
+	s.panel.SetBackgroundColor(color.RGBA{40, 40, 60, 255})
+	s.panel.SetPosition(screenWidth/2-200, screenHeight/2-100)
 
 	title := ebiten_extended.NewTextNode("title", "Scene: Menu", font, color.White)
 	title.SetPosition(20, 30)
-	panel.AddChildren(title)
+	s.panel.AddChildren(title)
 
 	hint := ebiten_extended.NewTextNode("hint", "Press Enter to start, Escape to return", font, color.RGBA{180, 180, 180, 255})
 	hint.SetPosition(20, 80)
-	panel.AddChildren(hint)
+	s.panel.AddChildren(hint)
 
-	return panel
+	engine.World().AddNodeToDefaultLayer(s.panel)
 }
 
-func buildGameScene() *ebiten_extended.Node {
-	root := ebiten_extended.NewNode("game_root")
+func (s *MenuScene) Exit() {
+	if s.engine != nil && s.panel != nil {
+		s.engine.World().RemoveNode(s.panel)
+	}
+}
+
+func (s *MenuScene) Update() error {
+	return nil
+}
+
+func (s *MenuScene) Draw(screen *ebiten.Image) {
+	s.engine.World().Draw(screen, nil)
+}
+
+// GameScene implements Scene for the game screen.
+type GameScene struct {
+	engine *ebiten_extended.Engine
+	root   *ebiten_extended.Node
+}
+
+func NewGameScene(engine *ebiten_extended.Engine) *GameScene {
+	return &GameScene{engine: engine}
+}
+
+func (s *GameScene) Enter(engine *ebiten_extended.Engine) {
+	s.engine = engine
+	s.root = ebiten_extended.NewNode("game_root")
 
 	circle := ebiten_extended.NewDrawnCircle("circle", math2D.NewVector2D(200, 150), 40, color.RGBA{0, 200, 100, 255}, true, 0)
 	rect := ebiten_extended.NewDrawnRectangle("rect", math2D.NewVector2D(400, 250), math2D.NewVector2D(80, 60), color.RGBA{200, 50, 50, 255}, true, 0)
 
-	root.AddChildren(circle)
-	root.AddChildren(rect)
+	s.root.AddChildren(circle)
+	s.root.AddChildren(rect)
 
-	return root
+	engine.World().AddNodeToDefaultLayer(s.root)
+}
+
+func (s *GameScene) Exit() {
+	if s.engine != nil && s.root != nil {
+		s.engine.World().RemoveNode(s.root)
+	}
+}
+
+func (s *GameScene) Update() error {
+	return nil
+}
+
+func (s *GameScene) Draw(screen *ebiten.Image) {
+	s.engine.World().Draw(screen, nil)
 }
 
 func NewGame() *Game {
 	engine := ebiten_extended.NewEngine()
 	engine.Input().SetMouseEnabled(true)
 
-	menuRoot := buildMenuScene(engine)
-	gameRoot := buildGameScene()
+	sm := ebiten_extended.NewSceneManager(engine)
+	sm.SetTransitionDuration(0.3) // enable fade transitions between scenes
+	engine.SetSceneManager(sm)
 
 	// Start with menu
-	engine.World().AddNodeToDefaultLayer(menuRoot)
+	sm.PushScene(NewMenuScene(engine))
 
 	return &Game{
 		engine:       engine,
-		menuRoot:     menuRoot,
-		gameRoot:     gameRoot,
-		currentScene: "menu",
-	}
-}
-
-func (g *Game) switchToScene(name string) {
-	g.engine.World().ClearLayer(0)
-	switch name {
-	case "menu":
-		g.engine.World().AddNodeToDefaultLayer(g.menuRoot)
-		g.currentScene = "menu"
-	case "game":
-		g.engine.World().AddNodeToDefaultLayer(g.gameRoot)
-		g.currentScene = "game"
+		sceneManager: sm,
 	}
 }
 
 func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeyNumpadEnter) {
-		if g.currentScene == "menu" {
-			g.switchToScene("game")
+		if _, ok := g.sceneManager.CurrentScene().(*MenuScene); ok {
+			g.sceneManager.ReplaceScene(NewGameScene(g.engine))
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		if g.currentScene == "game" {
-			g.switchToScene("menu")
+		if _, ok := g.sceneManager.CurrentScene().(*GameScene); ok {
+			g.sceneManager.ReplaceScene(NewMenuScene(g.engine))
 		}
 	}
 

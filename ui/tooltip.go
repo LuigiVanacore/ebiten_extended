@@ -80,6 +80,26 @@ func (t *TooltipNode) SetOffset(x, y float64) {
 	t.offsetX, t.offsetY = x, y
 }
 
+// GetWidth returns the tooltip box width (text width + padding). Implements SizeProvider for layout.
+// Returns 0 if font is nil or text is empty.
+func (t *TooltipNode) GetWidth() float64 {
+	if t.font == nil || t.text == "" {
+		return 0
+	}
+	w, _ := text.Measure(t.text, t.font, 0)
+	return w + t.padding*2
+}
+
+// GetHeight returns the tooltip box height (text height + padding). Implements SizeProvider for layout.
+// Returns 0 if font is nil or text is empty.
+func (t *TooltipNode) GetHeight() float64 {
+	if t.font == nil || t.text == "" {
+		return 0
+	}
+	_, h := text.Measure(t.text, t.font, 0)
+	return h + t.padding*2
+}
+
 // Update advances the hover timer and toggles visibility.
 func (t *TooltipNode) Update() {
 	if t.InputManager == nil || t.target == nil || t.text == "" {

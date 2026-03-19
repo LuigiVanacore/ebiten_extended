@@ -154,6 +154,20 @@ func (p *Pathfinder) getDirections() [][2]int {
 	return [][2]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 }
 
+// FindPathWorld finds a path between two world-space positions.
+// Converts start/end to tile coordinates, runs FindPath, and returns the path in tile coordinates.
+// Use PathToWorld to convert the result to world positions if needed.
+func FindPathWorld(p *Pathfinder, start, end math2D.Vector2D, tileWidth, tileHeight float64) []PathNode {
+	if p == nil || tileWidth <= 0 || tileHeight <= 0 {
+		return nil
+	}
+	startX := int(start.X() / tileWidth)
+	startY := int(start.Y() / tileHeight)
+	endX := int(end.X() / tileWidth)
+	endY := int(end.Y() / tileHeight)
+	return p.FindPath(startX, startY, endX, endY)
+}
+
 // PathToWorld converts a path in tile coordinates to world positions (center of each tile).
 func PathToWorld(path []PathNode, tileWidth, tileHeight float64) []math2D.Vector2D {
 	if len(path) == 0 {

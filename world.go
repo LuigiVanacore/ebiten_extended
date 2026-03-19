@@ -19,6 +19,7 @@ type World struct {
 	camera         *Camera
 	postUpdate     func() // called after updateNode; e.g. set to collision.CollisionManager().CheckCollision to avoid import cycle
 	cullingEnabled bool   // when true, Cullable nodes outside view are skipped
+	isPaused       bool   // when true, Update skips entity updates
 }
 
 // NewWorld creates and initializes a new World instance.
@@ -101,6 +102,16 @@ func (world *World) CullingEnabled() bool {
 	return world.cullingEnabled
 }
 
+// SetPaused sets whether the world update is paused. When true, entity Update() calls are skipped.
+func (world *World) SetPaused(paused bool) {
+	world.isPaused = paused
+}
+
+// IsPaused returns whether the world is paused.
+func (world *World) IsPaused() bool {
+	return world.isPaused
+}
+
 // Update progresses the game state by one tick.
 func (world *World) Update() {
 	world.camera.Update()
@@ -116,8 +127,10 @@ func (world *World) updateNode(node SceneNode) {
 	if node == nil {
 		return
 	}
-	if entity, ok := node.(Updatable); ok {
-		entity.Update()
+	if !world.isPaused {
+		if entity, ok := node.(Updatable); ok {
+			entity.Update()
+		}
 	}
 	for _, child := range node.GetChildren() {
 		world.updateNode(child)

@@ -1,7 +1,8 @@
 // Package ebiten_extended provides a 2D gameplay framework built on top of
 // [Ebiten](https://ebiten.org). It adds scene graph management, layers, camera,
-// sprites, animations, collision detection, input handling, and resource loading
-// so you can build 2D games without reimplementing common engine features.
+// sprites, animations, collision detection, input handling, resource loading,
+// particles, pooling, scene manager, and transitions so you can build 2D games
+// without reimplementing common engine features.
 //
 // # Core concepts
 //
@@ -38,6 +39,27 @@
 // [AnimationPlayer] handle sprite-sheet animations; attach an AnimationPlayer as a
 // child of a Node2D to draw animated sprites.
 //
+// # Scene manager and transitions
+//
+// [SceneManager] manages a stack of [Scene]s and delegates Engine Update/Draw to the
+// current scene. Set it on the engine with [Engine.SetSceneManager]. Use PushScene,
+// ReplaceScene, and PopScene to navigate. [Transition] provides fade effects between
+// scene changes: call SetTransitionDuration (e.g. 0.3 seconds) to enable fade-out,
+// swap, then fade-in. SetTransitionColor customizes the overlay (default black).
+//
+// # Particles
+//
+// The [particles] package provides [particles.ParticleEmitter] for configurable particle
+// effects (lifetime, velocity, scale, color). Use [particles.ParticleEmitterNode] as a
+// Node2D child to position and draw particles in the scene. Set emission rate for
+// continuous emission, or call Burst for one-shot effects.
+//
+// # Pooling
+//
+// [SpritePool] reuses [Sprite] instances to reduce allocations (e.g. projectiles, bullets).
+// Create with NewSpritePool, then Get/Put sprites. [utils.Pool] is a generic pool for
+// any type when you need custom factory and reset logic.
+//
 // # Subpackages
 //
 //   - [math2D]: 2D math (vectors, shapes, segments, rectangles, circles).
@@ -46,5 +68,7 @@
 //   - [input]: Input manager and cursor position (enable with SetMouseEnabled).
 //   - [fsm]: Generics powered state machine for AI or game states.
 //   - [tilemap]: Tile map data structures.
+//   - [particles]: ParticleEmitter and ParticleEmitterNode for visual effects.
+//   - [utils]: Generic Pool for object reuse.
 //   - [event]: Event bus (if enabled).
 package ebiten_extended

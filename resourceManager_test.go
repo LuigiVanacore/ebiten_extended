@@ -83,3 +83,28 @@ func TestResourceManagerClear(t *testing.T) {
 		t.Fatal("expected no fonts after clear")
 	}
 }
+
+func TestResourceManagerPreloadBatch(t *testing.T) {
+	rm := NewResourceManager()
+	assets := []PreloadAsset{
+		{ID: "img1", Path: "nonexistent_1.png", Type: AssetTypeImage},
+		{ID: "img2", Path: "nonexistent_2.png", Type: AssetTypeImage},
+	}
+
+	completeCh := make(chan []string)
+	var progressCount int
+
+	rm.PreloadBatch(assets, func(loaded, total int, lastID string) {
+		progressCount++
+	}, func(failed []string) {
+		completeCh <- failed
+	})
+
+	failed := <-completeCh
+	if len(failed) != 2 {
+		t.Errorf("expected 2 failed assets, got %d", len(failed))
+	}
+	if progressCount != 2 {
+		t.Errorf("expected progress callback to be called 2 times, got %d", progressCount)
+	}
+}

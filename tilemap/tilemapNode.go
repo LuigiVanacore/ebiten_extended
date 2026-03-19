@@ -25,12 +25,14 @@ type tileAnimKey struct {
 
 // TileMapNode wraps a Tiled map (.tmx) into an Ebiten Node2D.
 // It loads images directly into Ebiten GPU memory and renders tiles efficiently using batching.
+// Pathfinding: use BuildWalkableFromLayer or BuildWalkableFromLayerAndSet, then FindPathWorld.
 type TileMapNode struct {
 	*ebiten_extended.Node2D
 	MapData         *tiled.Map
 	tilesets        map[string]*Tileset
 	layerIndex      int
 	animationStates map[tileAnimKey]*animatedTileState
+	pathfinder      *Pathfinder // cached for FindPathWorld; set via SetPathfinder or BuildWalkableFromLayerAndSet
 }
 
 // NewTileMapNode creates and initializes a TileMapNode, parsing the .tmx file
@@ -84,6 +86,102 @@ func (t *TileMapNode) SetLayer(l int) {
 // GetLayer implements the Drawable interface.
 func (t *TileMapNode) GetLayer() int {
 	return t.layerIndex
+}
+
+// BuildWalkableFromLayer creates a Pathfinder from a tile layer for pathfinding.
+// layerName is the Tiled layer name. blockNonEmpty: if true, any non-empty tile blocks;
+// if false, only tiles with collision objects block.
+func (t *TileMapNode) BuildWalkableFromLayer(layerName string, blockNonEmpty bool) *Pathfinder {
+	return BuildPathfinderFromTileLayer(t, layerName, blockNonEmpty)
+}
+
+// BuildWalkableFromLayerAndSet builds a Pathfinder from the tile layer and stores it for FindPathWorld.
+// Use this when you want the tilemap to cache the pathfinder for repeated pathfinding queries.
+func (t *TileMapNode) BuildWalkableFromLayerAndSet(layerName string, blockNonEmpty bool) *Pathfinder {
+	pf := BuildPathfinderFromTileLayer(t, layerName, blockNonEmpty)
+	t.pathfinder = pf
+	return pf
+}
+
+// SetPathfinder sets the cached pathfinder for FindPathWorld. Pass nil to clear.
+func (t *TileMapNode) SetPathfinder(pf *Pathfinder) {
+	t.pathfinder = pf
+}
+
+// GetPathfinder returns the cached pathfinder, or nil if none set.
+func (t *TileMapNode) GetPathfinder() *Pathfinder {
+	return t.pathfinder
+}
+
+// WorldToTile converts world coordinates to tile indices.
+// worldPos is in game world space; it is converted to map-local by subtracting the tilemap's world position.
+// Returns (tileX, tileY). Caller should clamp or validate bounds.
+func (t *TileMapNode) WorldToTile(worldX, worldY float64) (int, int) {
+	if t.MapData == nil {
+		return 0, 0
+	}
+	pos := t.GetWorldPosition()
+	localX := worldX - pos.X()
+	localY := worldY - pos.Y()
+	tw := float64(t.MapData.TileWidth)
+	th := float64(t.MapData.TileHeight)
+	if tw <= 0 || th <= 0 {
+		return 0, 0
+	}
+	tx := int(math.Floor(localX / tw))
+	ty := int(math.Floor(localY / th))
+	return tx, ty
+}
+
+// TileToWorld returns the world position of the center of the tile at (tx, ty).
+func (t *TileMapNode) TileToWorld(tx, ty int) math2D.Vector2D {
+	if t.MapData == nil {
+		return math2D.ZeroVector2D()
+	}
+	pos := t.GetWorldPosition()
+	tw := float64(t.MapData.TileWidth)
+	th := float64(t.MapData.TileHeight)
+	centerX := float64(tx)*tw + tw/2
+	centerY := float64(ty)*th + th/2
+	return math2D.NewVector2D(pos.X()+centerX, pos.Y()+centerY)
+}
+
+// FindPathWorld finds a path between two world-space positions using the cached pathfinder.
+// Returns the path in tile coordinates, or nil if no path exists or no pathfinder is set.
+// Set a pathfinder with SetPathfinder or BuildWalkableFromLayerAndSet first.
+func (t *TileMapNode) FindPathWorld(start, end math2D.Vector2D) []PathNode {
+	if t.pathfinder == nil || t.MapData == nil {
+		return nil
+	}
+	tw := float64(t.MapData.TileWidth)
+	th := float64(t.MapData.TileHeight)
+	if tw <= 0 || th <= 0 {
+		return nil
+	}
+	pos := t.GetWorldPosition()
+	localStart := math2D.NewVector2D(start.X()-pos.X(), start.Y()-pos.Y())
+	localEnd := math2D.NewVector2D(end.X()-pos.X(), end.Y()-pos.Y())
+	return FindPathWorld(t.pathfinder, localStart, localEnd, tw, th)
+}
+
+// FindPathWorldPositions finds a path and returns it as world positions (center of each tile).
+// Returns nil if no path exists or no pathfinder is set.
+func (t *TileMapNode) FindPathWorldPositions(start, end math2D.Vector2D) []math2D.Vector2D {
+	path := t.FindPathWorld(start, end)
+	if path == nil {
+		return nil
+	}
+	if t.MapData == nil {
+		return nil
+	}
+	tw := float64(t.MapData.TileWidth)
+	th := float64(t.MapData.TileHeight)
+	result := PathToWorld(path, tw, th)
+	pos := t.GetWorldPosition()
+	for i := range result {
+		result[i] = math2D.NewVector2D(result[i].X()+pos.X(), result[i].Y()+pos.Y())
+	}
+	return result
 }
 
 // Update processes tile animations. Implements Updatable.

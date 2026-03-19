@@ -2,43 +2,48 @@ package collision
 
 import "github.com/LuigiVanacore/ebiten_extended/utils"
 
-
-// CollisionMask identifies the kind of the shape
-// to collide other shapes.
+// CollisionMask controls which collision pairs are checked. It uses two bit sets (utils.ByteSet):
+//
+//   - Identity: the layer(s) this object belongs to (what it "is"). Other objects with this layer
+//     in their mask can collide with it.
+//   - Mask: the layer(s) this object responds to. This object will collide with others whose
+//     identity is in this mask.
+//
+// For a pair (A, B) to collide, both must allow it: A.mask must include B.identity AND
+// B.mask must include A.identity. Use power-of-2 bits (1<<0, 1<<1, …) for layers to avoid overlap.
 type CollisionMask struct {
-	// Identity determines which other
-	// shapes can collide the present shape.
 	identity utils.ByteSet
-	// Mask determines which other shapes
-	// the present shape can collide.
-	mask utils.ByteSet
+	mask     utils.ByteSet
 }
 
-
+// NewCollisionMask creates a mask with the given identity (layer membership) and mask (layers to collide with).
+// Example: NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1|2)) = object on layer 1 that collides with layers 1 and 2.
 func NewCollisionMask(identity, mask utils.ByteSet) CollisionMask {
-	return CollisionMask{ identity: identity, mask: mask }
+	return CollisionMask{identity: identity, mask: mask}
 }
-// IsCollidable returns true if this shape should collide with the other according to their masks.
+
+// IsCollidable returns true if this shape's mask includes the other's identity.
+// Collision between A and B requires both A.IsCollidable(B) and B.IsCollidable(A).
 func (t CollisionMask) IsCollidable(other CollisionMask) bool {
 	return t.mask.Has(other.GetIdentity())
 }
 
-// GetIdentity returns the value of the shape identity.
+// GetIdentity returns the layer(s) this object belongs to.
 func (t CollisionMask) GetIdentity() utils.ByteSet {
 	return t.identity
 }
 
-// SetIdentity assigns a new value to the tag identity.
+// SetIdentity sets the layer(s) this object belongs to.
 func (t *CollisionMask) SetIdentity(newIdentity utils.ByteSet) {
 	t.identity = newIdentity
 }
 
-// GetMask the value of the shape mask.
+// GetMask returns the layer(s) this object can collide with.
 func (t CollisionMask) GetMask() utils.ByteSet {
 	return t.mask
 }
 
-// SetMask assigns a new value to the tag mask.
+// SetMask sets the layer(s) this object can collide with.
 func (t *CollisionMask) SetMask(newMask utils.ByteSet) {
 	t.mask = newMask
 }

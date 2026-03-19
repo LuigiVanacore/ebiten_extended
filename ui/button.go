@@ -24,6 +24,7 @@ type ButtonNode struct {
 
 	inputManager *input.InputManager
 	state        ButtonState
+	focused      bool
 
 	// Optional text label integrated within the button
 	label *ebiten_extended.TextNode
@@ -141,6 +142,38 @@ func (b *ButtonNode) Update() {
 		b.state = newState
 		b.updateVisuals()
 	}
+}
+
+// SetFocused implements Focusable.
+func (b *ButtonNode) SetFocused(focused bool) {
+	if b.focused == focused {
+		return
+	}
+	b.focused = focused
+	if focused {
+		b.state = ButtonStateHover
+	} else {
+		b.state = ButtonStateIdle
+	}
+	b.updateVisuals()
+}
+
+// IsFocused implements Focusable.
+func (b *ButtonNode) IsFocused() bool {
+	return b.focused
+}
+
+// OnFocusAction implements Focusable.
+func (b *ButtonNode) OnFocusAction() {
+	// Temporarily simulate press visually
+	b.state = ButtonStatePressed
+	b.updateVisuals()
+	if b.OnClick != nil {
+		b.OnClick()
+	}
+	// Return to hover (focused) visualization
+	b.state = ButtonStateHover
+	b.updateVisuals()
 }
 
 // updateVisuals changes the background color or image responding to the current state.

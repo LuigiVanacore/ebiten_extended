@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ebiten_extended/math2D"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -18,14 +19,17 @@ type PanelNode struct {
 	backgroundColor color.Color
 	backgroundImage *ebiten.Image
 	layer           int
+	anchor          AnchorType
+	anchorMargin    math2D.Vector2D
 }
 
 // NewPanelNode creates a new geometric UI panel.
 func NewPanelNode(name string, width, height float64) *PanelNode {
 	return &PanelNode{
-		Node2D: *ebiten_extended.NewNode2D(name),
-		width:  width,
-		height: height,
+		Node2D:       *ebiten_extended.NewNode2D(name),
+		width:        width,
+		height:       height,
+		anchorMargin: math2D.ZeroVector2D(),
 	}
 }
 
@@ -38,6 +42,16 @@ func (p *PanelNode) SetSize(w, h float64) {
 // GetSize returns the panel's dimensions.
 func (p *PanelNode) GetSize() (float64, float64) {
 	return p.width, p.height
+}
+
+// GetWidth returns the panel width. Implements SizeProvider for layout.
+func (p *PanelNode) GetWidth() float64 {
+	return p.width
+}
+
+// GetHeight returns the panel height. Implements SizeProvider for layout.
+func (p *PanelNode) GetHeight() float64 {
+	return p.height
 }
 
 // SetBackgroundColor sets the solid background color of the panel. Set to nil for transparency.
@@ -63,6 +77,26 @@ func (p *PanelNode) GetLayer() int {
 // SetLayer sets the render layer of this panel.
 func (p *PanelNode) SetLayer(layer int) {
 	p.layer = layer
+}
+
+// SetAnchor sets the anchor type for this panel.
+func (p *PanelNode) SetAnchor(a AnchorType) {
+	p.anchor = a
+}
+
+// GetAnchor returns the current anchor type.
+func (p *PanelNode) GetAnchor() AnchorType {
+	return p.anchor
+}
+
+// SetAnchorMargin sets the margin used during anchoring.
+func (p *PanelNode) SetAnchorMargin(m math2D.Vector2D) {
+	p.anchorMargin = m
+}
+
+// GetAnchorMargin returns the current anchor margin.
+func (p *PanelNode) GetAnchorMargin() math2D.Vector2D {
+	return p.anchorMargin
 }
 
 // Draw renders the panel background at its world-space position.

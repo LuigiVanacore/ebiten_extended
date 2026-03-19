@@ -84,6 +84,37 @@ func (l *TextNode) SetLayer(layer int) {
 	l.layer = layer
 }
 
+// GetWidth returns the width of the rendered text. Implements ui.SizeProvider for layout.
+// Returns the maximum line width when maxWidth is set, or the measured width of the longest line.
+func (l *TextNode) GetWidth() float64 {
+	lines := l.getLines()
+	if len(lines) == 0 || l.font == nil {
+		return 0
+	}
+	var maxW float64
+	for _, ln := range lines {
+		w, _ := text.Measure(ln, l.font, 0)
+		if w > maxW {
+			maxW = w
+		}
+	}
+	if l.maxWidth > 0 && maxW > l.maxWidth {
+		return l.maxWidth
+	}
+	return maxW
+}
+
+// GetHeight returns the height of the rendered text. Implements ui.SizeProvider for layout.
+// Returns lineCount * lineHeight.
+func (l *TextNode) GetHeight() float64 {
+	lines := l.getLines()
+	if len(lines) == 0 || l.font == nil {
+		return 0
+	}
+	_, lineHeight := text.Measure("M", l.font, 0)
+	return float64(len(lines)) * lineHeight
+}
+
 func (l *TextNode) getLines() []string {
 	if l.font == nil {
 		return nil

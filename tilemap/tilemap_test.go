@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/lafriks/go-tiled"
 )
 
 func TestNewTileMapNodeInvalidPath(t *testing.T) {
@@ -86,5 +87,58 @@ func TestPathToWorld(t *testing.T) {
 	exp := math2D.NewVector2D(48, 48)
 	if world[1].X() != exp.X() || world[1].Y() != exp.Y() {
 		t.Errorf("second point: got (%.0f,%.0f)", world[1].X(), world[1].Y())
+	}
+}
+
+func TestTileMapNode_BuildWalkableFromLayer(t *testing.T) {
+	nilTile := &tiled.LayerTile{Nil: true}
+	solidTile := &tiled.LayerTile{ID: 1, Nil: false}
+
+	tm := &TileMapNode{
+		MapData: &tiled.Map{
+			Width:      3,
+			Height:     3,
+			TileWidth:  32,
+			TileHeight: 32,
+			Layers: []*tiled.Layer{
+				{
+					Name: "Obstacles",
+					Tiles: []*tiled.LayerTile{
+						nilTile, nilTile, nilTile,
+						solidTile, nilTile, solidTile, // blocked left and right
+						nilTile, nilTile, nilTile,
+					},
+				},
+			},
+		},
+	}
+
+	pf := tm.BuildWalkableFromLayer("Obstacles", true) // blockNonEmpty = true
+	if pf == nil {
+		t.Fatal("expected non-nil pathfinder")
+	}
+
+	if pf.IsWalkable(0, 1) {
+		t.Error("expected (0,1) to be blocked")
+	}
+	if pf.IsWalkable(2, 1) {
+		t.Error("expected (2,1) to be blocked")
+	}
+	if !pf.IsWalkable(1, 1) {
+		t.Error("expected (1,1) to be walkable")
+	}
+
+	// Test FindPathWorld integration
+	tm.SetPathfinder(pf)
+
+	// from top-left (16, 16) to bottom-right (16+64, 16+64)
+	start := math2D.NewVector2D(16, 16)
+	end := math2D.NewVector2D(16+64, 16+64)
+	path := tm.FindPathWorld(start, end)
+	if path == nil {
+		t.Fatal("expected a valid path")
+	}
+	if len(path) == 0 {
+		t.Error("path should not be empty")
 	}
 }

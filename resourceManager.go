@@ -2,6 +2,8 @@ package ebiten_extended
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"image"
 	"os"
 	"sync"
@@ -114,6 +116,66 @@ func (r *ResourceManager) Clear() {
 	r.ClearFonts()
 }
 
+// AssetType enumerates the types of loadable assets for batching.
+type AssetType string
+
+const (
+	AssetTypeImage AssetType = "image"
+	AssetTypeFont  AssetType = "font"
+	AssetTypeAtlas AssetType = "atlas"
+)
+
+// PreloadAsset defines a single asset descriptor for batch loading.
+type PreloadAsset struct {
+	ID       string
+	Path     string
+	Type     AssetType
+	// Only for AssetTypeFont:
+	FontSize float64
+	// Only for AssetTypeAtlas:
+	JsonPath string
+}
+
+// PreloadBatch asynchronously loads a list of assets and triggers progress callbacks.
+// The onProgress callback receives the number of loaded assets, total assets, and ID of the last one.
+// The onComplete callback triggers when the entire batch is finished. Errors are logged but do not interrupt the batch.
+func (r *ResourceManager) PreloadBatch(
+	assets []PreloadAsset,
+	onProgress func(loaded, total int, lastLoadedID string),
+	onComplete func(failedAssets []string),
+) {
+	go func() {
+		total := len(assets)
+		var failed []string
+
+		for i, asset := range assets {
+			var err error
+			switch asset.Type {
+			case AssetTypeImage:
+				err = r.LoadImageFromFile(asset.ID, asset.Path)
+			case AssetTypeFont:
+				err = r.LoadFontFromFile(asset.ID, asset.Path, asset.FontSize)
+			case AssetTypeAtlas:
+				err = r.LoadAtlas(asset.ID, asset.Path, asset.JsonPath)
+			default:
+				err = fmt.Errorf("unknown asset type: %s", asset.Type)
+			}
+
+			if err != nil {
+				failed = append(failed, asset.ID)
+			}
+
+			if onProgress != nil {
+				onProgress(i+1, total, asset.ID)
+			}
+		}
+
+		if onComplete != nil {
+			onComplete(failed)
+		}
+	}()
+}
+
 // LoadImageFromFile loads an image from the given file path and caches it under textureId.
 // Supports common formats (PNG, JPG, GIF, etc.). Returns an error if the file cannot be read or decoded.
 func (r *ResourceManager) LoadImageFromFile(textureId string, path string) error {
@@ -141,6 +203,68 @@ func (r *ResourceManager) AddImage(textureId string, texture []byte) error {
 	defer r.mu.Unlock()
 	r.images[textureId] = ebitenImage
 	return nil
+}
+
+// AtlasRegion defines the bounding box of a sub-image inside an atlas.
+type AtlasRegion struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+	W int `json:"w"`
+	H int `json:"h"`
+}
+
+// atlasData is used to decode TexturePacker Hash format JSONs.
+type atlasData struct {
+	Frames map[string]struct {
+		Frame AtlasRegion `json:"frame"`
+	} `json:"frames"`
+}
+
+// LoadAtlas loads a texture atlas image and its associated JSON descriptor.
+// The JSON must match the TexturePacker "JSON (Hash)" format with "frames" containing "frame" definitions.
+// Each region will be available via GetAtlasRegion(atlasId, regionId) or GetImage(atlasId + ":" + regionId).
+func (r *ResourceManager) LoadAtlas(atlasId string, imgPath string, jsonPath string) error {
+	// First load the actual image. We temporarily use atlasId for it.
+	err := r.LoadImageFromFile(atlasId, imgPath)
+	if err != nil {
+		return err
+	}
+
+	// Now read the JSON descriptor.
+	jsonData, err := os.ReadFile(jsonPath)
+	if err != nil {
+		return err
+	}
+
+	var data atlasData
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return err
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	baseImage := r.images[atlasId]
+	if baseImage == nil {
+		return fmt.Errorf("base image %s not found after loading", atlasId)
+	}
+
+	for regionId, frameData := range data.Frames {
+		f := frameData.Frame
+		rect := image.Rect(f.X, f.Y, f.X+f.W, f.Y+f.H)
+		subImg := baseImage.SubImage(rect).(*ebiten.Image)
+		r.images[atlasId+":"+regionId] = subImg
+	}
+
+	return nil
+}
+
+// GetAtlasRegion is a convenience method to fetch a sub-image loaded via LoadAtlas.
+// It is equivalent to calling GetImage(atlasId + ":" + regionId).
+func (r *ResourceManager) GetAtlasRegion(atlasId, regionId string) *ebiten.Image {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.images[atlasId+":"+regionId]
 }
 
 // LoadFontFromFile loads an OpenType font from the given file path and caches it under fontId.

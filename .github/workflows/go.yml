@@ -21,7 +21,10 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        run: go test -v -race -count=1 ./...
+        run: go test -v -race -count=1 -coverprofile=coverage.out ./...
+
+      - name: Coverage
+        run: go tool cover -func=coverage.out
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6

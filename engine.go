@@ -30,6 +30,11 @@ type Engine struct {
 	// logicalSize is used for Layout when SetLogicalSize was called; (0,0) = passthrough.
 	logicalWidth  int
 	logicalHeight int
+
+	paused    bool
+	timeScale float64
+
+	sceneManager *SceneManager // when set, Update and Draw delegate to it
 }
 
 // NewEngine creates and initializes a new Engine instance with default systems.
@@ -41,6 +46,7 @@ func NewEngine() *Engine {
 		audioManager:    NewAudioManager(),
 		clock:           NewClock(),
 		debug:           NewDebug(false),
+		timeScale:       1.0,
 	}
 
 	return e
@@ -81,16 +87,69 @@ func (e *Engine) SetIsDebug(debugFlag bool) {
 	e.debug.SetEnabled(debugFlag)
 }
 
+// IsPaused returns whether the engine update loop is paused.
+func (e *Engine) IsPaused() bool {
+	return e.paused
+}
+
+// SetPaused pauses or resumes the engine update loop. Draw continues when paused.
+func (e *Engine) SetPaused(paused bool) {
+	e.paused = paused
+	e.world.SetPaused(paused)
+}
+
+// TimeScale returns the current time scale (1.0 = normal, 0.5 = half speed, 2.0 = double speed).
+func (e *Engine) TimeScale() float64 {
+	return e.timeScale
+}
+
+// SetTimeScale sets the time scale for updates. Use for slow-motion or fast-forward.
+func (e *Engine) SetTimeScale(scale float64) {
+	if scale < 0 {
+		scale = 0
+	}
+	e.timeScale = scale
+}
+
+// ScaledDelta returns FIXED_DELTA multiplied by the current time scale.
+// Use this in Update logic for frame-rate independent behavior when time scale is applied.
+func (e *Engine) ScaledDelta() float64 {
+	return FIXED_DELTA * e.timeScale
+}
+
+// SetSceneManager sets the scene manager. When set, Update and Draw delegate to it instead of the World directly.
+// Pass nil to revert to direct World update/draw.
+func (e *Engine) SetSceneManager(sm *SceneManager) {
+	e.sceneManager = sm
+	if sm != nil {
+		sm.engine = e
+	}
+}
+
+// SceneManager returns the current scene manager, or nil if not set.
+func (e *Engine) SceneManager() *SceneManager {
+	return e.sceneManager
+}
+
 // Update advances the engine state by one tick, updating input and the game world.
 func (e *Engine) Update() error {
 	e.inputManager.Update()
-	e.world.Update()
+	if e.sceneManager != nil {
+		return e.sceneManager.Update()
+	}
+	if !e.paused {
+		e.world.Update()
+	}
 	return nil
 }
 
 // Draw renders the game world onto the target screen image.
 // Ensure ebitengine signature compatibility.
 func (e *Engine) Draw(target *ebiten.Image) {
+	if e.sceneManager != nil {
+		e.sceneManager.Draw(target)
+		return
+	}
 	e.world.Draw(target, nil)
 }
 
