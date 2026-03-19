@@ -11,13 +11,17 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 - **Camera**: 2D camera with zoom, position, and world/screen coordinate conversion (top-left origin)
 - **Sprites & animation**: [Sprite] for static images, [AnimationPlayer] + [AnimationSet] for sprite-sheet animations
 - **Collision**: [collision] package with shapes (circle, rect, oriented rect), masks, and callbacks; optional broad-phase for performance
+- **Physics**: [physics] package with `RigidBody2D` (Dynamic/Kinematic), forces, and velocity-based simulation
+- **Particles**: [particles] system with `EmitterNode` for highly customizable visual effects (life, size, color, spread, velocity)
+- **Tweening**: [tween] package for procedural animations with over 30 easing functions (Linear, Sine, Elastic, Bounce, etc.)
+- **Events**: [event] generic event system (`Event[T]`) for decoupled node-to-node communication
 - **Time**: [Clock] and [Timer] for elapsed time and delayed/looping actions
-- **Resources/Save**: [ResourceManager] for images/fonts (AddImage, LoadImageFromFile, LoadFont, LoadFontFromFile); [save] for atomic JSON/Binary (Gob) data persistence.
-- **UI**: Fast interaction-ready graphical user interface components including `PanelNode`, `ButtonNode` (with image states), `ProgressBarNode` (with `SetOrientation(ProgressBarVertical)`), `SliderNode`, `CheckboxNode`, `TextInputNode` (editable text field), and `ScrollPanelNode` (scrollable content).
+- **Resources/Save**: [ResourceManager] for images/fonts; supports **Texture Atlases** (`LoadAtlas`, `GetAtlasRegion`) and **Asynchronous Preloading** (`PreloadBatch`) with progress callbacks; [save] for atomic JSON/Binary (Gob) data persistence.
+- **UI**: Interaction-ready components including `PanelNode`, `ButtonNode`, `ProgressBarNode`, `SliderNode`, `CheckboxNode`, `TextInputNode`, and `ScrollPanelNode`. Includes a **FocusManager** for keyboard/gamepad navigation and an **AnchorLayout** system for relative positioning (Top, Center, Bottom, Stretch).
 - **Audio**: [AudioManager] for sounds (WAV, OGG, MP3) and playback
 - **Input**: Cursor position, key/button state via [input] package; gamepad/joystick support (buttons, sticks, standard layout)
 - **State machine**: [fsm] for AI or game states
-- **Tile map**: [tilemap] data structures for grid-based maps; BuildCollisions (per-tile) and BuildCollisionsFromObjectLayer (rectangles, ellipses, polygons, polylines as bounding boxes)
+- **Tile map**: [tilemap] data structures for grid-based maps; supports `BuildCollisions` (per-tile), `BuildCollisionsFromObjectLayer`, and **Pathfinder integration** via `BuildWalkableFromLayer` (automatically configures pathfinding grid from obstacle layers).
 
 ## Installation
 
@@ -68,7 +72,7 @@ func main() {
 ## Documentation
 
 - **API (godoc)**: [pkg.go.dev/github.com/LuigiVanacore/ebiten_extended](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
-- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap), [ui](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/ui)
+- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [physics](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/physics), [particles](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/particles), [tween](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tween), [event](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/event), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap), [ui](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/ui)
 
 ## Layers
 
@@ -105,7 +109,7 @@ The order matters: run `PhysicsWorld.Step` first (updates positions), then `Coll
 
 ## Fixed timestep
 
-The engine uses Ebiten's default 60 TPS. Use `ebiten_extended.FIXED_DELTA` (1/60 s) for timing in your `Update()` logic. [AnimationSet], [AnimationPlayer], [AnimationSprite], [TileMapNode], [TweenNode], and UI components already use it internally. Implement `Updatable` (`Update()`) on your nodes. [TextNode] supports word wrap via `SetMaxWidth`. [SliderNode] supports `SetRange(min, max)` and `SetOrientation(SliderVertical)`. [ProgressBarNode] supports `SetOrientation(ProgressBarVertical)`. Use `Engine.SetLogicalSize(w, h)` for fixed-resolution scaling. Call `Collider.DrawDebug` when `Engine.IsDebug()` for collision outlines. Use `CollisionManager.OverlapPoint(point)` for point-in-shape queries. Use `CollisionManager.Raycast(start, end)` for segment/line casting (returns hits sorted by distance). `CollisionOrientedRect` supports rotated rectangles (slopes, platforms). `RigidBody2D.Kinematic = true` for bodies moved by code that push dynamic bodies but are not pushed. `ScrollPanelNode` for scrollable UI content with mouse wheel.
+The engine uses Ebiten's default 60 TPS. Use `ebiten_extended.FIXED_DELTA` (1/60 s) for timing in your `Update()` logic. [AnimationSet], [AnimationPlayer], [AnimationSprite], [TileMapNode], [TweenNode], and UI components already use it internally. Implement `Updatable` (`Update()`) on your nodes. [TextNode] supports word wrap via `SetMaxWidth`. [SliderNode] supports `SetRange(min, max)` and `SetOrientation(SliderVertical)`. [ProgressBarNode] supports `SetOrientation(ProgressBarVertical)`. Use `Engine.SetLogicalSize(w, h)` for fixed-resolution scaling. Call `Collider.DrawDebug` when `Engine.IsDebug()` for collision outlines. Use `CollisionManager.OverlapPoint(point)` for point-in-shape queries. Use `CollisionManager.Raycast(start, end)` for segment/line casting (returns hits sorted by distance). `CollisionOrientedRect` supports rotated rectangles (slopes, platforms). `RigidBody2D.Kinematic = true` for bodies moved by code that push dynamic bodies but are not pushed. `ScrollPanelNode` for scrollable UI content with mouse wheel. Use `AnchorLayout` with `AnchorType` (e.g. `AnchorCenter`, `AnchorStretch`) for responsive UI positioning. Register `Focusable` nodes with `FocusManager` for controller/keyboard navigation. Use `ResourceManager.PreloadBatch` for background asset loading with progress updates.
 
 ## Development
 
