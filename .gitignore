@@ -26,6 +26,7 @@ go.work.sum
 .idea/
 .vscode/
 .cursorrules
+.agent/
 *.swp
 *.swo
 *~
