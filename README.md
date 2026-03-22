@@ -1,4 +1,4 @@
-# ludum
+# Ludum
 
 A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provides a scene graph, layers, camera, sprites, animations, collision detection, input handling, and resource management so you can focus on game logic.
 
