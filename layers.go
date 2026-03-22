@@ -1,9 +1,9 @@
-package ebiten_extended
+package ludum
 
 import (
 	"fmt"
 
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -55,14 +55,12 @@ func (l *Layers) AddNodeToLayer(layerIndex int, node Drawable, target *ebiten.Im
 	return nil
 }
 
-
-
 // DrawLayers executes all queued draw callbacks in layer order.
 func (l *Layers) DrawLayers() {
-    for i := range l.layers {
-        for !l.layers[i].IsEmpty() {
-            f, _ := l.layers[i].Pop()
-            f()
-        }
-    }
+	for i := range l.layers {
+		for !l.layers[i].IsEmpty() {
+			f, _ := l.layers[i].Pop()
+			f()
+		}
+	}
 }

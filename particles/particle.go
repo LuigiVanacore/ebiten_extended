@@ -3,15 +3,15 @@ package particles
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 // Particle holds the state of a single particle.
 type Particle struct {
-	Position   math2D.Vector2D
-	Velocity   math2D.Vector2D
-	Lifetime   float64   // total lifetime in seconds
-	Age        float64   // elapsed time
+	Position   math2d.Vector2D
+	Velocity   math2d.Vector2D
+	Lifetime   float64 // total lifetime in seconds
+	Age        float64 // elapsed time
 	Scale      float64
 	ColorStart color.Color
 	ColorEnd   color.Color

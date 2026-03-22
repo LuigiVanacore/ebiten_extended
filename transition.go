@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
@@ -12,8 +12,8 @@ type TransitionState int
 
 const (
 	TransitionIdle TransitionState = iota
-	TransitionIn   // fading/sliding in
-	TransitionOut  // fading/sliding out
+	TransitionIn                   // fading/sliding in
+	TransitionOut                  // fading/sliding out
 	TransitionDone
 )
 

@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -7,22 +7,21 @@ import (
 // AnimationPlayer coordinates playback and switching between multiple named AnimationSet sequences for a node.
 type AnimationPlayer struct {
 	Node2D
-	layer int
-	animationMap map[string]*AnimationSet
+	layer              int
+	animationMap       map[string]*AnimationSet
 	currentAnimationId string
 	isPlaying          bool
 }
 
 func NewAnimationPlayer(name string, layer int) *AnimationPlayer {
 	return &AnimationPlayer{
-		Node2D:          *NewNode2D(name),
-		layer:           layer,
-		animationMap:    make(map[string]*AnimationSet),
+		Node2D:             *NewNode2D(name),
+		layer:              layer,
+		animationMap:       make(map[string]*AnimationSet),
 		currentAnimationId: "",
-		isPlaying:      false,
+		isPlaying:          false,
 	}
 }
-
 
 func (a *AnimationPlayer) IsPlaying() bool {
 	return a.isPlaying
@@ -85,8 +84,8 @@ func (a *AnimationPlayer) Update() {
 
 // Draw overlays the currently processed frame slice from the prevailing active animation sequence to the target image.
 func (a *AnimationPlayer) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
-		animationSet := a.animationMap[a.currentAnimationId]
-		if animationSet != nil {
-			animationSet.Draw(target, op)
-		}
+	animationSet := a.animationMap[a.currentAnimationId]
+	if animationSet != nil {
+		animationSet.Draw(target, op)
+	}
 }

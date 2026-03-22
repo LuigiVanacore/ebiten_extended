@@ -3,14 +3,14 @@ package collision
 import (
 	"errors"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/event"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/event"
 )
 
 // Area2D is a sensor/trigger: it detects overlaps but does not block movement.
 // Subscribe to BodyEntered(), BodyStay(), BodyExited() for lifecycle events.
 type Area2D struct {
-	ebiten_extended.Node2D
+	ludum.Node2D
 	shape CollisionShape
 	mask  CollisionMask
 
@@ -25,7 +25,7 @@ func NewArea2D(name string, shape CollisionShape, mask CollisionMask) (*Area2D, 
 		return nil, errors.New("collision: NewArea2D shape must not be nil")
 	}
 	return &Area2D{
-		Node2D:        *ebiten_extended.NewNode2D(name),
+		Node2D:        *ludum.NewNode2D(name),
 		shape:         shape,
 		mask:          mask,
 		onBodyEntered: &event.Event[Area2DBodyEvent]{},

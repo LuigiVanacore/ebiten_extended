@@ -14,16 +14,16 @@ const (
 )
 
 type RawInputButton struct {
-	keyButton ebiten.Key
-	mouseButton ebiten.MouseButton
+	keyButton     ebiten.Key
+	mouseButton   ebiten.MouseButton
 	gamePadButton ebiten.GamepadButton
-	gamepadID ebiten.GamepadID
-	buttonType InputButtonTypes
+	gamepadID     ebiten.GamepadID
+	buttonType    InputButtonTypes
 }
 
 func NewKeyRawInputButton(key ebiten.Key) RawInputButton {
 	return RawInputButton{
-		keyButton: key,
+		keyButton:  key,
 		buttonType: KEYBOARD,
 	}
 }
@@ -31,15 +31,15 @@ func NewKeyRawInputButton(key ebiten.Key) RawInputButton {
 func NewMouseRawInputButton(mouse ebiten.MouseButton) RawInputButton {
 	return RawInputButton{
 		mouseButton: mouse,
-		buttonType: MOUSE,
+		buttonType:  MOUSE,
 	}
 }
 
 func NewGamePadRawInputButton(gamePad ebiten.GamepadButton, gamePadId ebiten.GamepadID) RawInputButton {
 	return RawInputButton{
 		gamePadButton: gamePad,
-		gamepadID: gamePadId,
-		buttonType: GAMEPAD,
+		gamepadID:     gamePadId,
+		buttonType:    GAMEPAD,
 	}
 }
 
@@ -66,7 +66,6 @@ func (r *RawInputButton) IsMouseType() bool {
 func (r *RawInputButton) IsGamepadType() bool {
 	return r.buttonType == GAMEPAD
 }
-
 
 func (r *RawInputButton) IsGamepadID(gamepadID ebiten.GamepadID) bool {
 	return r.gamepadID == gamepadID
@@ -143,7 +142,6 @@ func (r *RawInputButton) IsJustPressed() bool {
 	return false
 }
 
-
 func (r *RawInputButton) IsJustReleased() bool {
 	switch r.buttonType {
 	case KEYBOARD:
@@ -183,11 +181,9 @@ func (r *RawInputButton) PressDuration() int {
 	return 0
 }
 
-
-
 type RawInputAxis struct {
-	axis int
-	gamepadID ebiten.GamepadID
+	axis           int
+	gamepadID      ebiten.GamepadID
 	axisValues     [8]float64
 	prevAxisValues [8]float64
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
-	camera "github.com/LuigiVanacore/ebiten_extended"
+	camera "github.com/LuigiVanacore/ludum"
 )
 
 // Organization is bad, but it's a messy example to test camera functions

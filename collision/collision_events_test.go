@@ -3,15 +3,15 @@ package collision
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func TestCollisionLifecycleEvents(t *testing.T) {
 	manager := NewCollisionManager()
 
 	// NewCollisionRect was not exposed, creating direct struct
-	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	shape1 := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	c1, err := NewCollider("c1", shape1, mask1)
 	if err != nil {
@@ -19,7 +19,7 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 	}
 	c1.SetPosition(0, 0)
 
-	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	shape2 := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	c2, err := NewCollider("c2", shape2, mask2)
 	if err != nil {
@@ -79,7 +79,7 @@ func TestCollisionLifecycleEvents(t *testing.T) {
 
 func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
 	manager := NewCollisionManager()
-	shape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	shape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))}
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	c1, err := NewCollider("c1", shape, mask)
 	if err != nil {
@@ -108,7 +108,7 @@ func TestCollisionManager_ColliderRetrocompat(t *testing.T) {
 func TestSpatialGridSeparation(t *testing.T) {
 	manager := NewCollisionManager()
 
-	shape1 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
+	shape1 := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(10, 10))}
 	mask1 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	c1, err := NewCollider("c1", shape1, mask1)
 	if err != nil {
@@ -116,7 +116,7 @@ func TestSpatialGridSeparation(t *testing.T) {
 	}
 	c1.SetPosition(0, 0) // Cell x=0, y=0
 
-	shape2 := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
+	shape2 := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(10, 10))}
 	mask2 := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	c2, err := NewCollider("c2", shape2, mask2)
 	if err != nil {

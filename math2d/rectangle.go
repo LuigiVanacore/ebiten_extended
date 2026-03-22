@@ -1,5 +1,4 @@
-package math2D
- 
+package math2d
 
 // Rectangle represents an axis-aligned rectangle by its top-left position and size (width, height).
 type Rectangle struct {
@@ -37,15 +36,13 @@ func (r *Rectangle) SetSize(size Vector2D) {
 }
 
 func (r *Rectangle) GetCenter() Vector2D {
-	return NewVector2D(r.position.x + r.size.X()/2, r.position.y + r.size.Y()/2)
+	return NewVector2D(r.position.x+r.size.X()/2, r.position.y+r.size.Y()/2)
 }
 
 func (r *Rectangle) SetCenter(center Vector2D) {
 	r.position.SetX(center.X() - r.size.X()/2)
 	r.position.SetY(center.Y() - r.size.Y()/2)
 }
-
- 
 
 func (r *Rectangle) SetCenterX(x float64) {
 	r.position.SetX(x - r.size.X()/2)
@@ -92,7 +89,7 @@ func (r *Rectangle) Equal(rectangle *Rectangle) bool {
 }
 
 func (r *Rectangle) Inflate(x, y float64) {
-	r.position = Vector2D{x: r.position.X() - x / 2, y: r.position.Y() - y / 2}
+	r.position = Vector2D{x: r.position.X() - x/2, y: r.position.Y() - y/2}
 	r.size = Vector2D{x: r.size.X() + x, y: r.size.Y() + y}
 }
 

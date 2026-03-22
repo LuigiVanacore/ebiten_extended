@@ -1,11 +1,11 @@
 package collision
 
-import "github.com/LuigiVanacore/ebiten_extended/utils"
+import "github.com/LuigiVanacore/ludum/utils"
 
 // Preset layer identities (power-of-2 bits) for common game object types.
 // Use with NewPresetMask or combine with utils.ByteSet for custom masks.
 const (
-	LayerPlayer    utils.ByteSet = 1 << iota
+	LayerPlayer utils.ByteSet = 1 << iota
 	LayerEnemy
 	LayerWorld
 	LayerPickup
@@ -34,9 +34,9 @@ func NewPresetMask(identity utils.ByteSet, collidesWith ...utils.ByteSet) Collis
 //	Pickup      ✓     -     -     -        -
 //	Projectile  -     ✓     ✓     -        -
 var (
-	MaskPlayer    = NewPresetMask(LayerPlayer, LayerWorld, LayerPickup)
-	MaskEnemy     = NewPresetMask(LayerEnemy, LayerWorld, LayerPlayer)
-	MaskWorld     = NewPresetMask(LayerWorld, LayerPlayer, LayerEnemy, LayerProjectile)
-	MaskPickup    = NewPresetMask(LayerPickup, LayerPlayer)
+	MaskPlayer     = NewPresetMask(LayerPlayer, LayerWorld, LayerPickup)
+	MaskEnemy      = NewPresetMask(LayerEnemy, LayerWorld, LayerPlayer)
+	MaskWorld      = NewPresetMask(LayerWorld, LayerPlayer, LayerEnemy, LayerProjectile)
+	MaskPickup     = NewPresetMask(LayerPickup, LayerPlayer)
 	MaskProjectile = NewPresetMask(LayerProjectile, LayerWorld, LayerEnemy)
 )

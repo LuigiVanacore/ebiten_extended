@@ -3,8 +3,8 @@ package tilemap
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/lafriks/go-tiled"
 )
 
@@ -85,7 +85,7 @@ func TestPathToWorld(t *testing.T) {
 	if world[0].X() != 16 || world[0].Y() != 16 {
 		t.Errorf("first point: got (%.0f,%.0f)", world[0].X(), world[0].Y())
 	}
-	exp := math2D.NewVector2D(48, 48)
+	exp := math2d.NewVector2D(48, 48)
 	if world[1].X() != exp.X() || world[1].Y() != exp.Y() {
 		t.Errorf("second point: got (%.0f,%.0f)", world[1].X(), world[1].Y())
 	}
@@ -96,7 +96,7 @@ func TestTileMapNode_BuildWalkableFromLayer(t *testing.T) {
 	solidTile := &tiled.LayerTile{ID: 1, Nil: false}
 
 	tm := &TileMapNode{
-		Node2D: ebiten_extended.NewNode2D("mock_tmx"),
+		Node2D: ludum.NewNode2D("mock_tmx"),
 		MapData: &tiled.Map{
 			Width:      3,
 			Height:     3,
@@ -134,8 +134,8 @@ func TestTileMapNode_BuildWalkableFromLayer(t *testing.T) {
 	tm.SetPathfinder(pf)
 
 	// from top-left (16, 16) to bottom-right (16+64, 16+64)
-	start := math2D.NewVector2D(16, 16)
-	end := math2D.NewVector2D(16+64, 16+64)
+	start := math2d.NewVector2D(16, 16)
+	end := math2d.NewVector2D(16+64, 16+64)
 	path := tm.FindPathWorld(start, end)
 	if path == nil {
 		t.Fatal("expected a valid path")

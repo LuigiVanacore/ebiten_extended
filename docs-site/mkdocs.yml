@@ -1,8 +1,8 @@
-site_name: Ebiten-Extended
+site_name: Ludum
 site_description: Documentazione del progetto in Go
-site_url: https://LuigiVanacore.github.io/ebiten_extended/
-repo_name: LuigiVanacore/ebiten_extended
-repo_url: github.com/LuigiVanacore/ebiten_extended
+site_url: https://LuigiVanacore.github.io/ludum/
+repo_name: LuigiVanacore/ludum
+repo_url: github.com/LuigiVanacore/ludum
 
 theme:
   name: material
@@ -45,4 +45,4 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: github.com/LuigiVanacore/ebiten_extended
+      link: github.com/LuigiVanacore/ludum

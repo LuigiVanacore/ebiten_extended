@@ -1,9 +1,9 @@
-package ebiten_extended
+package ludum
 
 import (
 	"sync"
 
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 

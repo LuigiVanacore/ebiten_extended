@@ -1,10 +1,10 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -19,7 +19,7 @@ func TestLayersAddNodeToLayerF_InvalidIndex(t *testing.T) {
 
 func TestLayersAddNodeToLayer_InvalidIndex(t *testing.T) {
 	layers := NewLayers()
-	rect := NewDrawnRectangle("r", math2D.ZeroVector2D(), math2D.ZeroVector2D(), color.White, false, 0)
+	rect := NewDrawnRectangle("r", math2d.ZeroVector2D(), math2d.ZeroVector2D(), color.White, false, 0)
 	target := ebiten.NewImage(1, 1)
 	op := ebiten.DrawImageOptions{}
 

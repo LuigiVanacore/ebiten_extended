@@ -8,8 +8,8 @@ type mockState[T any] struct {
 	execCount  int
 }
 
-func (s *mockState[T]) Enter(owner T) { s.enterCount++ }
-func (s *mockState[T]) Exit(owner T)  { s.exitCount++ }
+func (s *mockState[T]) Enter(owner T)   { s.enterCount++ }
+func (s *mockState[T]) Exit(owner T)    { s.exitCount++ }
 func (s *mockState[T]) Execute(owner T) { s.execCount++ }
 
 func TestStateMachine_ChangeState(t *testing.T) {

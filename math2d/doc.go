@@ -1,4 +1,4 @@
-// Package math2D provides 2D geometry and vector math for games and collision detection.
+// Package math2d provides 2D geometry and vector math for games and collision detection.
 //
 // Types:
 //   - Vector2D: 2D vector with X, Y; operations include Normalize, DotProduct, RotateVector, ProjectVector.
@@ -10,4 +10,4 @@
 //   - OrientedRectangle: rectangle with center, half-extents, and rotation (for SAT collision).
 //
 // Utilities (mathUtils): Min, Max, Distance, DegreesToRadian, RadianToDegrees, FLOAT_PI.
-package math2D
+package math2d

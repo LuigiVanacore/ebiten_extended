@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 import (
 	"fmt"
@@ -42,7 +42,6 @@ func ZeroVector2D() Vector2D {
 	return Vector2D{0, 0}
 }
 
- 
 // Normalize returns a unit-length vector in the same direction; returns v unchanged if length is zero.
 func (v Vector2D) Normalize() Vector2D {
 	length := v.Length()
@@ -77,15 +76,15 @@ func (v Vector2D) Clone() Vector2D {
 }
 
 func (v Vector2D) Length() float64 {
-	return math.Sqrt(DotProduct(v,v))
+	return math.Sqrt(DotProduct(v, v))
 }
 
 func AddVectors(v1, v2 Vector2D) Vector2D {
 	return Vector2D{x: v1.x + v2.x, y: v1.y + v2.y}
 }
 
-func SubtractVectors(v1, v2 Vector2D) Vector2D{
-	return Vector2D { x: v1.x - v2.x, y: v1.y - v2.y }
+func SubtractVectors(v1, v2 Vector2D) Vector2D {
+	return Vector2D{x: v1.x - v2.x, y: v1.y - v2.y}
 }
 
 func (v *Vector2D) SetToZero() {
@@ -114,11 +113,11 @@ func DotProduct(v1, v2 Vector2D) float64 {
 	return v1.x*v2.x + v1.y*v2.y
 }
 
-func (v Vector2D) MultiplyScalar( s  float64) Vector2D {
+func (v Vector2D) MultiplyScalar(s float64) Vector2D {
 	return Vector2D{v.x * s, v.y * s}
 }
 
-func(v Vector2D)   DivideScalar( s float64) Vector2D {
+func (v Vector2D) DivideScalar(s float64) Vector2D {
 	return Vector2D{v.x / s, v.y / s}
 }
 
@@ -160,18 +159,17 @@ func (v Vector2D) EncloseAngle(v2 Vector2D) float64 {
 func (v Vector2D) ProjectVector(v2 Vector2D) Vector2D {
 	var d = DotProduct(v2, v2)
 	if d != 0 {
-		return v2.MultiplyScalar( DotProduct(v, v2) / d)
+		return v2.MultiplyScalar(DotProduct(v, v2) / d)
 	}
 	return v2
 }
 
-
 func (v Vector2D) IsParallel(v2 Vector2D) bool {
 	na := v.RotateVector90()
-	return !(0 == v.x && 0 == v.y ) && !(0 == v2.x && 0 == v2.y) && 0 == DotProduct(na, v2)
+	return !(0 == v.x && 0 == v.y) && !(0 == v2.x && 0 == v2.y) && 0 == DotProduct(na, v2)
 }
 
-func (v Vector2D) IsEqual(v2 Vector2D) bool {	
+func (v Vector2D) IsEqual(v2 Vector2D) bool {
 	return v.x == v2.x && v.y == v2.y
 }
 

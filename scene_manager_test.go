@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
@@ -9,7 +9,7 @@ import (
 
 // mockScene is a test Scene that tracks Enter/Exit calls.
 type mockScene struct {
-	engine    *Engine
+	engine     *Engine
 	enterCalls int
 	exitCalls  int
 }

@@ -4,34 +4,34 @@ import (
 	"math"
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 func TestCirclesCollideResult(t *testing.T) {
 	tests := []struct {
 		name      string
-		a         math2D.Circle
-		b         math2D.Circle
+		a         math2d.Circle
+		b         math2d.Circle
 		wantOver  bool
 		wantDepth float64
 	}{
 		{
 			name:      "overlapping",
-			a:         math2D.NewCircle(math2D.NewVector2D(0, 0), 10),
-			b:         math2D.NewCircle(math2D.NewVector2D(15, 0), 10),
+			a:         math2d.NewCircle(math2d.NewVector2D(0, 0), 10),
+			b:         math2d.NewCircle(math2d.NewVector2D(15, 0), 10),
 			wantOver:  true,
 			wantDepth: 5,
 		},
 		{
 			name:     "not overlapping",
-			a:        math2D.NewCircle(math2D.NewVector2D(0, 0), 10),
-			b:        math2D.NewCircle(math2D.NewVector2D(25, 0), 10),
+			a:        math2d.NewCircle(math2d.NewVector2D(0, 0), 10),
+			b:        math2d.NewCircle(math2d.NewVector2D(25, 0), 10),
 			wantOver: false,
 		},
 		{
 			name:     "tangent",
-			a:        math2D.NewCircle(math2D.NewVector2D(0, 0), 10),
-			b:        math2D.NewCircle(math2D.NewVector2D(20, 0), 10),
+			a:        math2d.NewCircle(math2d.NewVector2D(0, 0), 10),
+			b:        math2d.NewCircle(math2d.NewVector2D(20, 0), 10),
 			wantOver: false,
 		},
 	}
@@ -54,20 +54,20 @@ func TestCirclesCollideResult(t *testing.T) {
 func TestCircleRectangleCollideResult(t *testing.T) {
 	tests := []struct {
 		name     string
-		c        math2D.Circle
-		r        math2D.Rectangle
+		c        math2d.Circle
+		r        math2d.Rectangle
 		wantOver bool
 	}{
 		{
 			name:     "overlapping",
-			c:        math2D.NewCircle(math2D.NewVector2D(15, 15), 10),
-			r:        math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(30, 30)),
+			c:        math2d.NewCircle(math2d.NewVector2D(15, 15), 10),
+			r:        math2d.NewRectangle(math2d.NewVector2D(0, 0), math2d.NewVector2D(30, 30)),
 			wantOver: true,
 		},
 		{
 			name:     "not overlapping",
-			c:        math2D.NewCircle(math2D.NewVector2D(50, 50), 10),
-			r:        math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(20, 20)),
+			c:        math2d.NewCircle(math2d.NewVector2D(50, 50), 10),
+			r:        math2d.NewRectangle(math2d.NewVector2D(0, 0), math2d.NewVector2D(20, 20)),
 			wantOver: false,
 		},
 	}
@@ -84,20 +84,20 @@ func TestCircleRectangleCollideResult(t *testing.T) {
 func TestRectanglesCollideResult(t *testing.T) {
 	tests := []struct {
 		name     string
-		a        math2D.Rectangle
-		b        math2D.Rectangle
+		a        math2d.Rectangle
+		b        math2d.Rectangle
 		wantOver bool
 	}{
 		{
 			name:     "overlapping",
-			a:        math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(10, 10)),
-			b:        math2D.NewRectangle(math2D.NewVector2D(5, 5), math2D.NewVector2D(10, 10)),
+			a:        math2d.NewRectangle(math2d.NewVector2D(0, 0), math2d.NewVector2D(10, 10)),
+			b:        math2d.NewRectangle(math2d.NewVector2D(5, 5), math2d.NewVector2D(10, 10)),
 			wantOver: true,
 		},
 		{
 			name:     "not overlapping",
-			a:        math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(10, 10)),
-			b:        math2D.NewRectangle(math2D.NewVector2D(20, 20), math2D.NewVector2D(10, 10)),
+			a:        math2d.NewRectangle(math2d.NewVector2D(0, 0), math2d.NewVector2D(10, 10)),
+			b:        math2d.NewRectangle(math2d.NewVector2D(20, 20), math2d.NewVector2D(10, 10)),
 			wantOver: false,
 		},
 	}
@@ -112,8 +112,8 @@ func TestRectanglesCollideResult(t *testing.T) {
 }
 
 func TestShapeCollisionResult(t *testing.T) {
-	c1 := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
-	c2 := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
+	c1 := NewCollisionCircle(math2d.NewCircle(math2d.NewVector2D(0, 0), 10))
+	c2 := NewCollisionCircle(math2d.NewCircle(math2d.NewVector2D(0, 0), 10))
 	t1 := transformAt(0, 0)
 	t2 := transformAt(12, 0)
 
@@ -130,8 +130,8 @@ func TestShapeCollisionResult(t *testing.T) {
 }
 
 func TestShapeCollisionResult_CircleRect(t *testing.T) {
-	c := NewCollisionCircle(math2D.NewCircle(math2D.NewVector2D(0, 0), 10))
-	r := NewCollisionRect(math2D.NewRectangle(math2D.NewVector2D(0, 0), math2D.NewVector2D(30, 30)))
+	c := NewCollisionCircle(math2d.NewCircle(math2d.NewVector2D(0, 0), 10))
+	r := NewCollisionRect(math2d.NewRectangle(math2d.NewVector2D(0, 0), math2d.NewVector2D(30, 30)))
 	tC := transformAt(15, 15)
 	tR := transformAt(15, 15)
 
@@ -148,8 +148,8 @@ func TestShapeCollisionResult_CircleRect(t *testing.T) {
 }
 
 func TestShapeCollisionResult_RectRect(t *testing.T) {
-	r1 := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
-	r2 := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10)))
+	r1 := NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(10, 10)))
+	r2 := NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(10, 10)))
 	t1 := transformAt(0, 0)
 	t2 := transformAt(5, 5)
 
@@ -166,8 +166,8 @@ func TestShapeCollisionResult_RectRect(t *testing.T) {
 }
 
 func TestCirclesCollideResult_Coincident(t *testing.T) {
-	a := math2D.NewCircle(math2D.NewVector2D(0, 0), 5)
-	b := math2D.NewCircle(math2D.NewVector2D(0, 0), 5)
+	a := math2d.NewCircle(math2d.NewVector2D(0, 0), 5)
+	b := math2d.NewCircle(math2d.NewVector2D(0, 0), 5)
 
 	res := CirclesCollideResult(a, b)
 	if !res.Overlapping {

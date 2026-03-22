@@ -5,13 +5,13 @@ import (
 	_ "image/png"
 	"log"
 
-	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ludum"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/images"
 )
 
 const (
-	screenWidth = 320
+	screenWidth  = 320
 	screenHeight = 240
 
 	frameOX     = 0
@@ -23,12 +23,12 @@ const (
 )
 
 type Game struct {
-	engine *ebiten_extended.Engine
-	count int
+	engine *ludum.Engine
+	count  int
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	if err := engine.Resources().AddImage(imageID, images.Runner_png); err != nil {
 		log.Fatal(err)
 	}

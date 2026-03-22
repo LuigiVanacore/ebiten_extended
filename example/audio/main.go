@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ludum"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -15,27 +15,27 @@ const (
 )
 
 type Game struct {
-	engine       *ebiten_extended.Engine
-	musicPlayer  *ebiten_extended.AudioStreamPlayer // node per musica (loop)
-	sfxPlayer    *ebiten_extended.AudioStreamPlayer // node per effetti
+	engine      *ludum.Engine
+	musicPlayer *ludum.AudioStreamPlayer // node per musica (loop)
+	sfxPlayer   *ludum.AudioStreamPlayer // node per effetti
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	am := engine.Audio()
 
 	// Carica suoni (sound.wav, sound.ogg, sound.mp3)
 	for _, path := range []string{"sound.wav", "sound.ogg", "sound.mp3"} {
 		data, err := os.ReadFile(path)
 		if err == nil {
-			var audioFmt ebiten_extended.AudioFormat
+			var audioFmt ludum.AudioFormat
 			switch path {
 			case "sound.wav":
-				audioFmt = ebiten_extended.AudioFormatWAV
+				audioFmt = ludum.AudioFormatWAV
 			case "sound.ogg":
-				audioFmt = ebiten_extended.AudioFormatOGG
+				audioFmt = ludum.AudioFormatOGG
 			case "sound.mp3":
-				audioFmt = ebiten_extended.AudioFormatMP3
+				audioFmt = ludum.AudioFormatMP3
 			}
 			if err := am.AddSound("sfx", data, audioFmt); err != nil {
 				log.Printf("AddSound %s: %v", path, err)

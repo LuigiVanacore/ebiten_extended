@@ -1,5 +1,4 @@
-package math2D
- 
+package math2d
 
 type OrientedRectangle struct {
 	center       Vector2D
@@ -32,7 +31,7 @@ func (orientedrectangle *OrientedRectangle) SetCenter(center Vector2D) *Oriented
 	return orientedrectangle
 }
 
-func (orientedrectangle *OrientedRectangle) SetHalfExtended(halfExtended  Vector2D) *OrientedRectangle {
+func (orientedrectangle *OrientedRectangle) SetHalfExtended(halfExtended Vector2D) *OrientedRectangle {
 	orientedrectangle.halfExtended = halfExtended
 	return orientedrectangle
 }

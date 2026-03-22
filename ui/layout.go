@@ -1,15 +1,15 @@
 package ui
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 // Layout arranges child nodes spatially. Apply positions children in sequence.
 type Layout interface {
 	// Apply positions the children of the given parent node.
 	// Children must be transform.Transformable (e.g. Node2D) for positioning to take effect.
-	Apply(parent ebiten_extended.SceneNode)
+	Apply(parent ludum.SceneNode)
 }
 
 // HBoxLayout arranges children in a horizontal row (left to right).
@@ -26,17 +26,17 @@ func NewHBoxLayout() *HBoxLayout {
 // positionable is used by layouts to position children. Node2D, PanelNode, TextNode, etc. implement this.
 type positionable interface {
 	SetPosition(x, y float64)
-	GetPosition() math2D.Vector2D
+	GetPosition() math2d.Vector2D
 }
 
 // Apply positions children horizontally.
 // Uses SizeProvider for width when available; otherwise advances by Spacing.
-func (h *HBoxLayout) Apply(parent ebiten_extended.SceneNode) {
+func (h *HBoxLayout) Apply(parent ludum.SceneNode) {
 	children := parent.GetChildren()
 	if len(children) == 0 {
 		return
 	}
-	parentPos := math2D.ZeroVector2D()
+	parentPos := math2d.ZeroVector2D()
 	if tr, ok := parent.(positionable); ok {
 		parentPos = tr.GetPosition()
 	}
@@ -67,12 +67,12 @@ func NewVBoxLayout() *VBoxLayout {
 
 // Apply positions children vertically.
 // Uses SizeProvider for height when available; otherwise advances by Spacing.
-func (v *VBoxLayout) Apply(parent ebiten_extended.SceneNode) {
+func (v *VBoxLayout) Apply(parent ludum.SceneNode) {
 	children := parent.GetChildren()
 	if len(children) == 0 {
 		return
 	}
-	parentPos := math2D.ZeroVector2D()
+	parentPos := math2d.ZeroVector2D()
 	if tr, ok := parent.(positionable); ok {
 		parentPos = tr.GetPosition()
 	}
@@ -96,4 +96,3 @@ type SizeProvider interface {
 	GetWidth() float64
 	GetHeight() float64
 }
-

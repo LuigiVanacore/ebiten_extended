@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -47,13 +47,13 @@ func TestParticleEmitterBurstRespectsMax(t *testing.T) {
 
 func TestParticleEmitterUpdateEmission(t *testing.T) {
 	e := NewParticleEmitter(50)
-	e.SetEmissionRate(60) // 60 particles per second = 1 per frame at 60fps
+	e.SetEmissionRate(60)    // 60 particles per second = 1 per frame at 60fps
 	e.SetLifetimeRange(1, 1) // deterministic lifetime
-	e.SetVelocityRange(math2D.ZeroVector2D(), math2D.ZeroVector2D())
+	e.SetVelocityRange(math2d.ZeroVector2D(), math2d.ZeroVector2D())
 
 	// Update for 1 second
 	for i := 0; i < 60; i++ {
-		e.Update(1.0/60.0, math2D.ZeroVector2D())
+		e.Update(1.0/60.0, math2d.ZeroVector2D())
 	}
 	count := len(e.Particles())
 	if count < 40 || count > 70 {
@@ -65,15 +65,15 @@ func TestParticleEmitterUpdateAging(t *testing.T) {
 	e := NewParticleEmitter(20)
 	e.SetEmissionRate(0)
 	e.SetLifetimeRange(0.1, 0.1) // 0.1s lifetime
-	e.SetVelocityRange(math2D.ZeroVector2D(), math2D.ZeroVector2D())
+	e.SetVelocityRange(math2d.ZeroVector2D(), math2d.ZeroVector2D())
 	e.Burst(5)
 
-	e.Update(0.05, math2D.ZeroVector2D())
+	e.Update(0.05, math2d.ZeroVector2D())
 	if len(e.Particles()) != 5 {
 		t.Errorf("after 0.05s: want 5 particles, got %d", len(e.Particles()))
 	}
 
-	e.Update(0.1, math2D.ZeroVector2D()) // total 0.15s, all should be dead
+	e.Update(0.1, math2d.ZeroVector2D()) // total 0.15s, all should be dead
 	if len(e.Particles()) != 0 {
 		t.Errorf("after 0.15s (lifetime 0.1): want 0 particles, got %d", len(e.Particles()))
 	}
@@ -83,7 +83,7 @@ func TestParticleEmitterSetMethods(t *testing.T) {
 	e := NewParticleEmitter(10)
 	e.SetEmissionRate(100)
 	e.SetLifetimeRange(0.5, 2.0)
-	e.SetVelocityRange(math2D.NewVector2D(-1, -1), math2D.NewVector2D(1, 1))
+	e.SetVelocityRange(math2d.NewVector2D(-1, -1), math2d.NewVector2D(1, 1))
 	e.SetScaleRange(0.5, 2.0)
 	e.SetColorRange(color.White, color.Black)
 

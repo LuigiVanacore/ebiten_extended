@@ -3,8 +3,8 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -16,15 +16,15 @@ import (
 type DropdownNode struct {
 	PanelNode
 
-	InputManager *input.InputManager
-	items        []string
+	InputManager  *input.InputManager
+	items         []string
 	selectedIndex int
-	open         bool
+	open          bool
 
-	itemHeight float64
-	font       text.Face
-	textColor  color.Color
-	itemBgColor color.Color
+	itemHeight     float64
+	font           text.Face
+	textColor      color.Color
+	itemBgColor    color.Color
 	itemHoverColor color.Color
 
 	OnSelectionChanged func(index int, text string)
@@ -35,11 +35,11 @@ func NewDropdownNode(name string, width, height float64, font text.Face, im *inp
 	p := NewPanelNode(name, width, height)
 	p.SetBackgroundColor(color.RGBA{80, 80, 80, 255})
 	return &DropdownNode{
-		PanelNode:     *p,
-		InputManager:  im,
-		selectedIndex: -1,
-		itemHeight:    24,
-		font:          font,
+		PanelNode:      *p,
+		InputManager:   im,
+		selectedIndex:  -1,
+		itemHeight:     24,
+		font:           font,
 		textColor:      color.White,
 		itemBgColor:    color.RGBA{60, 60, 60, 255},
 		itemHoverColor: color.RGBA{90, 90, 90, 255},
@@ -191,4 +191,4 @@ func (d *DropdownNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 }
 
 // Ensure DropdownNode is an Updatable so World.Update calls it.
-var _ ebiten_extended.Updatable = (*DropdownNode)(nil)
+var _ ludum.Updatable = (*DropdownNode)(nil)

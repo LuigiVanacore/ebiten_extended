@@ -4,8 +4,8 @@ import (
 	"image/color"
 	"unicode/utf8"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -16,19 +16,19 @@ import (
 // Supports UTF-8 input, backspace, cursor, selection, and Ctrl+C/V/X copy/paste/cut.
 type TextInputNode struct {
 	PanelNode
-	InputManager *input.InputManager
-	text         string
-	placeholder  string
-	font         text.Face
-	textColor    color.Color
+	InputManager     *input.InputManager
+	text             string
+	placeholder      string
+	font             text.Face
+	textColor        color.Color
 	placeholderColor color.Color
-	focused      bool
-	cursorBlink  float64
-	maxLength    int // 0 = unlimited
-	cursorIndex  int // rune index; 0 = before first char
-	selStart     int
-	selEnd       int
-	clipboard    string // internal buffer for copy/paste
+	focused          bool
+	cursorBlink      float64
+	maxLength        int // 0 = unlimited
+	cursorIndex      int // rune index; 0 = before first char
+	selStart         int
+	selEnd           int
+	clipboard        string // internal buffer for copy/paste
 
 	OnSubmit func(text string)
 	OnChange func(text string)
@@ -119,7 +119,7 @@ func (t *TextInputNode) Update() {
 	if !t.focused {
 		return
 	}
-	t.cursorBlink += ebiten_extended.FIXED_DELTA
+	t.cursorBlink += ludum.FIXED_DELTA
 	if t.cursorBlink > 1 {
 		t.cursorBlink -= 1
 	}

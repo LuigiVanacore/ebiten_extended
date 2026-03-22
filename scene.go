@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"

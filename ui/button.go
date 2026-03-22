@@ -3,8 +3,8 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
@@ -27,7 +27,7 @@ type ButtonNode struct {
 	focused      bool
 
 	// Optional text label integrated within the button
-	label *ebiten_extended.TextNode
+	label *ludum.TextNode
 
 	// Configurable stylings for different states
 	IdleColor    color.Color
@@ -70,7 +70,7 @@ func (b *ButtonNode) SetSize(w, h float64) {
 // SetText initializes or updates the inside label of the button, centered horizontally and vertically.
 func (b *ButtonNode) SetText(textStr string, face text.Face, c color.Color) {
 	if b.label == nil {
-		b.label = ebiten_extended.NewTextNode(b.GetName()+"_label", textStr, face, c)
+		b.label = ludum.NewTextNode(b.GetName()+"_label", textStr, face, c)
 		b.AddChildren(b.label)
 	} else {
 		b.label.SetMessage(textStr)

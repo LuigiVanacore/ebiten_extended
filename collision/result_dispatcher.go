@@ -1,8 +1,8 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 // ShapeCollisionResult returns the MTV for two shapes, or (zero result, false) if unsupported.
@@ -25,15 +25,15 @@ var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.
 		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ca := a.(*CollisionCircle).circle
 			cb := b.(*CollisionCircle).circle
-			caCopy := math2D.NewCircle(tA.GetPosition(), ca.GetRadius())
-			cbCopy := math2D.NewCircle(tB.GetPosition(), cb.GetRadius())
+			caCopy := math2d.NewCircle(tA.GetPosition(), ca.GetRadius())
+			cbCopy := math2d.NewCircle(tB.GetPosition(), cb.GetRadius())
 			return CirclesCollideResult(caCopy, cbCopy)
 		},
 		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ca := a.(*CollisionCircle).circle
 			rb := b.(*CollisionRect).rectangle
-			caCopy := math2D.NewCircle(tA.GetPosition(), ca.GetRadius())
-			rbCopy := math2D.NewRectangle(rb.GetPosition(), rb.GetSize())
+			caCopy := math2d.NewCircle(tA.GetPosition(), ca.GetRadius())
+			rbCopy := math2d.NewRectangle(rb.GetPosition(), rb.GetSize())
 			rbCopy.SetCenter(tB.GetPosition())
 			return CircleRectangleCollideResult(caCopy, rbCopy)
 		},
@@ -42,9 +42,9 @@ var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.
 		kindCircle: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ra := a.(*CollisionRect).rectangle
 			cb := b.(*CollisionCircle).circle
-			raCopy := math2D.NewRectangle(ra.GetPosition(), ra.GetSize())
+			raCopy := math2d.NewRectangle(ra.GetPosition(), ra.GetSize())
 			raCopy.SetCenter(tA.GetPosition())
-			cbCopy := math2D.NewCircle(tB.GetPosition(), cb.GetRadius())
+			cbCopy := math2d.NewCircle(tB.GetPosition(), cb.GetRadius())
 
 			// Circle vs Rect: swap so circle is first, invert normal for consistency
 			res := CircleRectangleCollideResult(cbCopy, raCopy)
@@ -56,8 +56,8 @@ var resultHandlers = map[shapeKind]map[shapeKind]func(CollisionShape, transform.
 		kindRect: func(a CollisionShape, tA transform.Transform, b CollisionShape, tB transform.Transform) CollisionResult {
 			ra := a.(*CollisionRect).rectangle
 			rb := b.(*CollisionRect).rectangle
-			raCopy := math2D.NewRectangle(ra.GetPosition(), ra.GetSize())
-			rbCopy := math2D.NewRectangle(rb.GetPosition(), rb.GetSize())
+			raCopy := math2d.NewRectangle(ra.GetPosition(), ra.GetSize())
+			rbCopy := math2d.NewRectangle(rb.GetPosition(), rb.GetSize())
 			raCopy.SetCenter(tA.GetPosition())
 			rbCopy.SetCenter(tB.GetPosition())
 			return RectanglesCollideResult(raCopy, rbCopy)

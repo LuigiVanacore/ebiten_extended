@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ func TestNodeIDGeneration(t *testing.T) {
 	if node1.GetID() == 0 {
 		t.Errorf("Node ID should not be zero or uninitialized")
 	}
-	
+
 	if node1.GetID() == node2.GetID() {
 		t.Errorf("Nodes generated identical IDs: %d", node1.GetID())
 	}

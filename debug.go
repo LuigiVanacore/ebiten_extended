@@ -1,12 +1,9 @@
-package ebiten_extended
-
-
+package ludum
 
 // Debug represents a global indicator for logic tracking and diagnostic feedback.
 type Debug struct {
 	enabled bool
 }
-
 
 // NewDebug instantiates a new Debug state representation initialized with the specified flag.
 func NewDebug(enabled bool) *Debug {

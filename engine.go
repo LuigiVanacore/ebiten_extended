@@ -1,7 +1,7 @@
-package ebiten_extended
+package ludum
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -12,7 +12,7 @@ const (
 )
 
 // PhysicsDelta returns the fixed timestep for physics, matching Ebiten's TPS.
-// Use this in physicsWorld.Step(ebiten_extended.PhysicsDelta()) for correct
+// Use this in physicsWorld.Step(ludum.PhysicsDelta()) for correct
 // integration with Ebiten's Update frequency (ebiten.SetTPS affects this).
 func PhysicsDelta() float64 {
 	return 1.0 / float64(ebiten.TPS())

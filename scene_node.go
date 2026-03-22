@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 // SceneNode defines the interface for an element within the game's hierarchical scene graph.
 type SceneNode interface {

@@ -1,8 +1,8 @@
 package particles
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -10,7 +10,7 @@ import (
 // ParticleEmitterNode is a Node2D that hosts a ParticleEmitter and integrates with the scene graph.
 // Implements Drawable and Updatable.
 type ParticleEmitterNode struct {
-	ebiten_extended.Node2D
+	ludum.Node2D
 	emitter *ParticleEmitter
 	layer   int
 }
@@ -18,7 +18,7 @@ type ParticleEmitterNode struct {
 // NewParticleEmitterNode creates a ParticleEmitterNode with the given emitter.
 func NewParticleEmitterNode(name string, emitter *ParticleEmitter, layer int) *ParticleEmitterNode {
 	return &ParticleEmitterNode{
-		Node2D:  *ebiten_extended.NewNode2D(name),
+		Node2D:  *ludum.NewNode2D(name),
 		emitter: emitter,
 		layer:   layer,
 	}
@@ -42,7 +42,7 @@ func (n *ParticleEmitterNode) SetLayer(l int) {
 // Update advances the emitter by one frame. Implements Updatable.
 func (n *ParticleEmitterNode) Update() {
 	if n.emitter != nil {
-		n.emitter.Update(ebiten_extended.FIXED_DELTA, math2D.ZeroVector2D())
+		n.emitter.Update(ludum.FIXED_DELTA, math2d.ZeroVector2D())
 	}
 }
 

@@ -1,7 +1,7 @@
 package input
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -14,7 +14,7 @@ type InputManager struct {
 	actionMap    *ActionMap
 	stateBuf     *StateBuffer
 	mouseEnabled bool
-	cursorPos    math2D.Vector2D
+	cursorPos    math2d.Vector2D
 }
 
 func NewInputManager() *InputManager {
@@ -122,7 +122,7 @@ func (i *InputManager) IsMouseEnabled() bool {
 
 // GetCursorPos returns the absolute screen coordinates (OS Window) of the Hardware mouse.
 // To get the world-mapped coordinates, use Camera.GetCursorCoords(inputMgr) instead.
-func (i *InputManager) GetCursorPos() math2D.Vector2D {
+func (i *InputManager) GetCursorPos() math2d.Vector2D {
 	return i.cursorPos
 }
 
@@ -131,7 +131,7 @@ func (i *InputManager) Update() {
 	i.stateBuf.Update()
 	if i.mouseEnabled {
 		x, y := ebiten.CursorPosition()
-		i.cursorPos.SetPosition(math2D.NewVector2D(float64(x), float64(y)))
+		i.cursorPos.SetPosition(math2d.NewVector2D(float64(x), float64(y)))
 	}
 }
 

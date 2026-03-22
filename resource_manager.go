@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"bytes"
@@ -127,9 +127,9 @@ const (
 
 // PreloadAsset defines a single asset descriptor for batch loading.
 type PreloadAsset struct {
-	ID       string
-	Path     string
-	Type     AssetType
+	ID   string
+	Path string
+	Type AssetType
 	// Only for AssetTypeFont:
 	FontSize float64
 	// Only for AssetTypeAtlas:

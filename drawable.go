@@ -1,8 +1,8 @@
-package ebiten_extended
+package ludum
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -17,5 +17,5 @@ type Drawable interface {
 // Cullable is an optional interface for Drawables that report their world-space AABB.
 // When implemented, the World may skip drawing if the bounds are outside the camera view.
 type Cullable interface {
-	GetWorldBounds() math2D.Rectangle
+	GetWorldBounds() math2d.Rectangle
 }

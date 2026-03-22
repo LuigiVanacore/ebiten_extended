@@ -1,8 +1,8 @@
-package ebiten_extended
+package ludum
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 // Node2D represents a 2D scene graph node incorporating spatial transformations (position, rotation, scale).
@@ -17,8 +17,8 @@ type Node2D struct {
 func NewNode2D(name string) *Node2D {
 	n := &Node2D{Node: *NewNode(name), isDirty: true}
 	// Initialize local and world transforms properly so scale starts at (1, 1).
-	n.localTransform = transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
-	n.worldTransform = transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	n.localTransform = transform.NewTransform(math2d.ZeroVector2D(), math2d.ZeroVector2D(), 0)
+	n.worldTransform = transform.NewTransform(math2d.ZeroVector2D(), math2d.ZeroVector2D(), 0)
 	return n
 }
 
@@ -42,12 +42,12 @@ func (s *Node2D) SetTransform(transform transform.Transform) {
 
 // SetPosition modifies the local X and Y position of the node and marks it as dirty.
 func (s *Node2D) SetPosition(x, y float64) {
-	s.localTransform.SetPosition(math2D.NewVector2D(x, y))
+	s.localTransform.SetPosition(math2d.NewVector2D(x, y))
 	s.MarkDirty()
 }
 
 // GetPosition returns the current local 2D position vector of the node.
-func (s *Node2D) GetPosition() math2D.Vector2D {
+func (s *Node2D) GetPosition() math2d.Vector2D {
 	return s.localTransform.GetPosition()
 }
 
@@ -69,12 +69,12 @@ func (s *Node2D) SetScale(x, y float64) {
 }
 
 // GetScale returns the local scale factors of this node.
-func (s *Node2D) GetScale() math2D.Vector2D {
+func (s *Node2D) GetScale() math2d.Vector2D {
 	return s.localTransform.GetScale()
 }
 
 // GetPivot returns the local pivot point (used for scale/rotation center).
-func (s *Node2D) GetPivot() math2D.Vector2D {
+func (s *Node2D) GetPivot() math2d.Vector2D {
 	return s.localTransform.GetPivot()
 }
 
@@ -95,7 +95,7 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 	}
 
 	// Compute new world transform from parent if possible
-	world := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	world := transform.NewTransform(math2d.ZeroVector2D(), math2d.ZeroVector2D(), 0)
 	parent := b.GetParent()
 	if parentTransformable, ok := parent.(transform.Transformable); ok {
 		world = parentTransformable.GetWorldTransform()
@@ -112,7 +112,7 @@ func (b *Node2D) GetWorldTransform() transform.Transform {
 }
 
 // GetWorldPosition extracts and returns the absolute 2D position in the world from the calculated world transform.
-func (b *Node2D) GetWorldPosition() math2D.Vector2D {
+func (b *Node2D) GetWorldPosition() math2d.Vector2D {
 	worldTransform := b.GetWorldTransform()
 	return worldTransform.GetPosition()
 }
@@ -124,7 +124,7 @@ func (b *Node2D) GetWorldRotation() float64 {
 }
 
 // GetWorldScale returns the absolute world scale factors.
-func (b *Node2D) GetWorldScale() math2D.Vector2D {
+func (b *Node2D) GetWorldScale() math2d.Vector2D {
 	wt := b.GetWorldTransform()
 	return wt.GetScale()
 }

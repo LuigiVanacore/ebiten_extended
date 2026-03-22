@@ -3,13 +3,13 @@ package collision
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func TestCollisionOrientedRect_Circle(t *testing.T) {
 	mask := NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	circ := NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 15))
+	circ := NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 15))
 	rect := NewCollisionOrientedRectFromSize(30, 20)
 	colCirc, _ := NewCollider("c", circ, mask)
 	colRect, _ := NewCollider("r", rect, mask)
@@ -36,7 +36,7 @@ func TestCollisionOrientedRect_OverlapPoint(t *testing.T) {
 	col.SetPosition(100, 100)
 	mgr := NewCollisionManager()
 	mgr.AddParticipant(col)
-	results := mgr.OverlapPoint(math2D.NewVector2D(100, 100))
+	results := mgr.OverlapPoint(math2d.NewVector2D(100, 100))
 	if len(results) != 1 {
 		t.Errorf("point at center: got %d overlaps", len(results))
 	}

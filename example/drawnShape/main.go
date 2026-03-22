@@ -4,8 +4,8 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -17,14 +17,14 @@ const (
 var RED_COLOR = color.RGBA{0xf0, 0x31, 0x31, 0xff}
 
 type Game struct {
-	engine *ebiten_extended.Engine
+	engine *ludum.Engine
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 
-	circle := ebiten_extended.NewDrawnCircle("Circle", math2D.NewVector2D(100, 100), 50, RED_COLOR, true, 0)
-	rectangle := ebiten_extended.NewDrawnRectangle("Rectangle", math2D.NewVector2D(200, 200), math2D.NewVector2D(100, 50), RED_COLOR, true, 0)
+	circle := ludum.NewDrawnCircle("Circle", math2d.NewVector2D(100, 100), 50, RED_COLOR, true, 0)
+	rectangle := ludum.NewDrawnRectangle("Rectangle", math2d.NewVector2D(200, 200), math2d.NewVector2D(100, 50), RED_COLOR, true, 0)
 
 	engine.World().AddNodeToLayer(circle, 0)
 	engine.World().AddNodeToLayer(rectangle, 0)

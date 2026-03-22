@@ -3,11 +3,11 @@ package collision
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 func TestShapeAABB_Circle(t *testing.T) {
-	c := NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 15))
+	c := NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 15))
 	tC := transformAt(100, 50)
 
 	minX, minY, maxX, maxY := ShapeAABB(c, tC)
@@ -19,7 +19,7 @@ func TestShapeAABB_Circle(t *testing.T) {
 }
 
 func TestShapeAABB_Rect(t *testing.T) {
-	r := NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(40, 30)))
+	r := NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(40, 30)))
 	tR := transformAt(100, 50) // center -> rect top-left (80,35)
 
 	minX, minY, maxX, maxY := ShapeAABB(r, tR)

@@ -1,16 +1,16 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image"
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Sprite struct {
 	Node2D
-	textureRect math2D.Rectangle
+	textureRect math2d.Rectangle
 	texture     *ebiten.Image
 	subImage    *ebiten.Image // cached sub-region; updated by updateSubImage
 	layerIndex  int
@@ -18,7 +18,7 @@ type Sprite struct {
 	colorScale ebiten.ColorScale
 	flipX      bool
 	flipY      bool
-	visible    bool   // when false, Draw is skipped
+	visible    bool // when false, Draw is skipped
 	blend      ebiten.Blend
 	filter     ebiten.Filter
 }
@@ -30,9 +30,9 @@ func NewSprite(name string, texture *ebiten.Image, layerIndex int, isPivotToCent
 	}
 
 	// Use Dx/Dy so the rect is correct even for sub-images with non-zero Min.
-	textureRect := math2D.NewRectangle(
-		math2D.ZeroVector2D(),
-		math2D.NewVector2D(float64(texture.Bounds().Dx()), float64(texture.Bounds().Dy())),
+	textureRect := math2d.NewRectangle(
+		math2d.ZeroVector2D(),
+		math2d.NewVector2D(float64(texture.Bounds().Dx()), float64(texture.Bounds().Dy())),
 	)
 
 	sprite := &Sprite{
@@ -51,7 +51,7 @@ func NewSprite(name string, texture *ebiten.Image, layerIndex int, isPivotToCent
 	return sprite
 }
 
-func (s *Sprite) GetTextureRect() math2D.Rectangle {
+func (s *Sprite) GetTextureRect() math2d.Rectangle {
 	return s.textureRect
 }
 
@@ -69,7 +69,7 @@ func (s *Sprite) SetTextureRect(x, y, width, height float64) {
 		width = math.Max(0, math.Min(width, maxW))
 		height = math.Max(0, math.Min(height, maxH))
 	}
-	s.textureRect = math2D.NewRectangle(math2D.NewVector2D(x, y), math2D.NewVector2D(width, height))
+	s.textureRect = math2d.NewRectangle(math2d.NewVector2D(x, y), math2d.NewVector2D(width, height))
 	s.updateSubImage()
 }
 
@@ -80,12 +80,12 @@ func (s *Sprite) GetTexture() *ebiten.Image {
 func (s *Sprite) SetTexture(texture *ebiten.Image) {
 	s.texture = texture
 	if texture != nil {
-		s.textureRect = math2D.NewRectangle(
-			math2D.ZeroVector2D(),
-			math2D.NewVector2D(float64(texture.Bounds().Dx()), float64(texture.Bounds().Dy())),
+		s.textureRect = math2d.NewRectangle(
+			math2d.ZeroVector2D(),
+			math2d.NewVector2D(float64(texture.Bounds().Dx()), float64(texture.Bounds().Dy())),
 		)
 	} else {
-		s.textureRect = math2D.NewRectangle(math2D.ZeroVector2D(), math2D.ZeroVector2D())
+		s.textureRect = math2d.NewRectangle(math2d.ZeroVector2D(), math2d.ZeroVector2D())
 	}
 	s.updateSubImage()
 }
@@ -203,7 +203,7 @@ func (s *Sprite) GetVisible() bool {
 }
 
 // GetSize returns the size of the current texture rect (width, height).
-func (s *Sprite) GetSize() math2D.Vector2D {
+func (s *Sprite) GetSize() math2d.Vector2D {
 	return s.textureRect.GetSize()
 }
 
@@ -248,7 +248,7 @@ func (s *Sprite) Clone() *Sprite {
 }
 
 // GetWorldBounds returns the axis-aligned bounding box in world space for culling.
-func (s *Sprite) GetWorldBounds() math2D.Rectangle {
+func (s *Sprite) GetWorldBounds() math2d.Rectangle {
 	pos := s.GetWorldPosition()
 	scale := s.GetWorldScale()
 	sz := s.textureRect.GetSize()
@@ -267,9 +267,9 @@ func (s *Sprite) GetWorldBounds() math2D.Rectangle {
 	if minY > maxY {
 		minY, maxY = maxY, minY
 	}
-	return math2D.NewRectangle(
-		math2D.NewVector2D(minX, minY),
-		math2D.NewVector2D(maxX-minX, maxY-minY),
+	return math2d.NewRectangle(
+		math2d.NewVector2D(minX, minY),
+		math2d.NewVector2D(maxX-minX, maxY-minY),
 	)
 }
 

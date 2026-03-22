@@ -3,7 +3,7 @@ package tween
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ludum"
 )
 
 func TestTweenNode_Update(t *testing.T) {
@@ -32,7 +32,7 @@ func TestTweenNode_OnComplete(t *testing.T) {
 	node := NewTweenNode("tn", tw)
 	called := false
 	node.OnComplete = func() { called = true }
-	frames := int(0.2 / ebiten_extended.FIXED_DELTA)
+	frames := int(0.2 / ludum.FIXED_DELTA)
 	for i := 0; i < frames; i++ {
 		node.Update()
 	}
@@ -44,7 +44,7 @@ func TestTweenNode_OnComplete(t *testing.T) {
 func TestTweenNode_Restart(t *testing.T) {
 	tw := NewTween("t", 0, 10, 1.0, Linear)
 	node := NewTweenNode("tn", tw)
-	frames := int(1.5 / ebiten_extended.FIXED_DELTA)
+	frames := int(1.5 / ludum.FIXED_DELTA)
 	for i := 0; i < frames; i++ {
 		node.Update()
 	}

@@ -6,11 +6,11 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/tilemap"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/tilemap"
+	"github.com/LuigiVanacore/ludum/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -22,18 +22,18 @@ const (
 )
 
 type Game struct {
-	engine    *ebiten_extended.Engine
-	tilemap   *tilemap.TileMapNode
-	collMgr   *collision.CollisionManager
+	engine     *ludum.Engine
+	tilemap    *tilemap.TileMapNode
+	collMgr    *collision.CollisionManager
 	pathfinder *tilemap.Pathfinder
-	path      []math2D.Vector2D
+	path       []math2d.Vector2D
 	spawnTileX int
 	spawnTileY int
-	overlaps  []collision.CollisionParticipant
+	overlaps   []collision.CollisionParticipant
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	engine.Input().SetMouseEnabled(true)
 	engine.SetIsDebug(true) // show collision outlines on hover
 
@@ -94,7 +94,7 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 	cx, cy := g.engine.World().Camera().GetCursorCoords(g.engine.Input())
-	g.overlaps = g.collMgr.OverlapPoint(math2D.NewVector2D(cx, cy))
+	g.overlaps = g.collMgr.OverlapPoint(math2d.NewVector2D(cx, cy))
 
 	if g.pathfinder != nil && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		tileW := float64(g.tilemap.GetMapData().TileWidth)

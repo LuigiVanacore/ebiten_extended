@@ -1,7 +1,7 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 // CollisionShape is implemented by CollisionCircle, CollisionRect, etc.

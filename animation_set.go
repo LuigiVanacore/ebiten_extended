@@ -1,27 +1,24 @@
-package ebiten_extended
+package ludum
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-
-
-
 // AnimationSet represents a singular, self-contained repeating or one-shot frame sequence.
 type AnimationSet struct {
-	spriteSheet []*ebiten.Image
-	pivot math2D.Vector2D
+	spriteSheet  []*ebiten.Image
+	pivot        math2d.Vector2D
 	currentFrame uint
-	frameCount uint
+	frameCount   uint
 	timePerFrame float64
-	elapsedTime float64
-	isLooped bool
+	elapsedTime  float64
+	isLooped     bool
 }
 
 // NewAnimationSet creates a playback sequence from a sprite sheet slice.
 // fps is the playback speed in frames per second; pass 0 to pause animation.
-func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCount uint, fps float64, isLooped bool) *AnimationSet {
+func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2d.Vector2D, frameCount uint, fps float64, isLooped bool) *AnimationSet {
 	var timePerFrame float64
 	if fps > 0 {
 		timePerFrame = 1 / fps
@@ -30,17 +27,17 @@ func NewAnimationSet(spriteSheet []*ebiten.Image, pivot math2D.Vector2D, frameCo
 }
 
 func (a *AnimationSet) GetTexture() *ebiten.Image {
-	if len(a.spriteSheet) == 0  {
+	if len(a.spriteSheet) == 0 {
 		return nil
 	}
 	return a.spriteSheet[a.currentFrame]
 }
 
-func (a *AnimationSet) GetPivot() math2D.Vector2D {
+func (a *AnimationSet) GetPivot() math2d.Vector2D {
 	return a.pivot
 }
 
-func (a *AnimationSet) SetPivot(pivot math2D.Vector2D) {
+func (a *AnimationSet) SetPivot(pivot math2d.Vector2D) {
 	a.pivot = pivot
 }
 
@@ -75,9 +72,9 @@ func (a *AnimationSet) SetTimePerFrame(timePerFrame float64) {
 	if timePerFrame < 0 {
 		timePerFrame = 1
 	}
-	
+
 	a.timePerFrame = timePerFrame
-	
+
 }
 
 func (a *AnimationSet) SetLooped(isLooped bool) {
@@ -87,8 +84,6 @@ func (a *AnimationSet) SetLooped(isLooped bool) {
 func (a *AnimationSet) IsLooped() bool {
 	return a.isLooped
 }
-
-
 
 // Update advances the animation by one fixed frame. Implements Updatable.
 func (a *AnimationSet) Update() {
@@ -107,7 +102,7 @@ func (a *AnimationSet) Update() {
 	}
 
 }
- 
+
 func (a *AnimationSet) updateGeomToPivot(op *ebiten.DrawImageOptions) {
 	op.GeoM.Translate(-a.pivot.X(), -a.pivot.Y())
 }
@@ -130,5 +125,5 @@ func (a *AnimationSet) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 
 // IsEnded evaluates whether a non-looping animation set profile has run completely through to its specified finish.
 func (a *AnimationSet) IsEnded() bool {
-	return a.currentFrame >= a.frameCount 
+	return a.currentFrame >= a.frameCount
 }

@@ -1,15 +1,15 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 type CollisionCircle struct {
-	circle math2D.Circle
+	circle math2d.Circle
 }
 
-func NewCollisionCircle(circle math2D.Circle) *CollisionCircle {
+func NewCollisionCircle(circle math2d.Circle) *CollisionCircle {
 	return &CollisionCircle{circle: circle}
 }
 

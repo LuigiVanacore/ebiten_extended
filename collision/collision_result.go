@@ -3,7 +3,7 @@ package collision
 import (
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 const epsilon = 1e-9
@@ -13,28 +13,28 @@ const epsilon = 1e-9
 // Depth is the penetration amount to correct.
 type CollisionResult struct {
 	Overlapping bool
-	Normal      math2D.Vector2D
+	Normal      math2d.Vector2D
 	Depth       float64
 }
 
 // CirclesCollideResult returns MTV for two circles.
 // Normal points from B toward A (direction to push A out of B).
 // Edge case: coincident circles use Normal (1,0) as fallback.
-func CirclesCollideResult(a, b math2D.Circle) CollisionResult {
+func CirclesCollideResult(a, b math2d.Circle) CollisionResult {
 	centerA := a.GetCenterPosition()
 	centerB := b.GetCenterPosition()
 	radiusSum := a.GetRadius() + b.GetRadius()
-	delta := math2D.SubtractVectors(centerA, centerB) // A - B, points from B to A
-	distSq := math2D.DotProduct(delta, delta)
+	delta := math2d.SubtractVectors(centerA, centerB) // A - B, points from B to A
+	distSq := math2d.DotProduct(delta, delta)
 
 	if distSq >= radiusSum*radiusSum {
 		return CollisionResult{Overlapping: false}
 	}
 
 	dist := math.Sqrt(distSq)
-	var normal math2D.Vector2D
+	var normal math2d.Vector2D
 	if dist < epsilon {
-		normal = math2D.NewVector2D(1, 0)
+		normal = math2d.NewVector2D(1, 0)
 	} else {
 		normal = delta.DivideScalar(dist)
 	}
@@ -47,11 +47,11 @@ func CirclesCollideResult(a, b math2D.Circle) CollisionResult {
 }
 
 // CircleRectangleCollideResult returns MTV for circle vs axis-aligned rectangle.
-func CircleRectangleCollideResult(c math2D.Circle, r math2D.Rectangle) CollisionResult {
+func CircleRectangleCollideResult(c math2d.Circle, r math2d.Rectangle) CollisionResult {
 	center := c.GetCenterPosition()
 	clamped := ClampOnRectangle(center, r)
-	delta := math2D.SubtractVectors(center, clamped)
-	distSq := math2D.DotProduct(delta, delta)
+	delta := math2d.SubtractVectors(center, clamped)
+	distSq := math2d.DotProduct(delta, delta)
 	radius := c.GetRadius()
 
 	if distSq >= radius*radius {
@@ -59,9 +59,9 @@ func CircleRectangleCollideResult(c math2D.Circle, r math2D.Rectangle) Collision
 	}
 
 	dist := math.Sqrt(distSq)
-	var normal math2D.Vector2D
+	var normal math2d.Vector2D
 	if dist < epsilon {
-		normal = math2D.NewVector2D(1, 0)
+		normal = math2d.NewVector2D(1, 0)
 	} else {
 		normal = delta.DivideScalar(dist)
 	}
@@ -74,7 +74,7 @@ func CircleRectangleCollideResult(c math2D.Circle, r math2D.Rectangle) Collision
 }
 
 // RectanglesCollideResult returns MTV for two axis-aligned rectangles.
-func RectanglesCollideResult(a, b math2D.Rectangle) CollisionResult {
+func RectanglesCollideResult(a, b math2d.Rectangle) CollisionResult {
 	aLeft := a.GetPosition().X()
 	aRight := aLeft + a.GetSize().X()
 	aTop := a.GetPosition().Y()
@@ -97,21 +97,21 @@ func RectanglesCollideResult(a, b math2D.Rectangle) CollisionResult {
 	dx := centerA.X() - centerB.X()
 	dy := centerA.Y() - centerB.Y()
 
-	var normal math2D.Vector2D
+	var normal math2d.Vector2D
 	var depth float64
 	if overlapX < overlapY {
 		depth = overlapX
 		if dx > 0 {
-			normal = math2D.NewVector2D(1, 0)
+			normal = math2d.NewVector2D(1, 0)
 		} else {
-			normal = math2D.NewVector2D(-1, 0)
+			normal = math2d.NewVector2D(-1, 0)
 		}
 	} else {
 		depth = overlapY
 		if dy > 0 {
-			normal = math2D.NewVector2D(0, 1)
+			normal = math2d.NewVector2D(0, 1)
 		} else {
-			normal = math2D.NewVector2D(0, -1)
+			normal = math2d.NewVector2D(0, -1)
 		}
 	}
 

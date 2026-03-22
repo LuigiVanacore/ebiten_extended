@@ -1,10 +1,10 @@
-package ebiten_extended
+package ludum
 
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 func TestNewNode2D(t *testing.T) {
@@ -19,7 +19,7 @@ func TestNewNode2D(t *testing.T) {
 
 func TestSetAndGetTransform(t *testing.T) {
 	node := NewNode2D("TestNode")
-	newTransform := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	newTransform := transform.NewTransform(math2d.ZeroVector2D(), math2d.ZeroVector2D(), 0)
 	node.SetTransform(newTransform)
 
 	if node.GetTransform() != newTransform {
@@ -32,7 +32,7 @@ func TestGetWorldTransform(t *testing.T) {
 	child := NewNode2D("Child")
 	root.AddChildren(child)
 
-	rootTransform := transform.NewTransform(math2D.ZeroVector2D(), math2D.ZeroVector2D(), 0)
+	rootTransform := transform.NewTransform(math2d.ZeroVector2D(), math2d.ZeroVector2D(), 0)
 	root.SetTransform(rootTransform)
 
 	worldTransform := child.GetWorldTransform()
@@ -49,7 +49,7 @@ func TestGetWorldPosition(t *testing.T) {
 	root.SetPosition(10, 20)
 
 	worldPosition := child.GetWorldPosition()
-	expectedPosition := math2D.NewVector2D(10, 20)
+	expectedPosition := math2d.NewVector2D(10, 20)
 	if worldPosition != expectedPosition {
 		t.Errorf("Expected world position to be %v, got %v", expectedPosition, worldPosition)
 	}

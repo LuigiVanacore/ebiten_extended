@@ -3,9 +3,9 @@ package physics
 import (
 	"errors"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 // RigidBody2D is a physics body with velocity, gravity, and collision shape.
@@ -14,8 +14,8 @@ import (
 // Kinematic bodies are moved by code, not by physics; they push dynamic bodies but are not pushed.
 // Friction (0-1) reduces sliding; Restitution (0-1) controls bounce.
 type RigidBody2D struct {
-	ebiten_extended.Node2D
-	velocity     math2D.Vector2D
+	ludum.Node2D
+	velocity     math2d.Vector2D
 	mass         float64
 	UsesGravity  bool
 	GravityScale float64
@@ -34,7 +34,7 @@ func NewRigidBody2D(name string, shape collision.CollisionShape, mask collision.
 		return nil, errors.New("physics: NewRigidBody2D shape must not be nil")
 	}
 	rb := &RigidBody2D{
-		Node2D:       *ebiten_extended.NewNode2D(name),
+		Node2D:       *ludum.NewNode2D(name),
 		mass:         1,
 		UsesGravity:  true,
 		GravityScale: 1,
@@ -46,16 +46,16 @@ func NewRigidBody2D(name string, shape collision.CollisionShape, mask collision.
 	return rb, nil
 }
 
-func (r *RigidBody2D) GetVelocity() math2D.Vector2D {
+func (r *RigidBody2D) GetVelocity() math2d.Vector2D {
 	return r.velocity
 }
 
-func (r *RigidBody2D) SetVelocity(v math2D.Vector2D) {
+func (r *RigidBody2D) SetVelocity(v math2d.Vector2D) {
 	r.velocity = v
 }
 
-func (r *RigidBody2D) ApplyImpulse(v math2D.Vector2D) {
-	r.velocity = math2D.AddVectors(r.velocity, v)
+func (r *RigidBody2D) ApplyImpulse(v math2d.Vector2D) {
+	r.velocity = math2d.AddVectors(r.velocity, v)
 }
 
 func (r *RigidBody2D) GetShape() collision.CollisionShape {

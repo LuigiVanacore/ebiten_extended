@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 func TestAnchorLayoutTopLeft(t *testing.T) {
@@ -12,7 +12,7 @@ func TestAnchorLayoutTopLeft(t *testing.T) {
 
 	child := NewPanelNode("child", 20, 20)
 	child.SetAnchor(AnchorTopLeft)
-	child.SetAnchorMargin(math2D.NewVector2D(5, 5))
+	child.SetAnchorMargin(math2d.NewVector2D(5, 5))
 	parent.AddChildren(child)
 
 	layout := NewAnchorLayout()
@@ -43,7 +43,7 @@ func TestAnchorLayoutStretch(t *testing.T) {
 	parent := NewPanelNode("parent", 100, 100)
 	child := NewPanelNode("child", 10, 10)
 	child.SetAnchor(AnchorStretch)
-	child.SetAnchorMargin(math2D.NewVector2D(10, 10))
+	child.SetAnchorMargin(math2d.NewVector2D(10, 10))
 	parent.AddChildren(child)
 
 	layout := NewAnchorLayout()

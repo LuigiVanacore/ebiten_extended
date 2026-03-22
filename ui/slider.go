@@ -3,7 +3,7 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -25,10 +25,10 @@ type SliderNode struct {
 	value        float64
 	min, max     float64
 
-	trackColor   color.Color
-	thumbColor   color.Color
-	thumbWidth   float64
-	orientation  SliderOrientation
+	trackColor  color.Color
+	thumbColor  color.Color
+	thumbWidth  float64
+	orientation SliderOrientation
 
 	dragging bool
 	OnChange func(value float64)

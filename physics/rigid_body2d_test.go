@@ -3,9 +3,9 @@ package physics
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func mustRigidBody(t *testing.T, shape collision.CollisionShape, mask collision.CollisionMask) *RigidBody2D {
@@ -19,11 +19,11 @@ func mustRigidBody(t *testing.T, shape collision.CollisionShape, mask collision.
 
 func TestRigidBody2D_VelocityIntegration(t *testing.T) {
 	world := NewPhysicsWorld()
-	shape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10))
+	shape := collision.NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 10))
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	body := mustRigidBody(t, shape, mask)
 	body.SetPosition(0, 0)
-	body.SetVelocity(math2D.NewVector2D(100, 50))
+	body.SetVelocity(math2d.NewVector2D(100, 50))
 	body.UsesGravity = false
 
 	if err := world.AddRigidBody(body); err != nil {
@@ -42,7 +42,7 @@ func TestRigidBody2D_VelocityIntegration(t *testing.T) {
 
 func TestRigidBody2D_Gravity(t *testing.T) {
 	world := NewPhysicsWorld()
-	shape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10))
+	shape := collision.NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 10))
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 	body := mustRigidBody(t, shape, mask)
 	body.SetPosition(100, 100)
@@ -62,10 +62,10 @@ func TestRigidBody2D_Gravity(t *testing.T) {
 
 func TestRigidBody2D_ApplyImpulse(t *testing.T) {
 	body := mustRigidBody(t,
-		collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)),
+		collision.NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 10)),
 		collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)),
 	)
-	body.ApplyImpulse(math2D.NewVector2D(10, -5))
+	body.ApplyImpulse(math2d.NewVector2D(10, -5))
 
 	v := body.GetVelocity()
 	if v.X() != 10 || v.Y() != -5 {

@@ -6,9 +6,9 @@ import (
 	"math"
 	"path/filepath"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/lafriks/go-tiled"
 )
@@ -27,7 +27,7 @@ type tileAnimKey struct {
 // It loads images directly into Ebiten GPU memory and renders tiles efficiently using batching.
 // Pathfinding: use BuildWalkableFromLayer or BuildWalkableFromLayerAndSet, then FindPathWorld.
 type TileMapNode struct {
-	*ebiten_extended.Node2D
+	*ludum.Node2D
 	MapData         *tiled.Map
 	tilesets        map[string]*Tileset
 	layerIndex      int
@@ -44,7 +44,7 @@ func NewTileMapNode(tmxPath string) (*TileMapNode, error) {
 	}
 
 	tm := &TileMapNode{
-		Node2D:          ebiten_extended.NewNode2D("TileMapNode"),
+		Node2D:          ludum.NewNode2D("TileMapNode"),
 		MapData:         parsedMap,
 		tilesets:        make(map[string]*Tileset),
 		animationStates: make(map[tileAnimKey]*animatedTileState),
@@ -134,22 +134,22 @@ func (t *TileMapNode) WorldToTile(worldX, worldY float64) (int, int) {
 }
 
 // TileToWorld returns the world position of the center of the tile at (tx, ty).
-func (t *TileMapNode) TileToWorld(tx, ty int) math2D.Vector2D {
+func (t *TileMapNode) TileToWorld(tx, ty int) math2d.Vector2D {
 	if t.MapData == nil {
-		return math2D.ZeroVector2D()
+		return math2d.ZeroVector2D()
 	}
 	pos := t.GetWorldPosition()
 	tw := float64(t.MapData.TileWidth)
 	th := float64(t.MapData.TileHeight)
 	centerX := float64(tx)*tw + tw/2
 	centerY := float64(ty)*th + th/2
-	return math2D.NewVector2D(pos.X()+centerX, pos.Y()+centerY)
+	return math2d.NewVector2D(pos.X()+centerX, pos.Y()+centerY)
 }
 
 // FindPathWorld finds a path between two world-space positions using the cached pathfinder.
 // Returns the path in tile coordinates, or nil if no path exists or no pathfinder is set.
 // Set a pathfinder with SetPathfinder or BuildWalkableFromLayerAndSet first.
-func (t *TileMapNode) FindPathWorld(start, end math2D.Vector2D) []PathNode {
+func (t *TileMapNode) FindPathWorld(start, end math2d.Vector2D) []PathNode {
 	if t.pathfinder == nil || t.MapData == nil {
 		return nil
 	}
@@ -159,14 +159,14 @@ func (t *TileMapNode) FindPathWorld(start, end math2D.Vector2D) []PathNode {
 		return nil
 	}
 	pos := t.GetWorldPosition()
-	localStart := math2D.NewVector2D(start.X()-pos.X(), start.Y()-pos.Y())
-	localEnd := math2D.NewVector2D(end.X()-pos.X(), end.Y()-pos.Y())
+	localStart := math2d.NewVector2D(start.X()-pos.X(), start.Y()-pos.Y())
+	localEnd := math2d.NewVector2D(end.X()-pos.X(), end.Y()-pos.Y())
 	return FindPathWorld(t.pathfinder, localStart, localEnd, tw, th)
 }
 
 // FindPathWorldPositions finds a path and returns it as world positions (center of each tile).
 // Returns nil if no path exists or no pathfinder is set.
-func (t *TileMapNode) FindPathWorldPositions(start, end math2D.Vector2D) []math2D.Vector2D {
+func (t *TileMapNode) FindPathWorldPositions(start, end math2d.Vector2D) []math2d.Vector2D {
 	path := t.FindPathWorld(start, end)
 	if path == nil {
 		return nil
@@ -179,14 +179,14 @@ func (t *TileMapNode) FindPathWorldPositions(start, end math2D.Vector2D) []math2
 	result := PathToWorld(path, tw, th)
 	pos := t.GetWorldPosition()
 	for i := range result {
-		result[i] = math2D.NewVector2D(result[i].X()+pos.X(), result[i].Y()+pos.Y())
+		result[i] = math2d.NewVector2D(result[i].X()+pos.X(), result[i].Y()+pos.Y())
 	}
 	return result
 }
 
 // Update processes tile animations. Implements Updatable.
 func (t *TileMapNode) Update() {
-	deltaMillis := ebiten_extended.FIXED_DELTA * 1000.0
+	deltaMillis := ludum.FIXED_DELTA * 1000.0
 
 	for key, state := range t.animationStates {
 		wrapper, ok := t.tilesets[key.tilesetName]
@@ -238,8 +238,8 @@ func (t *TileMapNode) buildCollisionsFromObjectLayer(layerName string, mask coll
 			var posX, posY float64
 			if len(obj.Ellipses) > 0 {
 				radius := math.Max(obj.Width, obj.Height) / 2
-				center := math2D.NewVector2D(obj.Width/2, obj.Height/2)
-				circle := math2D.NewCircle(center, radius)
+				center := math2d.NewVector2D(obj.Width/2, obj.Height/2)
+				circle := math2d.NewCircle(center, radius)
 				shape = collision.NewCollisionCircle(circle)
 				posX, posY = obj.X, obj.Y
 			} else if len(obj.Polygons) > 0 && obj.Polygons[0].Points != nil {
@@ -247,9 +247,9 @@ func (t *TileMapNode) buildCollisionsFromObjectLayer(layerName string, mask coll
 			} else if len(obj.PolyLines) > 0 && obj.PolyLines[0].Points != nil {
 				shape, posX, posY = tiledPointsToShape(obj.X, obj.Y, *obj.PolyLines[0].Points, usePolygon)
 			} else {
-				rect := math2D.NewRectangle(
-					math2D.ZeroVector2D(),
-					math2D.NewVector2D(obj.Width, obj.Height),
+				rect := math2d.NewRectangle(
+					math2d.ZeroVector2D(),
+					math2d.NewVector2D(obj.Width, obj.Height),
 				)
 				shape = collision.NewCollisionRect(rect)
 				posX, posY = obj.X, obj.Y
@@ -301,9 +301,9 @@ func tiledPointsToShape(originX, originY float64, points tiled.Points, usePolygo
 	posY := originY + centerY
 
 	if usePolygon && len(points) >= 3 && isConvexTiledPoints(points) {
-		verts := make([]math2D.Vector2D, len(points))
+		verts := make([]math2d.Vector2D, len(points))
 		for j, p := range points {
-			verts[j] = math2D.NewVector2D(p.X-centerX, p.Y-centerY)
+			verts[j] = math2d.NewVector2D(p.X-centerX, p.Y-centerY)
 		}
 		poly := collision.NewCollisionPolygon(verts)
 		if poly != nil {
@@ -315,7 +315,7 @@ func tiledPointsToShape(originX, originY float64, points tiled.Points, usePolygo
 	if w <= 0 || h <= 0 {
 		return nil, 0, 0
 	}
-	rect := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(w, h))
+	rect := math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(w, h))
 	return collision.NewCollisionRect(rect), originX + minX, originY + minY
 }
 
@@ -372,11 +372,11 @@ func (t *TileMapNode) BuildCollisions(mask collision.CollisionMask) error {
 						if len(obj.Ellipses) > 0 {
 							// Circle
 							radius := math.Max(obj.Width, obj.Height) / 2
-							circle := math2D.NewCircle(math2D.NewVector2D(radius, radius), radius) // local center
+							circle := math2d.NewCircle(math2d.NewVector2D(radius, radius), radius) // local center
 							shape = collision.NewCollisionCircle(circle)
 						} else {
 							// Rectangle
-							rect := math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(obj.Width, obj.Height))
+							rect := math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(obj.Width, obj.Height))
 							shape = collision.NewCollisionRect(rect)
 						}
 

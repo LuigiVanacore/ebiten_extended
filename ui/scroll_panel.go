@@ -3,8 +3,8 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -78,7 +78,7 @@ func (s *ScrollPanelNode) Update() {
 		}
 	}
 	for _, ch := range s.GetChildren() {
-		if n, ok := ch.(*ebiten_extended.Node2D); ok {
+		if n, ok := ch.(*ludum.Node2D); ok {
 			n.SetPosition(-s.scrollX, -s.scrollY)
 			break
 		}

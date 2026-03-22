@@ -6,9 +6,9 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	exampleresources "github.com/LuigiVanacore/ebiten_extended/example/resources"
-	"github.com/LuigiVanacore/ebiten_extended/save"
+	"github.com/LuigiVanacore/ludum"
+	exampleresources "github.com/LuigiVanacore/ludum/example/resources"
+	"github.com/LuigiVanacore/ludum/save"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -29,8 +29,8 @@ type GameState struct {
 
 type Game struct {
 	state     GameState
-	textLabel *ebiten_extended.TextNode
-	engine    *ebiten_extended.Engine
+	textLabel *ludum.TextNode
+	engine    *ludum.Engine
 }
 
 func loadDefaultFont() text.Face {
@@ -46,10 +46,10 @@ func loadDefaultFont() text.Face {
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	gameFont := loadDefaultFont()
 
-	textLabel := ebiten_extended.NewTextNode("stateLabel", "", gameFont, color.White)
+	textLabel := ludum.NewTextNode("stateLabel", "", gameFont, color.White)
 	textLabel.SetPosition(20, 20)
 	engine.World().AddNodeToDefaultLayer(textLabel)
 

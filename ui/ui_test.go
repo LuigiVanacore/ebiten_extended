@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"testing"
 
-	exampleresources "github.com/LuigiVanacore/ebiten_extended/example/resources"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	exampleresources "github.com/LuigiVanacore/ludum/example/resources"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 

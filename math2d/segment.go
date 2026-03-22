@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 // Segment represents a finite line segment between two points.
 type Segment struct {

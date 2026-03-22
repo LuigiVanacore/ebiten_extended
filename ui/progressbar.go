@@ -29,8 +29,8 @@ func NewProgressBarNode(name string, width, height float64) *ProgressBarNode {
 	p.SetBackgroundColor(color.RGBA{30, 30, 30, 255}) // Dark background by default
 
 	return &ProgressBarNode{
-		PanelNode:    *p,
-		progress:     0.0,
+		PanelNode:   *p,
+		progress:    0.0,
 		fillColor:   color.RGBA{0, 200, 0, 255}, // Green fill by default
 		orientation: ProgressBarHorizontal,
 	}

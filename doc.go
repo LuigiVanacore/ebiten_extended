@@ -1,4 +1,4 @@
-// Package ebiten_extended provides a 2D gameplay framework built on top of
+// Package ludum provides a 2D gameplay framework built on top of
 // [Ebiten](https://ebiten.org). It adds scene graph management, layers, camera,
 // sprites, animations, collision detection, input handling, resource loading,
 // particles, pooling, scene manager, and transitions so you can build 2D games
@@ -21,7 +21,7 @@
 //
 // Create an engine, add a layer and a node, then run the game:
 //
-//	engine := ebiten_extended.NewEngine()
+//	engine := ludum.NewEngine()
 //	engine.World().AddNodeToLayer(myNode, 0)
 //	// In your game's Update: engine.Update()
 //	// In your game's Draw: engine.Draw(screen)
@@ -62,7 +62,7 @@
 //
 // # Subpackages
 //
-//   - [math2D]: 2D math (vectors, shapes, segments, rectangles, circles).
+//   - [math2d]: 2D math (vectors, shapes, segments, rectangles, circles).
 //   - [transform]: Local transform (position, pivot, rotation, scale).
 //   - [collision]: Colliders, shapes, masks, and collision detection.
 //   - [input]: Input manager and cursor position (enable with SetMouseEnabled).
@@ -71,4 +71,4 @@
 //   - [particles]: ParticleEmitter and ParticleEmitterNode for visual effects.
 //   - [utils]: Generic Pool for object reuse.
 //   - [event]: Event bus (if enabled).
-package ebiten_extended
+package ludum

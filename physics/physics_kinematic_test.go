@@ -3,18 +3,18 @@ package physics
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func TestKinematic_PushesDynamic(t *testing.T) {
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
-	dynShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
+	dynShape := collision.NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(20, 20)))
 	dyn, _ := NewRigidBody2D("dyn", dynShape, mask)
 	dyn.SetPosition(50, 50)
 
-	kinShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20)))
+	kinShape := collision.NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(20, 20)))
 	kin, _ := NewRigidBody2D("kin", kinShape, mask)
 	kin.Kinematic = true
 	kin.SetPosition(55, 50) // overlapping dyn

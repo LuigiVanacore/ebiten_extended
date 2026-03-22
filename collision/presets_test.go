@@ -3,8 +3,8 @@ package collision
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func TestPresetMasks(t *testing.T) {
@@ -25,14 +25,14 @@ func TestPresetMasks(t *testing.T) {
 }
 
 func TestPresetVars(t *testing.T) {
-	playerCol, _ := NewCollider("player", NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), MaskPlayer)
-	worldCol, _ := NewCollider("world", NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))), MaskWorld)
+	playerCol, _ := NewCollider("player", NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 10)), MaskPlayer)
+	worldCol, _ := NewCollider("world", NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))), MaskWorld)
 	if !playerCol.CanCollideWith(worldCol) {
 		t.Error("player preset should collide with world preset")
 	}
 	// Pickup doesn't collide with enemy
-	pickupCol, _ := NewCollider("pickup", NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 5)), MaskPickup)
-	enemyCol, _ := NewCollider("enemy", NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 10)), MaskEnemy)
+	pickupCol, _ := NewCollider("pickup", NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 5)), MaskPickup)
+	enemyCol, _ := NewCollider("enemy", NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 10)), MaskEnemy)
 	if pickupCol.CanCollideWith(enemyCol) {
 		t.Error("pickup should not collide with enemy")
 	}

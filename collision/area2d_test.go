@@ -3,8 +3,8 @@ package collision
 import (
 	"testing"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/utils"
 )
 
 func mustNewArea2D(t *testing.T, shape CollisionShape, mask CollisionMask) *Area2D {
@@ -27,11 +27,11 @@ func mustNewCollider(t *testing.T, shape CollisionShape, mask CollisionMask) *Co
 
 func TestArea2D_OnBodyEntered(t *testing.T) {
 	manager := NewCollisionManager()
-	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	areaShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))}
 	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(100, 100)
 
-	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))}
+	collShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(20, 20))}
 	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(120, 120)
 
@@ -52,11 +52,11 @@ func TestArea2D_OnBodyEntered(t *testing.T) {
 
 func TestArea2D_OnBodyExited(t *testing.T) {
 	manager := NewCollisionManager()
-	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(100, 100))}
+	areaShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(100, 100))}
 	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(100, 100)
 
-	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(20, 20))}
+	collShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(20, 20))}
 	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(120, 120)
 
@@ -79,11 +79,11 @@ func TestArea2D_OnBodyExited(t *testing.T) {
 
 func TestArea2D_NoOverlapNoEvent(t *testing.T) {
 	manager := NewCollisionManager()
-	areaShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(50, 50))}
+	areaShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(50, 50))}
 	area := mustNewArea2D(t, areaShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	area.SetPosition(0, 0)
 
-	collShape := &CollisionRect{rectangle: math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(10, 10))}
+	collShape := &CollisionRect{rectangle: math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(10, 10))}
 	coll := mustNewCollider(t, collShape, NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1)))
 	coll.SetPosition(500, 500)
 

@@ -3,7 +3,7 @@ package collision
 import (
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 type collisionPair struct {
@@ -22,20 +22,20 @@ type CollisionManager struct {
 
 	previousCollisions map[uint64]collisionPair
 	// internal maps reused across CheckCollision calls to avoid per-frame allocations.
-	grid             map[uint64][]CollisionParticipant
+	grid              map[uint64][]CollisionParticipant
 	currentCollisions map[uint64]collisionPair
-	checkedPairs     map[uint64]bool
+	checkedPairs      map[uint64]bool
 }
 
 // NewCollisionManager returns a new collision manager with default CellSize 100.
 func NewCollisionManager() *CollisionManager {
 	return &CollisionManager{
-		participants:      make([]CollisionParticipant, 0),
-		CellSize:          100,
+		participants:       make([]CollisionParticipant, 0),
+		CellSize:           100,
 		previousCollisions: make(map[uint64]collisionPair),
-		grid:              make(map[uint64][]CollisionParticipant),
-		currentCollisions: make(map[uint64]collisionPair),
-		checkedPairs:      make(map[uint64]bool),
+		grid:               make(map[uint64][]CollisionParticipant),
+		currentCollisions:  make(map[uint64]collisionPair),
+		checkedPairs:       make(map[uint64]bool),
 	}
 }
 
@@ -85,10 +85,10 @@ type RaycastResult struct {
 
 // Raycast tests a segment against all participants and returns those hit, sorted by distance from start.
 // Use for line-of-sight, shooting, pathfinding. The segment is in world coordinates.
-func (m *CollisionManager) Raycast(start, end math2D.Vector2D) []RaycastResult {
-	seg := math2D.NewSegment(start, end)
-	dir := math2D.SubtractVectors(end, start)
-	segLen := math.Sqrt(math2D.DotProduct(dir, dir))
+func (m *CollisionManager) Raycast(start, end math2d.Vector2D) []RaycastResult {
+	seg := math2d.NewSegment(start, end)
+	dir := math2d.SubtractVectors(end, start)
+	segLen := math.Sqrt(math2d.DotProduct(dir, dir))
 	if segLen < 1e-9 {
 		segLen = 1e-9
 	}
@@ -104,18 +104,18 @@ func (m *CollisionManager) Raycast(start, end math2D.Vector2D) []RaycastResult {
 		}
 		// Approximate distance: use closest point on segment to shape center
 		center := p.GetWorldPosition()
-		toCenter := math2D.SubtractVectors(center, start)
-		proj := math2D.DotProduct(toCenter, dirNorm)
+		toCenter := math2d.SubtractVectors(center, start)
+		proj := math2d.DotProduct(toCenter, dirNorm)
 		if proj < 0 {
 			proj = 0
 		}
 		if proj > segLen {
 			proj = segLen
 		}
-		closest := math2D.AddVectors(start, dirNorm.MultiplyScalar(proj))
-		dist := math.Sqrt(math2D.DotProduct(
-			math2D.SubtractVectors(closest, start),
-			math2D.SubtractVectors(closest, start),
+		closest := math2d.AddVectors(start, dirNorm.MultiplyScalar(proj))
+		dist := math.Sqrt(math2d.DotProduct(
+			math2d.SubtractVectors(closest, start),
+			math2d.SubtractVectors(closest, start),
 		))
 		results = append(results, RaycastResult{Participant: p, Distance: dist})
 	}
@@ -131,7 +131,7 @@ func (m *CollisionManager) Raycast(start, end math2D.Vector2D) []RaycastResult {
 }
 
 // OverlapPoint returns all participants whose shape contains the given world-space point.
-func (m *CollisionManager) OverlapPoint(point math2D.Vector2D) []CollisionParticipant {
+func (m *CollisionManager) OverlapPoint(point math2d.Vector2D) []CollisionParticipant {
 	var result []CollisionParticipant
 	for _, p := range m.participants {
 		shape := p.GetShape()
@@ -146,8 +146,8 @@ func (m *CollisionManager) OverlapPoint(point math2D.Vector2D) []CollisionPartic
 }
 
 // OverlapCircle returns all participants whose shape overlaps the given world-space circle.
-func (m *CollisionManager) OverlapCircle(center math2D.Vector2D, radius float64) []CollisionParticipant {
-	query := math2D.NewCircle(center, radius)
+func (m *CollisionManager) OverlapCircle(center math2d.Vector2D, radius float64) []CollisionParticipant {
+	query := math2d.NewCircle(center, radius)
 	var result []CollisionParticipant
 	for _, p := range m.participants {
 		shape := p.GetShape()
@@ -163,7 +163,7 @@ func (m *CollisionManager) OverlapCircle(center math2D.Vector2D, radius float64)
 
 // OverlapRect returns all participants whose shape overlaps the given world-space axis-aligned rectangle.
 // The rectangle is defined by position (top-left) and size.
-func (m *CollisionManager) OverlapRect(rect math2D.Rectangle) []CollisionParticipant {
+func (m *CollisionManager) OverlapRect(rect math2d.Rectangle) []CollisionParticipant {
 	var result []CollisionParticipant
 	for _, p := range m.participants {
 		shape := p.GetShape()

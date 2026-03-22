@@ -4,8 +4,8 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -13,23 +13,23 @@ import (
 // PanelNode represents a generic UI container that occupies a specific screen area (Width x Height).
 // It can optionally draw a background color and/or a background image.
 type PanelNode struct {
-	ebiten_extended.Node2D
+	ludum.Node2D
 	width           float64
 	height          float64
 	backgroundColor color.Color
 	backgroundImage *ebiten.Image
 	layer           int
 	anchor          AnchorType
-	anchorMargin    math2D.Vector2D
+	anchorMargin    math2d.Vector2D
 }
 
 // NewPanelNode creates a new geometric UI panel.
 func NewPanelNode(name string, width, height float64) *PanelNode {
 	return &PanelNode{
-		Node2D:       *ebiten_extended.NewNode2D(name),
+		Node2D:       *ludum.NewNode2D(name),
 		width:        width,
 		height:       height,
-		anchorMargin: math2D.ZeroVector2D(),
+		anchorMargin: math2d.ZeroVector2D(),
 	}
 }
 
@@ -90,12 +90,12 @@ func (p *PanelNode) GetAnchor() AnchorType {
 }
 
 // SetAnchorMargin sets the margin used during anchoring.
-func (p *PanelNode) SetAnchorMargin(m math2D.Vector2D) {
+func (p *PanelNode) SetAnchorMargin(m math2d.Vector2D) {
 	p.anchorMargin = m
 }
 
 // GetAnchorMargin returns the current anchor margin.
-func (p *PanelNode) GetAnchorMargin() math2D.Vector2D {
+func (p *PanelNode) GetAnchorMargin() math2d.Vector2D {
 	return p.anchorMargin
 }
 

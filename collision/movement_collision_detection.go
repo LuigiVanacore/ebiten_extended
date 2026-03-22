@@ -1,34 +1,34 @@
 package collision
 
-import "github.com/LuigiVanacore/ebiten_extended/math2D"
+import "github.com/LuigiVanacore/ludum/math2d"
 
 // maxBisectionDepth limits the recursive bisection in moving-shape collision tests,
 // preventing stack overflows when the motion vector is very large or never shrinks.
 const maxBisectionDepth = 20
 
-func MovingCircleCircleCollide(a, b math2D.Circle, moveA math2D.Vector2D) bool {
-	bAbsorbedA := math2D.NewCircle(math2D.NewVector2D(b.GetCenterPosition().X(), b.GetCenterPosition().Y()), b.GetRadius()+a.GetRadius())
-	travelA := math2D.NewSegment(a.GetCenterPosition(), math2D.AddVectors(a.GetCenterPosition(), moveA))
+func MovingCircleCircleCollide(a, b math2d.Circle, moveA math2d.Vector2D) bool {
+	bAbsorbedA := math2d.NewCircle(math2d.NewVector2D(b.GetCenterPosition().X(), b.GetCenterPosition().Y()), b.GetRadius()+a.GetRadius())
+	travelA := math2d.NewSegment(a.GetCenterPosition(), math2d.AddVectors(a.GetCenterPosition(), moveA))
 	return CircleSegmentCollide(bAbsorbedA, travelA)
 }
 
 // MovingRectangleRectangleCollide reports whether rectangle a, moving by moveA, would hit rectangle b.
-func MovingRectangleRectangleCollide(a math2D.Rectangle, moveA math2D.Vector2D, b math2D.Rectangle) bool {
+func MovingRectangleRectangleCollide(a math2d.Rectangle, moveA math2d.Vector2D, b math2d.Rectangle) bool {
 	return movingRectRectCollide(a, moveA, b, 0)
 }
 
-func movingRectRectCollide(a math2D.Rectangle, moveA math2D.Vector2D, b math2D.Rectangle, depth int) bool {
+func movingRectRectCollide(a math2d.Rectangle, moveA math2d.Vector2D, b math2d.Rectangle, depth int) bool {
 	if depth >= maxBisectionDepth {
 		return RectanglesCollide(a, b)
 	}
 
 	envelope := a
-	envelope.SetPosition(math2D.AddVectors(envelope.GetPosition(), moveA))
+	envelope.SetPosition(math2d.AddVectors(envelope.GetPosition(), moveA))
 	envelope = EnlargeRectangleRectangle(envelope, a)
 
 	if RectanglesCollide(envelope, b) {
 		halfMoveA := moveA.DivideScalar(2)
-		envelope.SetPosition(math2D.AddVectors(a.GetPosition(), halfMoveA))
+		envelope.SetPosition(math2d.AddVectors(a.GetPosition(), halfMoveA))
 		envelope.SetSize(a.GetSize())
 		return movingRectRectCollide(a, halfMoveA, b, depth+1) || movingRectRectCollide(envelope, halfMoveA, b, depth+1)
 	}
@@ -37,11 +37,11 @@ func movingRectRectCollide(a math2D.Rectangle, moveA math2D.Vector2D, b math2D.R
 }
 
 // MovingCircleRectangleCollide reports whether circle a, moving by moveA, would hit rectangle b.
-func MovingCircleRectangleCollide(a math2D.Circle, moveA math2D.Vector2D, b math2D.Rectangle) bool {
+func MovingCircleRectangleCollide(a math2d.Circle, moveA math2d.Vector2D, b math2d.Rectangle) bool {
 	return movingCircleRectCollide(a, moveA, b, 0)
 }
 
-func movingCircleRectCollide(a math2D.Circle, moveA math2D.Vector2D, b math2D.Rectangle, depth int) bool {
+func movingCircleRectCollide(a math2d.Circle, moveA math2d.Vector2D, b math2d.Rectangle, depth int) bool {
 	if depth >= maxBisectionDepth {
 		return CircleRectangleCollide(a, b)
 	}
@@ -50,7 +50,7 @@ func movingCircleRectCollide(a math2D.Circle, moveA math2D.Vector2D, b math2D.Re
 	moveDistance := moveA.Length()
 
 	envelope := a
-	envelope.SetCenter(math2D.AddVectors(a.GetCenterPosition(), halfMoveA))
+	envelope.SetCenter(math2d.AddVectors(a.GetCenterPosition(), halfMoveA))
 	envelope.SetRadius(a.GetRadius() + moveDistance/2)
 
 	if CircleRectangleCollide(envelope, b) {
@@ -61,8 +61,7 @@ func movingCircleRectCollide(a math2D.Circle, moveA math2D.Vector2D, b math2D.Re
 	return false
 }
 
-func MovingRectangleCircleCollide(a math2D.Rectangle, moveA math2D.Vector2D, b math2D.Circle) bool {
+func MovingRectangleCircleCollide(a math2d.Rectangle, moveA math2d.Vector2D, b math2d.Circle) bool {
 	moveB := moveA.Negate()
 	return MovingCircleRectangleCollide(b, moveB, a)
 }
-

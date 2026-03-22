@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 // Range represents a 1D interval with minimum and maximum values.
 type Range struct {
@@ -34,7 +34,7 @@ func OverlappingRanges(a, b Range) bool {
 }
 
 func RangeHull(a, b Range) Range {
-	var hull Range 
+	var hull Range
 	if a.minimum < b.minimum {
 		hull.minimum = a.minimum
 	} else {
@@ -56,4 +56,3 @@ func (r Range) SortRange() Range {
 	}
 	return sorted
 }
-

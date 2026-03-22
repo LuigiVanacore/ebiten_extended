@@ -3,8 +3,8 @@ package ui
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/input"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/input"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -18,7 +18,7 @@ type Hoverable interface {
 // TooltipNode shows a tooltip when the user hovers over its target for a short delay.
 // Add a single child that implements Hoverable (e.g. ButtonNode, PanelNode).
 type TooltipNode struct {
-	ebiten_extended.Node2D
+	ludum.Node2D
 	InputManager *input.InputManager
 	target       Hoverable
 	text         string
@@ -26,29 +26,29 @@ type TooltipNode struct {
 	hoverTime    float64
 	visible      bool
 
-	font       text.Face
-	textColor  color.Color
-	bgColor    color.Color
-	padding    float64
-	offsetX    float64
-	offsetY    float64
+	font      text.Face
+	textColor color.Color
+	bgColor   color.Color
+	padding   float64
+	offsetX   float64
+	offsetY   float64
 }
 
 // NewTooltipNode creates a tooltip that activates when hovering over the target.
 // The target is typically the first child added with AddChildren.
 func NewTooltipNode(name string, target Hoverable, tooltipText string, font text.Face, im *input.InputManager) *TooltipNode {
 	n := &TooltipNode{
-		Node2D:      *ebiten_extended.NewNode2D(name),
+		Node2D:       *ludum.NewNode2D(name),
 		InputManager: im,
-		target:     target,
-		text:       tooltipText,
-		delay:      0.5,
-		font:       font,
-		textColor:  color.White,
-		bgColor:    color.RGBA{30, 30, 30, 230},
-		padding:    6,
-		offsetX:    12,
-		offsetY:    8,
+		target:       target,
+		text:         tooltipText,
+		delay:        0.5,
+		font:         font,
+		textColor:    color.White,
+		bgColor:      color.RGBA{30, 30, 30, 230},
+		padding:      6,
+		offsetX:      12,
+		offsetY:      8,
 	}
 	return n
 }
@@ -110,7 +110,7 @@ func (t *TooltipNode) Update() {
 	cx := t.InputManager.GetCursorPos().X()
 	cy := t.InputManager.GetCursorPos().Y()
 	if t.target.ContainsPoint(cx, cy) {
-		t.hoverTime += ebiten_extended.FIXED_DELTA
+		t.hoverTime += ludum.FIXED_DELTA
 		if t.hoverTime >= t.delay {
 			t.visible = true
 		}
@@ -156,4 +156,4 @@ func (t *TooltipNode) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 }
 
 // Ensure TooltipNode implements Updatable.
-var _ ebiten_extended.Updatable = (*TooltipNode)(nil)
+var _ ludum.Updatable = (*TooltipNode)(nil)

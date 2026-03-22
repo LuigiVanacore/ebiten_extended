@@ -1,6 +1,6 @@
 package collision
 
-import "github.com/LuigiVanacore/ebiten_extended/utils"
+import "github.com/LuigiVanacore/ludum/utils"
 
 // CollisionMask controls which collision pairs are checked. It uses two bit sets (utils.ByteSet):
 //

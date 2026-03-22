@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
@@ -20,17 +20,17 @@ const (
 // When set on an Engine via SetSceneManager, the Engine delegates to the manager instead of the World directly.
 // Use SetTransitionDuration to enable fade transitions between scenes.
 type SceneManager struct {
-	engine      *Engine
-	scenes      []Scene
-	current     Scene
-	useManager  bool // when true, Engine delegates Update/Draw to this manager
+	engine     *Engine
+	scenes     []Scene
+	current    Scene
+	useManager bool // when true, Engine delegates Update/Draw to this manager
 
 	// Transition support: when transitionDuration > 0, PushScene/ReplaceScene/PopScene use fade.
-	transition        *Transition
+	transition         *Transition
 	transitionDuration float32
-	transitionColor   color.Color
-	pending           pendingAction
-	pendingScene      Scene
+	transitionColor    color.Color
+	pending            pendingAction
+	pendingScene       Scene
 }
 
 // NewSceneManager creates a SceneManager for the given engine.

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/event"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/event"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -15,7 +15,7 @@ import (
 // CollisionStay(), and CollisionExit() for lifecycle events; add to a CollisionManager and
 // run CheckCollision each frame.
 type Collider struct {
-	ebiten_extended.Node2D
+	ludum.Node2D
 	collisionShape           CollisionShape
 	mask                     CollisionMask
 	isWorldCoordinateUpdated bool
@@ -32,7 +32,7 @@ func NewCollider(name string, shape CollisionShape, mask CollisionMask) (*Collid
 		return nil, errors.New("collision: NewCollider shape must not be nil")
 	}
 	c := &Collider{
-		Node2D:           *ebiten_extended.NewNode2D(name),
+		Node2D:           *ludum.NewNode2D(name),
 		collisionShape:   shape,
 		mask:             mask,
 		onCollisionEnter: &event.Event[*Collider]{},
@@ -93,8 +93,8 @@ func (c *Collider) DrawDebug(target *ebiten.Image, op *ebiten.DrawImageOptions) 
 		he := or.GetHalfExtended()
 		// Draw 4 edges of oriented rect
 		for i := 0; i < 4; i++ {
-			c1 := OrientedRectangleCorner(math2D.NewOrientedRectangle(center, he, rot), i)
-			c2 := OrientedRectangleCorner(math2D.NewOrientedRectangle(center, he, rot), (i+1)%4)
+			c1 := OrientedRectangleCorner(math2d.NewOrientedRectangle(center, he, rot), i)
+			c2 := OrientedRectangleCorner(math2d.NewOrientedRectangle(center, he, rot), (i+1)%4)
 			vector.StrokeLine(target, float32(c1.X()), float32(c1.Y()), float32(c2.X()), float32(c2.Y()), 2, debugColor, true)
 		}
 	case *CollisionPolygon:

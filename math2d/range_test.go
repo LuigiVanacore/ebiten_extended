@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 import "testing"
 

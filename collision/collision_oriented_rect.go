@@ -1,19 +1,19 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 // CollisionOrientedRect is a rotated rectangle (center, half-extents, rotation).
 // Use for platforms, sloped surfaces, or any axis-aligned rect that needs rotation.
 type CollisionOrientedRect struct {
-	rectangle math2D.OrientedRectangle
+	rectangle math2d.OrientedRectangle
 }
 
-// NewCollisionOrientedRect creates a CollisionOrientedRect from a math2D.OrientedRectangle.
+// NewCollisionOrientedRect creates a CollisionOrientedRect from a math2d.OrientedRectangle.
 // halfExtended is half-width and half-height; center and rotation come from the node's transform.
-func NewCollisionOrientedRect(rect math2D.OrientedRectangle) *CollisionOrientedRect {
+func NewCollisionOrientedRect(rect math2d.OrientedRectangle) *CollisionOrientedRect {
 	return &CollisionOrientedRect{rectangle: rect}
 }
 
@@ -21,9 +21,9 @@ func NewCollisionOrientedRect(rect math2D.OrientedRectangle) *CollisionOrientedR
 // Center and rotation are applied from the transform when colliding.
 func NewCollisionOrientedRectFromSize(halfWidth, halfHeight float64) *CollisionOrientedRect {
 	return &CollisionOrientedRect{
-		rectangle: math2D.NewOrientedRectangle(
-			math2D.ZeroVector2D(),
-			math2D.NewVector2D(halfWidth, halfHeight),
+		rectangle: math2d.NewOrientedRectangle(
+			math2d.ZeroVector2D(),
+			math2d.NewVector2D(halfWidth, halfHeight),
 			0,
 		),
 	}
@@ -38,6 +38,6 @@ func (c *CollisionOrientedRect) IsColliding(tSelf transform.Transform, other Col
 }
 
 // GetOrientedRectangle returns the underlying oriented rectangle (for reads only).
-func (c *CollisionOrientedRect) GetOrientedRectangle() math2D.OrientedRectangle {
+func (c *CollisionOrientedRect) GetOrientedRectangle() math2d.OrientedRectangle {
 	return c.rectangle
 }

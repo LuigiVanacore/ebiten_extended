@@ -1,8 +1,8 @@
 package ui
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 // AnchorType defines how a UI element is positioned relative to its parent's bounds.
@@ -26,8 +26,8 @@ const (
 type Anchorable interface {
 	GetAnchor() AnchorType
 	SetAnchor(a AnchorType)
-	GetAnchorMargin() math2D.Vector2D
-	SetAnchorMargin(m math2D.Vector2D)
+	GetAnchorMargin() math2d.Vector2D
+	SetAnchorMargin(m math2d.Vector2D)
 }
 
 // AnchorLayout positions children based on their Anchor properties.
@@ -40,14 +40,14 @@ func NewAnchorLayout() *AnchorLayout {
 }
 
 // Apply positions children based on their Anchor property.
-func (a *AnchorLayout) Apply(parent ebiten_extended.SceneNode) {
+func (a *AnchorLayout) Apply(parent ludum.SceneNode) {
 	parentSP, ok := parent.(SizeProvider)
 	if !ok {
 		return // Parent needs to have a size to anchor inside it
 	}
 	pw, ph := parentSP.GetWidth(), parentSP.GetHeight()
 
-	parentPos := math2D.ZeroVector2D()
+	parentPos := math2d.ZeroVector2D()
 	if tr, ok := parent.(positionable); ok {
 		parentPos = tr.GetPosition()
 	}

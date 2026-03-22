@@ -1,12 +1,12 @@
-package ebiten_extended
+package ludum
 
 import "time"
 
 // Timer is a utility for measuring specific durations and conditionally tracking loops.
 type Timer struct {
 	startTime time.Time
-	duration time.Duration
-	looped bool
+	duration  time.Duration
+	looped    bool
 }
 
 // NewTimer initializes a new Timer with a target duration and a looping preference.
@@ -74,4 +74,3 @@ func (t *Timer) Update() bool {
 	}
 	return true
 }
-

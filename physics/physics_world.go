@@ -4,16 +4,16 @@ import (
 	"errors"
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
 )
 
 // PhysicsWorld manages RigidBody2D and runs integration + collision resolution each frame.
 type PhysicsWorld struct {
 	rigidBodies  []*RigidBody2D
-	Gravity      math2D.Vector2D
+	Gravity      math2d.Vector2D
 	CellSize     int
-	checkedPairs map[uint64]bool     // reused each Step to avoid per-frame allocation
+	checkedPairs map[uint64]bool           // reused each Step to avoid per-frame allocation
 	grid         map[uint64][]*RigidBody2D // reused for broad-phase spatial hash
 }
 
@@ -21,7 +21,7 @@ type PhysicsWorld struct {
 func NewPhysicsWorld() *PhysicsWorld {
 	return &PhysicsWorld{
 		rigidBodies:  make([]*RigidBody2D, 0),
-		Gravity:      math2D.NewVector2D(0, 980),
+		Gravity:      math2d.NewVector2D(0, 980),
 		CellSize:     100,
 		checkedPairs: make(map[uint64]bool),
 		grid:         make(map[uint64][]*RigidBody2D),
@@ -56,11 +56,11 @@ func (w *PhysicsWorld) Step(dt float64) {
 			continue
 		}
 		if body.UsesGravity {
-			g := math2D.NewVector2D(
+			g := math2d.NewVector2D(
 				w.Gravity.X()*body.GravityScale*dt,
 				w.Gravity.Y()*body.GravityScale*dt,
 			)
-			body.velocity = math2D.AddVectors(body.velocity, g)
+			body.velocity = math2d.AddVectors(body.velocity, g)
 		}
 		pos := body.GetPosition()
 		body.SetPosition(
@@ -127,13 +127,13 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	if solidA && solidB {
 		return
 	}
-	var pushA, pushB math2D.Vector2D
+	var pushA, pushB math2d.Vector2D
 	if solidA {
-		pushA = math2D.ZeroVector2D()
+		pushA = math2d.ZeroVector2D()
 		pushB = res.Normal.Negate().MultiplyScalar(res.Depth)
 	} else if solidB {
 		pushA = res.Normal.MultiplyScalar(res.Depth)
-		pushB = math2D.ZeroVector2D()
+		pushB = math2d.ZeroVector2D()
 	} else {
 		pushA = res.Normal.MultiplyScalar(res.Depth * 0.5)
 		pushB = res.Normal.Negate().MultiplyScalar(res.Depth * 0.5)
@@ -159,7 +159,7 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 		friction = 1
 	}
 
-	applyVelocityResponse := func(body *RigidBody2D, v math2D.Vector2D, normalCompIntoSurface float64) {
+	applyVelocityResponse := func(body *RigidBody2D, v math2d.Vector2D, normalCompIntoSurface float64) {
 		if body.Static || body.Kinematic {
 			return
 		}
@@ -172,8 +172,8 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 		}
 
 		// Tangent: always reduce by friction when in contact.
-		tangent := math2D.SubtractVectors(v, res.Normal.MultiplyScalar(normalCompIntoSurface))
-		vNew := math2D.AddVectors(
+		tangent := math2d.SubtractVectors(v, res.Normal.MultiplyScalar(normalCompIntoSurface))
+		vNew := math2d.AddVectors(
 			res.Normal.MultiplyScalar(newNormalComp),
 			tangent.MultiplyScalar(1-friction),
 		)
@@ -181,15 +181,14 @@ func (w *PhysicsWorld) resolveOverlap(a, b *RigidBody2D, res collision.Collision
 	}
 
 	va := a.GetVelocity()
-	normalCompA := math2D.DotProduct(va, res.Normal)
+	normalCompA := math2d.DotProduct(va, res.Normal)
 	if !solidA {
 		applyVelocityResponse(a, va, normalCompA)
 	}
 
 	vb := b.GetVelocity()
-	normalCompB := math2D.DotProduct(vb, res.Normal)
+	normalCompB := math2d.DotProduct(vb, res.Normal)
 	if !solidB {
 		applyVelocityResponse(b, vb, normalCompB)
 	}
 }
-

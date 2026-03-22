@@ -1,9 +1,9 @@
 package tween
 
-import "github.com/LuigiVanacore/ebiten_extended"
+import "github.com/LuigiVanacore/ludum"
 
 type Sequence struct {
-	ebiten_extended.Node
+	ludum.Node
 	Tweens []*Tween
 	index  int
 }
@@ -11,7 +11,7 @@ type Sequence struct {
 // NewSequence returns a new Sequence object.
 func NewSequence(name string, tweens ...*Tween) *Sequence {
 	seq := &Sequence{
-		Node:   *ebiten_extended.NewNode(name),
+		Node:   *ludum.NewNode(name),
 		Tweens: tweens,
 	}
 	return seq
@@ -67,7 +67,7 @@ func (seq *Sequence) stepImpl(advance func(*Tween) (float32, bool)) (float32, bo
 
 // Update advances the sequence by one fixed frame. Implements Updatable.
 func (seq *Sequence) Update() {
-	seq.StepDelta(ebiten_extended.FIXED_DELTA)
+	seq.StepDelta(ludum.FIXED_DELTA)
 }
 
 // Tick advances the sequence by one frame, satisfying the Updatable interface.

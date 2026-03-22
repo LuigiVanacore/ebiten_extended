@@ -1,4 +1,4 @@
-package example_statemachine
+package examplestatemachine
 
 import (
 	"fmt"

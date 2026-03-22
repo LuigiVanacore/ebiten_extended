@@ -1,16 +1,16 @@
 package collision
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 )
 
 type CollisionRect struct {
-	rectangle math2D.Rectangle
+	rectangle math2d.Rectangle
 }
 
-// NewCollisionRect creates a CollisionRect from a math2D.Rectangle.
-func NewCollisionRect(rectangle math2D.Rectangle) *CollisionRect {
+// NewCollisionRect creates a CollisionRect from a math2d.Rectangle.
+func NewCollisionRect(rectangle math2d.Rectangle) *CollisionRect {
 	return &CollisionRect{rectangle: rectangle}
 }
 

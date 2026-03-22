@@ -6,9 +6,9 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	exampleresources "github.com/LuigiVanacore/ebiten_extended/example/resources"
-	"github.com/LuigiVanacore/ebiten_extended/ui"
+	"github.com/LuigiVanacore/ludum"
+	exampleresources "github.com/LuigiVanacore/ludum/example/resources"
+	"github.com/LuigiVanacore/ludum/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
@@ -20,7 +20,7 @@ const (
 )
 
 type Game struct {
-	engine *ebiten_extended.Engine
+	engine *ludum.Engine
 }
 
 func loadDefaultFont() text.Face {
@@ -35,7 +35,7 @@ func loadDefaultFont() text.Face {
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	im := engine.Input()
 	im.SetMouseEnabled(true) // Required for Button logic
 
@@ -47,13 +47,13 @@ func NewGame() *Game {
 	panel.SetPosition(screenWidth/2-150, 40) // Center horizontally
 
 	// 2. Create a Text label at the top of the panel
-	titleLabel := ebiten_extended.NewTextNode("title_lbl", "UI Example", gameFont, color.White)
+	titleLabel := ludum.NewTextNode("title_lbl", "UI Example", gameFont, color.White)
 	titleLabel.SetPosition(40, 20)
 	panel.AddChildren(titleLabel)
 
 	// 3. Create an interactive Button
 	clickCount := 0
-	counterLabel := ebiten_extended.NewTextNode("counter_lbl", "Clicks: 0", gameFont, color.RGBA{255, 200, 0, 255})
+	counterLabel := ludum.NewTextNode("counter_lbl", "Clicks: 0", gameFont, color.RGBA{255, 200, 0, 255})
 	counterLabel.SetPosition(40, 60)
 	panel.AddChildren(counterLabel)
 
@@ -97,7 +97,7 @@ func NewGame() *Game {
 	checkbox.SetPosition(50, 300)
 	panel.AddChildren(checkbox)
 
-	chkLabel := ebiten_extended.NewTextNode("chk_lbl", "Toggle Red Progress", gameFont, color.White)
+	chkLabel := ludum.NewTextNode("chk_lbl", "Toggle Red Progress", gameFont, color.White)
 	chkLabel.SetPosition(90, 300)
 	panel.AddChildren(chkLabel)
 

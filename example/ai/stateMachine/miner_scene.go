@@ -1,6 +1,4 @@
-package example_statemachine
-
+package examplestatemachine
 
 type MinerScene struct {
-	
 }

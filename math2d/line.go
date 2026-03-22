@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 // Line represents an infinite 2D line with a base point and a direction vector.
 type Line struct {

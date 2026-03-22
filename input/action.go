@@ -1,7 +1,7 @@
 package input
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -9,7 +9,7 @@ import (
 type ActionMode = utils.ByteSet
 
 const (
-	ActionHold      ActionMode = 1 << iota
+	ActionHold ActionMode = 1 << iota
 	ActionPressOnce
 	ActionReleaseOnce
 )

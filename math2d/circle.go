@@ -1,4 +1,4 @@
-package math2D
+package math2d
 
 // Circle represents a 2D circle by its center and radius.
 type Circle struct {

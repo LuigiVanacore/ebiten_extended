@@ -2,7 +2,7 @@ package tilemap
 
 import (
 	"container/heap"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/lafriks/go-tiled"
 )
 
@@ -157,7 +157,7 @@ func (p *Pathfinder) getDirections() [][2]int {
 // FindPathWorld finds a path between two world-space positions.
 // Converts start/end to tile coordinates, runs FindPath, and returns the path in tile coordinates.
 // Use PathToWorld to convert the result to world positions if needed.
-func FindPathWorld(p *Pathfinder, start, end math2D.Vector2D, tileWidth, tileHeight float64) []PathNode {
+func FindPathWorld(p *Pathfinder, start, end math2d.Vector2D, tileWidth, tileHeight float64) []PathNode {
 	if p == nil || tileWidth <= 0 || tileHeight <= 0 {
 		return nil
 	}
@@ -169,13 +169,13 @@ func FindPathWorld(p *Pathfinder, start, end math2D.Vector2D, tileWidth, tileHei
 }
 
 // PathToWorld converts a path in tile coordinates to world positions (center of each tile).
-func PathToWorld(path []PathNode, tileWidth, tileHeight float64) []math2D.Vector2D {
+func PathToWorld(path []PathNode, tileWidth, tileHeight float64) []math2d.Vector2D {
 	if len(path) == 0 {
 		return nil
 	}
-	result := make([]math2D.Vector2D, len(path))
+	result := make([]math2d.Vector2D, len(path))
 	for i, n := range path {
-		result[i] = math2D.NewVector2D(
+		result[i] = math2d.NewVector2D(
 			float64(n.X)*tileWidth+tileWidth/2,
 			float64(n.Y)*tileHeight+tileHeight/2,
 		)
@@ -193,7 +193,7 @@ type pfNodeHeap []*pfNode
 
 func (h pfNodeHeap) Len() int           { return len(h) }
 func (h pfNodeHeap) Less(i, j int) bool { return h[i].f < h[j].f }
-func (h pfNodeHeap) Swap(i, j int)     { h[i], h[j] = h[j], h[i] }
+func (h pfNodeHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 
 func (h *pfNodeHeap) Push(x any) {
 	*h = append(*h, x.(*pfNode))
@@ -206,7 +206,6 @@ func (h *pfNodeHeap) Pop() any {
 	*h = old[0 : n-1]
 	return x
 }
-
 
 // BuildPathfinderFromTileLayer creates a Pathfinder from a TileMapNode's tile layer.
 // layerName is the Tiled layer name. blockNonEmpty: if true, any non-empty tile blocks;

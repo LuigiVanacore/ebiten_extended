@@ -1,4 +1,4 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
@@ -11,12 +11,12 @@ import (
 // TextNode represents a visual 2D scene graph node dedicated to drawing scalable geometry-based text phrases.
 type TextNode struct {
 	Node2D
-	message   string
-	color     color.Color
-	font      text.Face
-	layer     int
-	maxWidth  float64 // if > 0, wrap text to fit; 0 = no wrap
-	drawOpts  text.DrawOptions
+	message     string
+	color       color.Color
+	font        text.Face
+	layer       int
+	maxWidth    float64 // if > 0, wrap text to fit; 0 = no wrap
+	drawOpts    text.DrawOptions
 	cachedLines []string // lines after word wrap, invalidated when message/maxWidth/font change
 }
 

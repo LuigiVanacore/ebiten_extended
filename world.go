@@ -1,9 +1,9 @@
-package ebiten_extended
+package ludum
 
 import (
 	"slices"
 
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 

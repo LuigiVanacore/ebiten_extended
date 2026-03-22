@@ -1,7 +1,5 @@
 package resources
 
-
-
 import (
 	_ "embed"
 )

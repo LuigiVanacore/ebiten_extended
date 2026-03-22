@@ -1,8 +1,8 @@
-# ebiten_extended
+# ludum
 
 A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provides a scene graph, layers, camera, sprites, animations, collision detection, input handling, and resource management so you can focus on game logic.
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/LuigiVanacore/ebiten_extended.svg)](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
+[![Go Reference](https://pkg.go.dev/badge/github.com/LuigiVanacore/ludum.svg)](https://pkg.go.dev/github.com/LuigiVanacore/ludum)
 
 ## Features
 
@@ -26,7 +26,7 @@ A 2D gameplay framework for [Ebiten](https://ebiten.org) written in Go. It provi
 ## Installation
 
 ```bash
-go get github.com/LuigiVanacore/ebiten_extended
+go get github.com/LuigiVanacore/ludum
 ```
 
 Requires Go 1.21+ and [Ebiten v2](https://github.com/hajimehoshi/ebiten).
@@ -37,16 +37,16 @@ Requires Go 1.21+ and [Ebiten v2](https://github.com/hajimehoshi/ebiten).
 package main
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended"
+	"github.com/LuigiVanacore/ludum"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
-	engine *ebiten_extended.Engine
+	engine *ludum.Engine
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	// Add your nodes with World.AddNodeToLayer(node, layerIndex) or AddNodeToDefaultLayer(node)
 	return &Game{engine: engine}
 }
@@ -71,8 +71,8 @@ func main() {
 
 ## Documentation
 
-- **API (godoc)**: [pkg.go.dev/github.com/LuigiVanacore/ebiten_extended](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended)
-- **Subpackages**: [math2D](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/math2D), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/collision), [physics](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/physics), [particles](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/particles), [tween](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tween), [event](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/event), [input](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/tilemap), [ui](https://pkg.go.dev/github.com/LuigiVanacore/ebiten_extended/ui)
+- **API (godoc)**: [pkg.go.dev/github.com/LuigiVanacore/ludum](https://pkg.go.dev/github.com/LuigiVanacore/ludum)
+- **Subpackages**: [math2d](https://pkg.go.dev/github.com/LuigiVanacore/ludum/math2d), [transform](https://pkg.go.dev/github.com/LuigiVanacore/ludum/transform), [collision](https://pkg.go.dev/github.com/LuigiVanacore/ludum/collision), [physics](https://pkg.go.dev/github.com/LuigiVanacore/ludum/physics), [particles](https://pkg.go.dev/github.com/LuigiVanacore/ludum/particles), [tween](https://pkg.go.dev/github.com/LuigiVanacore/ludum/tween), [event](https://pkg.go.dev/github.com/LuigiVanacore/ludum/event), [input](https://pkg.go.dev/github.com/LuigiVanacore/ludum/input), [fsm](https://pkg.go.dev/github.com/LuigiVanacore/ludum/fsm), [save](https://pkg.go.dev/github.com/LuigiVanacore/ludum/save), [tilemap](https://pkg.go.dev/github.com/LuigiVanacore/ludum/tilemap), [ui](https://pkg.go.dev/github.com/LuigiVanacore/ludum/ui)
 
 ## Layers
 
@@ -90,7 +90,7 @@ Layer indices define draw order (lower = drawn first). Use `World.AddNodeToLayer
 To use [physics.PhysicsWorld] together with [collision.CollisionManager], wire both into the game loop via `World.SetPostUpdate`:
 
 ```go
-engine := ebiten_extended.NewEngine()
+engine := ludum.NewEngine()
 physicsWorld := physics.NewPhysicsWorld()
 collisionMgr := collision.NewCollisionManager()
 
@@ -100,7 +100,7 @@ physicsWorld.AddRigidBody(player)
 collisionMgr.AddParticipant(player)
 
 engine.World().SetPostUpdate(func() {
-    physicsWorld.Step(ebiten_extended.PhysicsDelta()) // fixed timestep matching ebiten.TPS()
+    physicsWorld.Step(ludum.PhysicsDelta()) // fixed timestep matching ebiten.TPS()
     collisionMgr.CheckCollision()                    // emit Enter/Stay/Exit events
 })
 ```
@@ -118,6 +118,14 @@ golangci-lint run ./...
 ## Contributing
 
 Contributions of any kind are welcome. Open an issue or a pull request to propose improvements or report problems.
+
+### Naming conventions
+
+- **Packages**: Use short, all-lowercase names with only letters and numbers—no underscores or `mixedCaps` in the package name. Multi-word names are usually a single unbroken word (for example `tabwriter`, not `tab_writer` or `tabWriter`). See [Effective Go — package names](https://go.dev/doc/effective_go#package-names) and [Google Go Style — package names](https://google.github.io/styleguide/go/decisions#package-names).
+- **Source files**: `snake_case` file names are widely used in the Go tree and in many projects; matching that style for new files is a good default ([discussion](https://github.com/golang/go/issues/36060)).
+- **Module path**: Prefer **flatcase** path segments (this module is `github.com/LuigiVanacore/ludum`). Tools and proxies may use `!`-encoding for uppercase letters in paths; your `go.mod` uses the normal GitHub path. See `go help modules` and the [module reference](https://go.dev/ref/mod).
+
+Changing the module path again would break existing imports. New code in this repo should follow the conventions above where it fits the existing layout.
 
 ## License
 

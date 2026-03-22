@@ -4,8 +4,8 @@ import (
 	"log"
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/example/resources"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/example/resources"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -19,13 +19,13 @@ const (
 )
 
 type Game struct {
-	sprite   *ebiten_extended.Sprite
+	sprite   *ludum.Sprite
 	rotation float64
-	engine   *ebiten_extended.Engine
+	engine   *ludum.Engine
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	if err := engine.Resources().AddImage("aircraft", resources.Aircraft); err != nil {
 		log.Fatal(err)
 	}
@@ -33,13 +33,13 @@ func NewGame() *Game {
 		log.Fatal(err)
 	}
 
-	sprite := ebiten_extended.NewSprite("aircraftSprite1", engine.Resources().GetImage(aircraftID), 0, true)
+	sprite := ludum.NewSprite("aircraftSprite1", engine.Resources().GetImage(aircraftID), 0, true)
 	sprite.SetPosition(screenWidth/2, screenHeight/2)
 
-	sprite2 := ebiten_extended.NewSprite("aircraftSprite2", engine.Resources().GetImage(aircraftID), 0, true)
+	sprite2 := ludum.NewSprite("aircraftSprite2", engine.Resources().GetImage(aircraftID), 0, true)
 	sprite2.SetPosition(100, 100)
 
-	desertSprite := ebiten_extended.NewSprite("desertSprite", engine.Resources().GetImage(desertID), 0, false)
+	desertSprite := ludum.NewSprite("desertSprite", engine.Resources().GetImage(desertID), 0, false)
 
 	sprite.AddChildren(sprite2)
 

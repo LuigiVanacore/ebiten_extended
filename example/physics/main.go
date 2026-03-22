@@ -4,19 +4,19 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/LuigiVanacore/ebiten_extended"
-	"github.com/LuigiVanacore/ebiten_extended/collision"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/physics"
-	"github.com/LuigiVanacore/ebiten_extended/utils"
+	"github.com/LuigiVanacore/ludum"
+	"github.com/LuigiVanacore/ludum/collision"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/physics"
+	"github.com/LuigiVanacore/ludum/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
-	screenWidth   = 640
-	screenHeight  = 480
-	floorWidth    = 640 // collider must cover entire floor drawing
-	floorHeight   = 40
+	screenWidth  = 640
+	screenHeight = 480
+	floorWidth   = 640 // collider must cover entire floor drawing
+	floorHeight  = 40
 )
 
 var (
@@ -27,19 +27,19 @@ var (
 )
 
 type Game struct {
-	engine         *ebiten_extended.Engine
-	physicsWorld   *physics.PhysicsWorld
-	collisionMgr   *collision.CollisionManager
-	player         *physics.RigidBody2D
-	obstacle       *physics.RigidBody2D
-	floor          *physics.RigidBody2D
-	area           *collision.Area2D
+	engine       *ludum.Engine
+	physicsWorld *physics.PhysicsWorld
+	collisionMgr *collision.CollisionManager
+	player       *physics.RigidBody2D
+	obstacle     *physics.RigidBody2D
+	floor        *physics.RigidBody2D
+	area         *collision.Area2D
 }
 
 func NewGame() *Game {
-	engine := ebiten_extended.NewEngine()
+	engine := ludum.NewEngine()
 	physicsWorld := physics.NewPhysicsWorld()
-	physicsWorld.Gravity = math2D.NewVector2D(0, 400)
+	physicsWorld.Gravity = math2d.NewVector2D(0, 400)
 
 	collisionMgr := collision.NewCollisionManager()
 	mustRigidBody := func(name string, shape collision.CollisionShape, mask collision.CollisionMask) *physics.RigidBody2D {
@@ -65,33 +65,33 @@ func NewGame() *Game {
 	mask := collision.NewCollisionMask(utils.ByteSet(1), utils.ByteSet(1))
 
 	// Player (RigidBody with circle shape)
-	playerShape := collision.NewCollisionCircle(math2D.NewCircle(math2D.ZeroVector2D(), 20))
+	playerShape := collision.NewCollisionCircle(math2d.NewCircle(math2d.ZeroVector2D(), 20))
 	player := mustRigidBody("player", playerShape, mask)
 	player.SetPosition(100, 50)
-	player.AddChildren(ebiten_extended.NewDrawnCircle("player", math2D.ZeroVector2D(), 20, playerColor, true, 0))
+	player.AddChildren(ludum.NewDrawnCircle("player", math2d.ZeroVector2D(), 20, playerColor, true, 0))
 
 	// Obstacle (RigidBody, static - zero velocity)
-	obstacleShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(80, 80)))
+	obstacleShape := collision.NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(80, 80)))
 	obstacle := mustRigidBody("obstacle", obstacleShape, mask)
 	obstacle.SetPosition(320, 390)
 	obstacle.UsesGravity = false
 	obstacle.Static = true
-	obstacle.AddChildren(ebiten_extended.NewDrawnRectangle("obstacle", math2D.ZeroVector2D(), math2D.NewVector2D(80, 80), obstacleColor, true, 0))
+	obstacle.AddChildren(ludum.NewDrawnRectangle("obstacle", math2d.ZeroVector2D(), math2d.NewVector2D(80, 80), obstacleColor, true, 0))
 
 	// Floor (static - collider same size as drawing, perfectly overlapped)
-	floorSize := math2D.NewVector2D(float64(floorWidth), float64(floorHeight))
-	floorShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), floorSize))
+	floorSize := math2d.NewVector2D(float64(floorWidth), float64(floorHeight))
+	floorShape := collision.NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), floorSize))
 	floor := mustRigidBody("floor", floorShape, mask)
 	floor.SetPosition(float64(floorWidth)/2, float64(screenHeight)-float64(floorHeight)/2)
 	floor.UsesGravity = false
 	floor.Static = true
-	floor.AddChildren(ebiten_extended.NewDrawnRectangle("floor", math2D.ZeroVector2D(), floorSize, floorColor, true, 0))
+	floor.AddChildren(ludum.NewDrawnRectangle("floor", math2d.ZeroVector2D(), floorSize, floorColor, true, 0))
 
 	// Area2D (sensor/trigger)
-	areaShape := collision.NewCollisionRect(math2D.NewRectangle(math2D.ZeroVector2D(), math2D.NewVector2D(150, 50)))
+	areaShape := collision.NewCollisionRect(math2d.NewRectangle(math2d.ZeroVector2D(), math2d.NewVector2D(150, 50)))
 	area := mustArea("area", areaShape, mask)
 	area.SetPosition(450, 380)
-	area.AddChildren(ebiten_extended.NewDrawnRectangle("area", math2D.ZeroVector2D(), math2D.NewVector2D(150, 50), areaColor, true, 0))
+	area.AddChildren(ludum.NewDrawnRectangle("area", math2d.ZeroVector2D(), math2d.NewVector2D(150, 50), areaColor, true, 0))
 
 	area.BodyEntered().Connect(nil, func(ev collision.Area2DBodyEvent) {
 		// Trigger detected - e.g. collectible, damage zone
@@ -112,7 +112,7 @@ func NewGame() *Game {
 	collisionMgr.AddParticipant(area)
 
 	engine.World().SetPostUpdate(func() {
-		physicsWorld.Step(ebiten_extended.PhysicsDelta())
+		physicsWorld.Step(ludum.PhysicsDelta())
 		collisionMgr.CheckCollision()
 	})
 
@@ -161,14 +161,14 @@ func (g *Game) Update() error {
 	if jump {
 		v := g.player.GetVelocity()
 		if v.Y() > -15 && v.Y() < 15 {
-			g.player.ApplyImpulse(math2D.NewVector2D(0, -350))
+			g.player.ApplyImpulse(math2d.NewVector2D(0, -350))
 		}
 	}
 	if moveLeft {
-		g.player.ApplyImpulse(math2D.NewVector2D(-8, 0))
+		g.player.ApplyImpulse(math2d.NewVector2D(-8, 0))
 	}
 	if moveRight {
-		g.player.ApplyImpulse(math2D.NewVector2D(8, 0))
+		g.player.ApplyImpulse(math2d.NewVector2D(8, 0))
 	}
 
 	return g.engine.Update()

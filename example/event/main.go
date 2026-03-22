@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/LuigiVanacore/ebiten_extended/event"
+	"github.com/LuigiVanacore/ludum/event"
 )
 
 type UserCreatedEvent struct {

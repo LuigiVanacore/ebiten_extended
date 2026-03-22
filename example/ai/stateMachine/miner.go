@@ -1,7 +1,7 @@
-package example_statemachine
+package examplestatemachine
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/fsm"
+	"github.com/LuigiVanacore/ludum/fsm"
 )
 
 type locationType uint

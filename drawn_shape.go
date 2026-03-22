@@ -1,9 +1,9 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
 
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -22,17 +22,16 @@ const CiRCLE = CIRCLE
 type DrawnShape struct {
 	Node2D
 	shapeType         ShapeType
-	size              math2D.Vector2D
+	size              math2d.Vector2D
 	radius            float32
 	color             color.Color
-	lineFrom          math2D.Vector2D
-	lineTo            math2D.Vector2D
+	lineFrom          math2d.Vector2D
+	lineTo            math2d.Vector2D
 	isAntialiasActive bool
 	layer             int
 }
 
-
-func NewDrawnCircle(name string, position math2D.Vector2D, radius float32, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
+func NewDrawnCircle(name string, position math2d.Vector2D, radius float32, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
 	circle := &DrawnShape{
 		Node2D:            *NewNode2D(name),
 		shapeType:         CIRCLE,
@@ -45,7 +44,7 @@ func NewDrawnCircle(name string, position math2D.Vector2D, radius float32, color
 	return circle
 }
 
-func NewDrawnRectangle(name string, position math2D.Vector2D, size math2D.Vector2D, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
+func NewDrawnRectangle(name string, position math2d.Vector2D, size math2d.Vector2D, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
 	rect := &DrawnShape{
 		Node2D:            *NewNode2D(name),
 		shapeType:         RECT,
@@ -59,7 +58,7 @@ func NewDrawnRectangle(name string, position math2D.Vector2D, size math2D.Vector
 }
 
 // NewDrawnLine creates a line shape from lineFrom to lineTo, relative to the node position.
-func NewDrawnLine(name string, position, lineFrom, lineTo math2D.Vector2D, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
+func NewDrawnLine(name string, position, lineFrom, lineTo math2d.Vector2D, color color.Color, isAntialiasActive bool, layer int) *DrawnShape {
 	line := &DrawnShape{
 		Node2D:            *NewNode2D(name),
 		shapeType:         LINE,
@@ -76,7 +75,6 @@ func NewDrawnLine(name string, position, lineFrom, lineTo math2D.Vector2D, color
 func (d *DrawnShape) GetLayer() int {
 	return d.layer
 }
-
 
 func (d *DrawnShape) Draw(target *ebiten.Image, op *ebiten.DrawImageOptions) {
 	x := float32(op.GeoM.Element(0, 2))

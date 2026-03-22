@@ -1,31 +1,31 @@
 package transform
 
 import (
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
+	"github.com/LuigiVanacore/ludum/math2d"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Transform holds 2D position, pivot, rotation (radians), scale, and an optional GeoM for scale/skew.
 type Transform struct {
-	position math2D.Vector2D
-	pivot    math2D.Vector2D
+	position math2d.Vector2D
+	pivot    math2d.Vector2D
 	rotation float64
-	scale    math2D.Vector2D
+	scale    math2d.Vector2D
 	geoM     ebiten.GeoM
 }
 
 // NewTransform returns a transform with the given position, pivot, and rotation (radians).
 // The initial scale is initialized to (1,1).
-func NewTransform(position math2D.Vector2D, pivot math2D.Vector2D, rotation float64) Transform {
-	return Transform{position: position, pivot: pivot, rotation: rotation, scale: math2D.NewVector2D(1, 1)}
+func NewTransform(position math2d.Vector2D, pivot math2d.Vector2D, rotation float64) Transform {
+	return Transform{position: position, pivot: pivot, rotation: rotation, scale: math2d.NewVector2D(1, 1)}
 }
 
-func (t *Transform) GetPosition() math2D.Vector2D {
+func (t *Transform) GetPosition() math2d.Vector2D {
 	return t.position
 }
 
 // SetPosition sets the transform's position.
-func (t *Transform) SetPosition(position math2D.Vector2D) {
+func (t *Transform) SetPosition(position math2d.Vector2D) {
 	t.position.SetPosition(position)
 }
 
@@ -38,12 +38,12 @@ func (t *Transform) SetRotation(rotation float64) {
 }
 
 func (t *Transform) SetPivot(x, y float64) {
-	t.pivot.SetPosition(math2D.NewVector2D(x, y))
+	t.pivot.SetPosition(math2d.NewVector2D(x, y))
 }
 
 // SetScale sets the scaling factors.
 func (t *Transform) SetScale(x, y float64) {
-	t.scale = math2D.NewVector2D(x, y)
+	t.scale = math2d.NewVector2D(x, y)
 }
 
 // Scale is an alias for SetScale and exists to match Node2D's usage.
@@ -52,12 +52,12 @@ func (t *Transform) Scale(x, y float64) {
 }
 
 // GetScale returns the current scaling factors.
-func (t *Transform) GetScale() math2D.Vector2D {
+func (t *Transform) GetScale() math2d.Vector2D {
 	return t.scale
 }
 
 // GetPivot returns the current pivot point.
-func (t *Transform) GetPivot() math2D.Vector2D {
+func (t *Transform) GetPivot() math2d.Vector2D {
 	return t.pivot
 }
 
@@ -93,8 +93,8 @@ func (t *Transform) Concat(other Transform) {
 	// Scale local position by parent scale, then rotate by parent rotation
 	scaledX := other.GetPosition().X() * t.scale.X()
 	scaledY := other.GetPosition().Y() * t.scale.Y()
-	rotated := math2D.NewVector2D(scaledX, scaledY).RotateVector(t.rotation)
+	rotated := math2d.NewVector2D(scaledX, scaledY).RotateVector(t.rotation)
 	t.Translate(rotated.X(), rotated.Y())
-	t.scale.SetPosition(math2D.NewVector2D(t.scale.X()*other.GetScale().X(), t.scale.Y()*other.GetScale().Y()))
+	t.scale.SetPosition(math2d.NewVector2D(t.scale.X()*other.GetScale().X(), t.scale.Y()*other.GetScale().Y()))
 	t.Rotate(other.GetRotation())
 }

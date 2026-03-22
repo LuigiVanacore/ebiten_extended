@@ -1,12 +1,12 @@
-package ebiten_extended
+package ludum
 
 import (
 	"image/color"
 	"math"
 
-	"github.com/LuigiVanacore/ebiten_extended/input"
-	"github.com/LuigiVanacore/ebiten_extended/math2D"
-	"github.com/LuigiVanacore/ebiten_extended/transform"
+	"github.com/LuigiVanacore/ludum/input"
+	"github.com/LuigiVanacore/ludum/math2d"
+	"github.com/LuigiVanacore/ludum/transform"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -21,25 +21,24 @@ type Camera struct {
 	nodeToFollow    transform.Transformable
 	FollowSmoothing float64
 
-	shakeIntensity  float64
-	shakeDuration   float64
-	shakeRemaining  float64
-	shakeOffsetX    float64
-	shakeOffsetY    float64
-	shakePhase      float64
+	shakeIntensity float64
+	shakeDuration  float64
+	shakeRemaining float64
+	shakeOffsetX   float64
+	shakeOffsetY   float64
+	shakePhase     float64
 
 	// bounds constrain camera position when set (boundsSet true). World rect: minX, minY, maxX, maxY.
-	boundsSet bool
+	boundsSet                                      bool
 	boundsMinX, boundsMinY, boundsMaxX, boundsMaxY float64
 }
-
 
 // NewCamera creates and initializes a new Camera with the specified width and height.
 func NewCamera(w, h uint) *Camera {
 	c := &Camera{
 		width:  w,
 		height: h,
-		zoom: 1.0,
+		zoom:   1.0,
 	}
 	c.surface = ebiten.NewImage(int(w), int(h))
 	return c
@@ -49,7 +48,6 @@ func NewCamera(w, h uint) *Camera {
 func (c *Camera) GetZoom() float64 {
 	return c.zoom
 }
-
 
 // SetZoom sets the zoom level of the camera (clamped to a minimum of 0.01)
 // and dynamically resizes its rendering surface to accommodate the zoom.
@@ -91,8 +89,6 @@ func (c *Camera) Deallocate() {
 func (c *Camera) Fill(color color.Color) {
 	c.surface.Fill(color)
 }
-
-
 
 // ApplyRelativeTranslation applies camera-relative translation to op in place.
 // World (0,0) maps to the top-left of the camera surface; camera position acts as view offset.
@@ -185,14 +181,14 @@ func (c *Camera) GetBounds() (minX, minY, maxX, maxY float64, active bool) {
 }
 
 // GetVisibleWorldRect returns the axis-aligned world rectangle currently visible (for culling).
-func (c *Camera) GetVisibleWorldRect() math2D.Rectangle {
+func (c *Camera) GetVisibleWorldRect() math2d.Rectangle {
 	px := c.GetPosition().X()
 	py := c.GetPosition().Y()
 	w := float64(c.width) / c.zoom
 	h := float64(c.height) / c.zoom
-	return math2D.NewRectangle(
-		math2D.NewVector2D(px, py),
-		math2D.NewVector2D(w, h),
+	return math2d.NewRectangle(
+		math2d.NewVector2D(px, py),
+		math2d.NewVector2D(w, h),
 	)
 }
 

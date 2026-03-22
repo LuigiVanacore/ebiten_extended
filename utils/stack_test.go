@@ -44,28 +44,28 @@ func TestStackPush_String(t *testing.T) {
 }
 
 func TestStackPop_Int(t *testing.T) {
-    stack := NewStack[int]()
-    stack.Push(1)
-    stack.Push(2)
+	stack := NewStack[int]()
+	stack.Push(1)
+	stack.Push(2)
 
-    val, ok := stack.Pop()
-    if !ok || val != 2 {
-        t.Errorf("Expected pop 2, got %v, ok=%v", val, ok)
-    }
-    if stack.Size() != 1 {
-        t.Errorf("Expected size 1 after pop, got %d", stack.Size())
-    }
+	val, ok := stack.Pop()
+	if !ok || val != 2 {
+		t.Errorf("Expected pop 2, got %v, ok=%v", val, ok)
+	}
+	if stack.Size() != 1 {
+		t.Errorf("Expected size 1 after pop, got %d", stack.Size())
+	}
 
-    val, ok = stack.Pop()
-    if !ok || val != 1 {
-        t.Errorf("Expected pop 1, got %v, ok=%v", val, ok)
-    }
-    if stack.Size() != 0 {
-        t.Errorf("Expected size 0 after second pop, got %d", stack.Size())
-    }
+	val, ok = stack.Pop()
+	if !ok || val != 1 {
+		t.Errorf("Expected pop 1, got %v, ok=%v", val, ok)
+	}
+	if stack.Size() != 0 {
+		t.Errorf("Expected size 0 after second pop, got %d", stack.Size())
+	}
 
-    val, ok = stack.Pop()
-    if ok {
-        t.Errorf("Expected pop to fail on empty stack, got %v, ok=%v", val, ok)
-    }
+	val, ok = stack.Pop()
+	if ok {
+		t.Errorf("Expected pop to fail on empty stack, got %v, ok=%v", val, ok)
+	}
 }
